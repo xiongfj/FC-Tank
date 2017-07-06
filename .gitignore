@@ -1,0 +1,24 @@
+# vc6.0
+*.db
+
+*.ncb
+*.opt
+*.plg
+
+# vs2010
+*.suo
+*.sdf
+*.opensdf
+*.vcxproj.user
+
+#vs2015
+*.VC.db
+*.VC.opendb
+
+# User-specific files
+ReadMe.txt
+
+
+Debug/
+ipch/
+.vs/
