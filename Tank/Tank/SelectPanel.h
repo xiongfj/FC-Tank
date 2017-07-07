@@ -37,5 +37,5 @@ private:
 	// 选择玩家后显示关卡信息
 	Image* mGrayBackgroundImage;	// 游戏灰色背景图
 	Image* mCurrentStageImage;		// 选择完后显示当前关卡
-	Image* mBlackNumberImage;		// 数字 1234567890 图片
+	IMAGE mBlackNumberImage;		// 数字 1234567890 图片
 };

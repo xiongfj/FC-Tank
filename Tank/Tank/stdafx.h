@@ -1,6 +1,6 @@
 
 // TODO: 在此处引用程序需要的其他头文件
-#include "graphics.h"
+#include "./easyx/graphics.h"
 #include <list>
 #include <time.h>
 #include <stdlib.h>
@@ -24,22 +24,23 @@ using namespace Gdiplus;
 #pragma comment ( lib, "./gdi+/Lib/GdiPlus.lib" )
 #endif
 
-#define WINDOW_WIDTH 768		// 窗口大小，可以由玩家修改，
-#define WINDOW_HEIGHT 672
+#define WINDOW_WIDTH	786		// 窗口大小，可以由玩家修改，
+#define WINDOW_HEIGHT	672
+#define CANVAS_WIDTH	256		// 画布 image 大小，不会改变，左右绘图都在 image 上操作，然后一次性绘制到主窗口
+#define CANVAS_HEIGHT	224
+#define CENTER_WIDTH	208		// 中间黑色游戏区域
+#define CENTER_HEIGHT	208
+#define CENTER_X		16		// 黑色游戏区域相对左上角的坐标
+#define CENTER_Y		9
 
-#define CANVAS_WIDTH 256		// 画布 image 大小，不会改变，左右绘图都在 image 上操作，然后一次性绘制到主窗口
-#define CANVAS_HEIGHT 224
-#define CENTER_WIDTH 208		// 中间黑色游戏区域
-#define CENTER_HEIGHT 208
-
-#define CENTER_X 16		// 黑色游戏区域相对左上角的坐标
-#define CENTER_Y 9
-
-#define _WALL		'1'
-#define _FOREST		'2'
-#define _ICE		'3'
-#define _RIVER		'4'
-#define _STONE		'5'
+// 标记, 用于 markxx[26][26]
+#define _EMPTY		0		// 空地
+#define _WALL		1		// 森林
+#define _FOREST		2		// 冰
+							// ------ 以上 < 3 坦克可以穿行
+#define _ICE		3		// 墙
+#define _RIVER		4		// 河流
+#define _STONE		5		// 石头
 
 #define BOX_SIZE					8		// 26*26 的格子
 #define BLACK_NUMBER_SIZE			7		// 黑色数字大小

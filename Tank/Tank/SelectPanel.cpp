@@ -25,9 +25,9 @@ void SelectPanel::Init()
 	mSelectTankPoint[0].x = 60;
 	mSelectTankPoint[1].x = 60;
 	mSelectTankPoint[2].x = 60;
-	mSelectTankPoint[0].y = 125;
-	mSelectTankPoint[1].y = 141;
-	mSelectTankPoint[2].y = 158;
+	mSelectTankPoint[0].y = 123;
+	mSelectTankPoint[1].y = 139;
+	mSelectTankPoint[2].y = 156;
 	mSelectIndex = 1;
 	mCounter = 1;
 
@@ -36,7 +36,7 @@ void SelectPanel::Init()
 	// STAGE 字样
 	mCurrentStageImage = Image::FromFile(L"./res/big/stage.gif");
 	// 黑色 1234567890 数字
-	mBlackNumberImage = Image::FromFile(L"./res/big/black-number.gif");
+	loadimage(&mBlackNumberImage, _T("./res/big/black-number.gif"));
 }
 
 //
@@ -115,14 +115,15 @@ void SelectPanel::ShowStage()
 
 	// [1-9] 关卡，单个数字
 	if ( GameControl::mCurrentStage < 10 )
-		mGraphics->DrawImage(mBlackNumberImage, Rect( 157, 102, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE),
-			BLACK_NUMBER_SIZE * GameControl::mCurrentStage, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, UnitPixel); // Gdiplus::Unit::UnitPixel
+		TransparentBlt(mImage_hdc, 157, 103, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE,
+			GetImageHDC(&mBlackNumberImage), BLACK_NUMBER_SIZE * GameControl::mCurrentStage, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0xffffff );
 	else	// 10,11,12 .. 双位数关卡
 	{
-		mGraphics->DrawImage(mBlackNumberImage, Rect( 157, 102, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE),
-			BLACK_NUMBER_SIZE * (GameControl::mCurrentStage / 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, UnitPixel);
-		mGraphics->DrawImage(mBlackNumberImage, Rect( 163, 102, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE),
-			BLACK_NUMBER_SIZE * (GameControl::mCurrentStage % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, UnitPixel);
+		TransparentBlt(mImage_hdc, 157, 103, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE,
+			GetImageHDC(&mBlackNumberImage), BLACK_NUMBER_SIZE * (GameControl::mCurrentStage / 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0xffffff);
+
+		TransparentBlt(mImage_hdc, 157, 103, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE,
+			GetImageHDC(&mBlackNumberImage), BLACK_NUMBER_SIZE * (GameControl::mCurrentStage % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0xffffff);
 	}
 	StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 	FlushBatchDraw();
