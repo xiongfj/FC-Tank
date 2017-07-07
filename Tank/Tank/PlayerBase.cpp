@@ -40,7 +40,7 @@ PlayerBase::PlayerBase(byte player)
 	loadimage(&mPlayerTankIcoImage, _T("./res/big/playertank-ico.gif"	));	// 玩家坦克图标
 	loadimage(&mBlackNumberImage,	_T("./res/big/black-number.gif"		));	// 黑色数字
 	mPlayerLife = 2;
-	mPlayerTankLevel = 0;
+	mPlayerTankLevel = 3;
 	mTankDir = DIR_LEFT;
 	mSpeed = 2;
 	//mKeyCounter = 3;
@@ -80,13 +80,11 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 	switch (player_id)
 	{
 	case 0:										// 玩家一
-		//if ( mKeyCounter++ != 3 )
-		//	break;
 		if (GetAsyncKeyState('A') & 0x8000)
 		{
 			if (mTankDir != DIR_LEFT)			// 仅转向
 			{
-				mTankDir = DIR_LEFT;
+				ChangeDir(DIR_LEFT);
 			}
 			else								// 移动
 			{
@@ -101,7 +99,7 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 		{
 			if (mTankDir != DIR_UP)			// 仅转向
 			{
-				mTankDir = DIR_UP;
+				ChangeDir(DIR_UP);
 			}
 			else								// 移动
 			{
@@ -116,7 +114,7 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 		{
 			if (mTankDir != DIR_RIGHT)		// 仅转向
 			{
-				mTankDir = DIR_RIGHT;
+				ChangeDir(DIR_RIGHT);
 			}
 			else								// 移动
 			{
@@ -131,7 +129,7 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 		{
 			if (mTankDir != DIR_DOWN)			// 仅转向
 			{
-				mTankDir = DIR_DOWN;
+				ChangeDir(DIR_DOWN);
 			}
 			else								// 移动
 			{
@@ -145,8 +143,6 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 		break;
 
 	case 1:										// 玩家二
-		//if ( mKeyCounter++ != 3 )
-		//	break;
 		if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 		{
 			if (mTankDir != DIR_LEFT)			// 仅转向
@@ -223,20 +219,21 @@ void PlayerBase::ChangeDir(int new_dir)
 	// 原左右变上下方向
 	if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
 	{
-		if (mTankX > (mTankX / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2)	// 如果是靠近格子线上的右边节点
+		if (mTankX > (mTankX / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2 - 1)	// 如果是靠近格子线上的右边节点, -1是修正
 			mTankX = (mTankX / BOX_SIZE + 1) * BOX_SIZE;
 		else
-			mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;				// 靠近格子线上的左边节点
+			mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;					// 靠近格子线上的左边节点
 	}
 	// 上下变左右
 	else
 	{
-		if (mTankY > (mTankY / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2)	// 如果是靠近格子线上的下边节点
+		if (mTankY > (mTankY / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2 - 1)	// 如果是靠近格子线上的下边节点, -1是修正
 			mTankY = (mTankY / BOX_SIZE + 1) * BOX_SIZE;
 		else
-			mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;				// 靠近格子线上的上边节点
+			mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;					// 靠近格子线上的上边节点
 	}
 
+	// 更改方向
 	mTankDir = new_dir;
 }
 
@@ -250,21 +247,21 @@ bool PlayerBase::CheckMoveable(byte dir, BoxMarkStruct* bms)
 	int index_i = tempx / BOX_SIZE;
 	int index_j = tempy / BOX_SIZE;
 
-	int dev[4][2][2] = { {{0,0},{0,1}},{{0,0},{1,0}},{{2,0},{2,1}},{{0,2},{1,2}} };
-	//if ( bms->box_8[index_i][index_j] != '0' )
-		//return false;
-	if (bms->box_8[index_j + dev[dir][0][0]][index_i + dev[dir][0][1]] != 0 ||
-		bms->box_8[index_j + dev[dir][1][0]][index_i + dev[dir][1][1]] != 0)
-	{
+	int dev[4][2][2] = { {{-1,-1},{0,-1}},  {{-1,-1},{-1,0}},  {{-1,1},{0,1}}, { {1,-1},{1,0}} };
 
-		/*printf("%d, %d - %d/%d/%d/%d - %d, %d\n", index_i, index_j,
-			index_i + dev[dir][0][0],
-			index_j + dev[dir][0][1],
-			index_i + dev[dir][1][0],
-			index_j + dev[dir][1][1],
-			bms->box_8[index_i + dev[dir][0][0]][index_j + dev[dir][0][1]], bms->box_8[index_i + dev[dir][1][0]][index_j + dev[dir][1][1]]);
-	*/
-		//return false;
+	if (bms->box_8[index_j + dev[dir][0][0]][index_i + dev[dir][0][1]] > 2 ||
+		bms->box_8[index_j + dev[dir][1][0]][index_i + dev[dir][1][1]] > 2 )
+	{
+		printf("%d-%d; %d-%d\n", mTankX, mTankY, mTankX / 8, mTankY / 8);
+		printf("%d, %d - %d/%d/%d/%d - %d, %d\n", index_i, index_j,
+			index_j + dev[dir][0][0],
+			index_i + dev[dir][0][1],
+			index_j + dev[dir][1][0],
+			index_i + dev[dir][1][1],
+			bms->box_8[index_j + dev[dir][0][0]][index_i + dev[dir][0][1]],
+			bms->box_8[index_j + dev[dir][1][0]][index_i + dev[dir][1][1]]);
+	
+		return false;
 	}
 	return true;
 }

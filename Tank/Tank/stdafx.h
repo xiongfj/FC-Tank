@@ -35,10 +35,10 @@ using namespace Gdiplus;
 
 // 标记, 用于 markxx[26][26]
 #define _EMPTY		0		// 空地
-#define _WALL		1		// 森林
-#define _FOREST		2		// 冰
+#define _FOREST		1		// 森林
+#define _ICE		2		// 冰
 							// ------ 以上 < 3 坦克可以穿行
-#define _ICE		3		// 墙
+#define _WALL		3		// 墙
 #define _RIVER		4		// 河流
 #define _STONE		5		// 石头
 

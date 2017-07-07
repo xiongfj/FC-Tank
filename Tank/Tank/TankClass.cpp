@@ -42,7 +42,6 @@ TankInfo::TankInfo(byte enemy_kind, int enemy_level, bool notuse)
 // 玩家坦克信息
 TankInfo::TankInfo(byte player, byte level)
 {
-	//mTankDir = 0;
 	switch(player)
 	{
 	case 0:

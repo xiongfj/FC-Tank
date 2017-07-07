@@ -29,7 +29,6 @@ private:
 	void SignBoxMark(int i, int j, int sign_val);	// 标记格子, LoadMap() 内调用
 	void RefreshRightPanel();						// 刷新右边信息面板数据
 	void RefreshCenterPanel();						// 刷新中间游戏区域 208 * 208
-	int SignValueTrans(char);						// 将地图'0''1''2''3''4''5' 的标记转换成宏 _WALL, _ICE.. 之类的
 
 public:
 	static int mCurrentStage;						// [1-35] 当前关卡, SelectPanel 内使用, 本类内使用

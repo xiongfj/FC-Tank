@@ -94,61 +94,11 @@ void main()
 	}
 
 	control->LoadMap();
-	/*
-	// 获取玩家坦克 image 信息
-	PlayerBase* player = new PlayerBase();
-	Image* image = player->GetTankImage();
-	graphics->DrawImage(image, 0, 0, image->GetWidth(), image->GetHeight() );
-
-	putimage(50, 25, &canvas_img);*/
+	
+	
+	
 	GdiplusShutdown(m_GdiplusToken);		// 释放gdi+资源
 	closegraph();
-
-	/*
-	initgraph( WINDOW_WIDTH, WINDOW_HEIGHT );
-	srand( (unsigned int)time( NULL ) );
-
-	DWORD click_t1 = timeGetTime();
-	game.start  = true;
-	game.replay = false;
-	game.level  = 0;
-
-	SetWorkingImage(&temp_img);
-
-	HDC main_hdc = GetImageHDC();
-	HDC img_hdc = GetImageHDC(&temp_img);
-
-	Init();
-	Load();
-	LoadMap( game.level );
-
-	//BeginBatchDraw();
-	while ( game.start )
-	{
-	Sleep( 11 );
-	Enemy();
-	Control( click_t1 );
-	ShowNest();
-	NextLevel();
-
-	SetWorkingImage();
-	StretchBlt(main_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, img_hdc, 0, 0, 600, 600, SRCCOPY);	// 伸缩粘贴 img
-	//putimage(0, 0, &temp_img);
-	FlushBatchDraw();		// hdc 需要使用该函数使绘图操作生效
-	SetWorkingImage(&temp_img);
-
-	//FlushBatchDraw();
-	if ( game.replay )
-	{
-	cleardevice();
-	Init();
-	LoadMap( game.level );
-	game.replay = false;
-	}
-	}
-	closegraph();
-	//
-	*/
 }
 
 // 下标与方向对应加载坦克、漩涡

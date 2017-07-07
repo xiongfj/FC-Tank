@@ -62,8 +62,7 @@ void GameControl::LoadMap()
 	{
 		for ( int j = 0; j < 26; j++ )
 		{
-			// 地图数据点没有对应好, 待改
-			SignBoxMark( i, j, SignValueTrans(mMap.buf[i][j]) );		// 标记 26*26 和 52*52 格子
+			SignBoxMark( i, j, mMap.buf[i][j] - '0' );		// 标记 26*26 和 52*52 格子
 			//printf("%c- ", mMap.buf[i][j] );
 		}
 		//printf("\n");
@@ -71,7 +70,7 @@ void GameControl::LoadMap()
 
 	while (StartGame())
 	{
-		Sleep(50);
+		Sleep(40);
 	}
 }
 
@@ -209,20 +208,4 @@ void GameControl::RefreshRightPanel()
 
 void GameControl::RefreshCenterPanel()
 {
-}
-
-int GameControl::SignValueTrans(char c)
-{
-	switch (c)
-	{
-	case '0':		return _EMPTY;
-	case '1':		return _WALL;
-	case '2':		return _FOREST;
-	case '3':		return _ICE;
-	case '4':		return _RIVER;
-	case '5':		return _STONE;
-	default:
-		break;
-	}
-	return 0;
 }
