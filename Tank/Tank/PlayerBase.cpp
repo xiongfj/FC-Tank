@@ -15,9 +15,9 @@ PlayerBase::PlayerBase( byte player )
 		m12PImage_x = 233;									// 1P\2P 坐标
 		m12PImage_y = 129;
 		mPlayerTankIcoImage_x = 232;						// 玩家坦克图标坐标
-		mPlayerTankIcoImage_y = 135;
-		mPlayerLife_x = 241;								// 玩家生命值坐标
-		mPlayerLife_y = 135;
+		mPlayerTankIcoImage_y = 137;
+		mPlayerLife_x = 240;								// 玩家生命值坐标
+		mPlayerLife_y = 137;
 		mTankX =  4 * 16 + CENTER_X;						// 坦克首次出现时候的坐标
 		mTankY = 7 * 16 + CENTER_Y;
 	}
@@ -27,9 +27,9 @@ PlayerBase::PlayerBase( byte player )
 		m12PImage_x = 233;
 		m12PImage_y = 153;
 		mPlayerTankIcoImage_x = 232;
-		mPlayerTankIcoImage_y = 162;
-		mPlayerLife_x = 241;
-		mPlayerLife_y = 162;
+		mPlayerTankIcoImage_y = 161;
+		mPlayerLife_x = 240;
+		mPlayerLife_y = 161;
 		mTankX =  8 * 16 + CENTER_X;
 		mTankY = 12 * 16 + CENTER_Y;
 	}
@@ -48,6 +48,7 @@ PlayerBase::~PlayerBase()
 {
 }
 
+// 绘制玩家的一些数据: 1P\2P 坦克图标 生命
 void PlayerBase::DrawPlayerTankIco( Graphics* graphics )
 {
 	// 绘制1P/2P
@@ -55,15 +56,18 @@ void PlayerBase::DrawPlayerTankIco( Graphics* graphics )
 	// 绘制坦克图标
 	graphics->DrawImage( mPlayerTankIcoImage, mPlayerTankIcoImage_x, mPlayerTankIcoImage_y, PLAYER_TANK_ICO_SIZE_X, PLAYER_TANK_ICO_SIZE_Y );
 	// 绘制玩家生命数字
-	graphics->DrawImage( mBlackNumberImage, Rect(mPlayerLife_x, mPlayerLife_y, 7, 7), 7 * mPlayerLife, 0, 7, 7, UnitPixel);
+	graphics->DrawImage( mBlackNumberImage, Rect(mPlayerLife_x, mPlayerLife_y, BLACK_NUMBER_SIZE,
+		BLACK_NUMBER_SIZE), BLACK_NUMBER_SIZE * mPlayerLife, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, UnitPixel);
 }
 
-void PlayerBase::DrawPlayerTank( Graphics* graphics )
+//
+void PlayerBase::DrawPlayerTank( HDC canvas_hdc )
 {
-	Image* tank = mPlayerTank->GetTankImage( mPlayerTankLevel, mTankDir );
-	graphics->DrawImage( tank, mTankX, mTankY, tank->GetWidth(), tank->GetHeight() );
+	IMAGE tank = mPlayerTank->GetTankImage( mPlayerTankLevel, mTankDir );
+	TransparentBlt( canvas_hdc, mTankX, mTankY, BOX_SIZE * 2, BOX_SIZE * 2, GetImageHDC(&tank), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000 );
 }
 
+//
 bool PlayerBase::PlayerControl( BoxMarkStruct* bms )
 {
 	if ( GetAsyncKeyState(27) & 0x8000 )

@@ -10,8 +10,11 @@
 #pragma comment ( lib, "Winmm.lib" )
 using namespace std;
 
-// GDI+ 
+// GDI
+#include <wingdi.h>
+#pragma comment (lib, "msimg32.lib")
 
+// GDI+ 
 #ifndef ULONG_PTR
 #define ULONG_PTR unsigned long*
 #include <comdef.h>
@@ -21,8 +24,8 @@ using namespace Gdiplus;
 #pragma comment ( lib, "./gdi+/Lib/GdiPlus.lib" )
 #endif
 
-#define WINDOW_WIDTH 256		// 窗口大小，可以由玩家修改，
-#define WINDOW_HEIGHT 224
+#define WINDOW_WIDTH 768		// 窗口大小，可以由玩家修改，
+#define WINDOW_HEIGHT 672
 
 #define CANVAS_WIDTH 256		// 画布 image 大小，不会改变，左右绘图都在 image 上操作，然后一次性绘制到主窗口
 #define CANVAS_HEIGHT 224
@@ -38,7 +41,8 @@ using namespace Gdiplus;
 #define _RIVER		'4'
 #define _STONE		'5'
 
-#define BOX_SIZE 8			// 26*26 的格子
+#define BOX_SIZE					8		// 26*26 的格子
+#define BLACK_NUMBER_SIZE			7		// 黑色数字大小
 
 #define ENEMY_TANK_ICO_SIZE			7		// 敌机图标大小
 #define PLAYER_TANK_ICO_SIZE_X		7		// 玩家图标大小

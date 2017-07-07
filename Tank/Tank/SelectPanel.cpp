@@ -17,30 +17,26 @@ void SelectPanel::Init()
 {
 	// 背景选择图片
 	mSelect_player_image_y = WINDOW_HEIGHT;
-	mSelect_player_image = Image::FromFile( L"./res/big/select_player.bmp" );
+	mSelect_player_image = Image::FromFile( L"./res/big/select_player.gif" );
 
 	// 选择坦克手柄游标
-	mSelectTankImage[0] = Image::FromFile( L"./res/big/0Player/m0-2-1.png" );
-	mSelectTankImage[1] = Image::FromFile( L"./res/big/0Player/m0-2-2.png" );
+	mSelectTankImage[0] = Image::FromFile( L"./res/big/0Player/m0-2-1.gif" );
+	mSelectTankImage[1] = Image::FromFile( L"./res/big/0Player/m0-2-2.gif" );
 	mSelectTankPoint[0].x = 60;
 	mSelectTankPoint[1].x = 60;
 	mSelectTankPoint[2].x = 60;
-	mSelectTankPoint[0].y = 123;
-	mSelectTankPoint[1].y = 137;
-	mSelectTankPoint[2].y = 153;
+	mSelectTankPoint[0].y = 125;
+	mSelectTankPoint[1].y = 141;
+	mSelectTankPoint[2].y = 158;
 	mSelectIndex = 1;
 	mCounter = 1;
 
 	// 灰色背景
-	mGrayBackgroundImage = Image::FromFile(L"./res/big/bg_gray.png");
-	// 黑色背景
-	//mBlackBackgroundImage = Image::FromFile(L"./res/big/bg_black.png");
+	mGrayBackgroundImage = Image::FromFile(L"./res/big/bg_gray.gif");
 	// STAGE 字样
-	mCurrentStageImage = Image::FromFile(L"./res/big/stage.png");
-	// 当前关卡
-	//mCurrentStage = 2;
+	mCurrentStageImage = Image::FromFile(L"./res/big/stage.gif");
 	// 黑色 1234567890 数字
-	mBlackNumberImage = Image::FromFile(L"./res/big/black-number.png");
+	mBlackNumberImage = Image::FromFile(L"./res/big/black-number.gif");
 }
 
 //
@@ -72,7 +68,7 @@ EnumSelectResult SelectPanel::ShowSelectPanel()
 		mCounter++;
 		mGraphics->DrawImage(mSelect_player_image, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT );
 		mGraphics->DrawImage(mSelectTankImage[mCounter], mSelectTankPoint[mSelectIndex].x, mSelectTankPoint[mSelectIndex].y ,
-				15, 13 );
+				16, 16 );
 		StretchBlt(mDes_hdc, 0, mSelect_player_image_y, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 		FlushBatchDraw();
 
@@ -94,6 +90,7 @@ EnumSelectResult SelectPanel::ShowSelectPanel()
 		}
 	}
 
+	// 响应玩家的选择
 	switch( mSelectIndex )
 	{
 	case 0:
@@ -114,15 +111,18 @@ void SelectPanel::ShowStage()
 {
 	// 灰色背景
 	mGraphics->DrawImage(mGrayBackgroundImage, 0, 0, CANVAS_WIDTH + 10, CANVAS_HEIGHT + 10);	// +10 去掉由于拉伸的边缘变色
-	mGraphics->DrawImage(mCurrentStageImage, 97, 100, 40, 11);								// "STAGE" 字样
+	mGraphics->DrawImage(mCurrentStageImage, 97, 103, 39, 7);									// "STAGE" 字样
 
 	// [1-9] 关卡，单个数字
 	if ( GameControl::mCurrentStage < 10 )
-		mGraphics->DrawImage(mBlackNumberImage, Rect( 157, 102, 8, 8), 8 * GameControl::mCurrentStage, 0, 8, 8, UnitPixel); // Gdiplus::Unit::UnitPixel
+		mGraphics->DrawImage(mBlackNumberImage, Rect( 157, 102, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE),
+			BLACK_NUMBER_SIZE * GameControl::mCurrentStage, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, UnitPixel); // Gdiplus::Unit::UnitPixel
 	else	// 10,11,12 .. 双位数关卡
 	{
-		mGraphics->DrawImage(mBlackNumberImage, Rect( 157, 102, 8, 8), 8 * (GameControl::mCurrentStage / 10), 0, 8, 8, UnitPixel);
-		mGraphics->DrawImage(mBlackNumberImage, Rect( 163, 102, 8, 8), 8 * (GameControl::mCurrentStage % 10), 0, 8, 8, UnitPixel);
+		mGraphics->DrawImage(mBlackNumberImage, Rect( 157, 102, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE),
+			BLACK_NUMBER_SIZE * (GameControl::mCurrentStage / 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, UnitPixel);
+		mGraphics->DrawImage(mBlackNumberImage, Rect( 163, 102, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE),
+			BLACK_NUMBER_SIZE * (GameControl::mCurrentStage % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, UnitPixel);
 	}
 	StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 	FlushBatchDraw();

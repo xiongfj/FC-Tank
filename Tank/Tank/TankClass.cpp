@@ -13,19 +13,25 @@ TankInfo::TankInfo(byte enemy_kind, int enemy_level, bool notuse)
 	case 0:		// 道具坦克
 		for ( int i = 0; i < 4; i++ )
 		{
-			_stprintf_s(c, L"./res/big/prop-tank/%d-%d-1", enemy_level, i );
-			mTankImage[i][0] = Image::FromFile(c);
-			_stprintf_s(c, L"./res/big/prop-tank/%d-%d-2", enemy_level, i );
-			mTankImage[i][1] = Image::FromFile(c);
+			_stprintf_s(c, L"./res/big/prop-tank/%d-%d-1.gif", enemy_level, i );
+			//mTankImage[i][0] = Image::FromFile(c);
+			loadimage(&mTankImage[i][0], c);
+			_stprintf_s(c, L"./res/big/prop-tank/%d-%d-2.gif", enemy_level, i );
+			//mTankImage[i][1] = Image::FromFile(c);
+			loadimage(&mTankImage[i][1], c);
 		}
 		break;
 	case 1:		// 普通坦克
 		for ( int i = 0; i < 4; i++ )
 		{
-			_stprintf_s(c, L"./res/big/common-tank/%d-%d-1", enemy_level, i );
-			mTankImage[i][0] = Image::FromFile(c);
-			_stprintf_s(c, L"./res/big/common-tank/%d-%d-2", enemy_level, i );
-			mTankImage[i][1] = Image::FromFile(c);
+			_stprintf_s(c, L"./res/big/common-tank/%d-%d-1.gif", enemy_level, i );
+
+			//mTankImage[i][0] = Image::FromFile(c);
+			loadimage(&mTankImage[i][0], c);
+			_stprintf_s(c, L"./res/big/common-tank/%d-%d-2.gif", enemy_level, i );
+
+			//mTankImage[i][1] = Image::FromFile(c);
+			loadimage(&mTankImage[i][1], c);
 		}
 		break;
 	default:
@@ -45,10 +51,12 @@ TankInfo::TankInfo(byte player, byte level)
 			TCHAR c[50];
 			for ( int i = 0; i < 4; i++ )
 			{
-				_stprintf_s(c, L"./res/big/%dPlayer/m%d-%d-1.png", player, level, i);
-				mTankImage[i][0] = Image::FromFile(c);
-				_stprintf_s(c, L"./res/big/%dPlayer/m%d-%d-2.png", player, level, i );
-				mTankImage[i][1] = Image::FromFile(c);
+				_stprintf_s(c, L"./res/big/%dPlayer/m%d-%d-1.gif", player, level, i);
+				//mTankImage[i][0] = Image::FromFile(c);
+				loadimage(&mTankImage[i][0], c);
+				_stprintf_s(c, L"./res/big/%dPlayer/m%d-%d-2.gif", player, level, i );
+				loadimage(&mTankImage[i][1], c);
+				//mTankImage[i][1] = Image::FromFile(c);
 			}
 		}
 		break;
@@ -61,7 +69,7 @@ TankInfo::~TankInfo()
 {
 }
 
-Image* TankInfo::GetTankImage(byte dir)
+IMAGE TankInfo::GetTankImage(byte dir)
 {
 	return mTankImage[dir][1];
 }
@@ -78,7 +86,7 @@ PlayerTank::~PlayerTank()
 {
 }
 
-Image* PlayerTank::GetTankImage(byte level, byte dir)
+IMAGE PlayerTank::GetTankImage(byte level, byte dir)
 {
 	return mTankInfo[level]->GetTankImage( dir );
 }

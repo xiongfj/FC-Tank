@@ -6,6 +6,14 @@ struct Map
 	char buf[26][27];
 };
 
+/* 类功能:
+* 从 main 接收主窗口绘图接口
+* 定义一个 IMAGE 画布, 绘制地图/敌机列表信息/旗子/关卡
+* 存储格子标记
+* 存储玩家链表
+* 进行游戏循环
+*/
+
 class GameControl
 {
 public:
@@ -31,15 +39,15 @@ private:
 	BoxMarkStruct* mBoxMarkStruct;	// 存储格子标记
 	list<PlayerBase> PlayerList;	// 存储玩家列表
 
-	Image* mGrayBackgroundImage;	// 游戏灰色背景图
-	Image* mBlackBackgroundImage;	// 黑色背景图
+	IMAGE mGrayBackgroundImage;		// 游戏灰色背景图
+	IMAGE mBlackBackgroundImage;	// 黑色背景图
 
 	Map mMap;						// 存储地图数据结构
-	Image *mStoneImage;				// 石头
-	Image *mForestImage;			// 树林
-	Image *mIceImage;				// 冰块
-	Image *mRiverImage[2];			// 河流
-	Image *mWallImage;				// 泥墙
+	IMAGE mStoneImage;				// 石头
+	IMAGE mForestImage;				// 树林
+	IMAGE mIceImage;				// 冰块
+	IMAGE mRiverImage[2];			// 河流
+	IMAGE mWallImage;				// 泥墙
 
 	// 初始 mActiveEnemyTankNumber + mRemainEnemyTankNumber = 20
 	int mActiveEnemyTankNumber;		// 当前活动的敌机数量, 最多显示 6 架

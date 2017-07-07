@@ -12,9 +12,9 @@ public:
 	TankInfo(byte player, byte level);							// player [0-1]; level [0-3]
 	~TankInfo();
 
-	Image* GetTankImage( byte dir );
+	IMAGE GetTankImage( byte dir );
 private:
-	Image* mTankImage[4][2];		// 四个方向,一个方向两张贴图实现坦克移动动作.
+	IMAGE mTankImage[4][2];		// 四个方向,一个方向两张贴图实现坦克移动动作.
 };
 
 /************ 玩家坦克级别 **********/
@@ -24,7 +24,7 @@ class PlayerTank
 public:
 	PlayerTank(byte player);		// player [0-1]
 	~PlayerTank();
-	Image* GetTankImage( byte level, byte dir );
+	IMAGE GetTankImage( byte level, byte dir );
 private:
 	TankInfo* mTankInfo[4];			// 4 个级别坦克
 };

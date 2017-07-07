@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GameControl.h"
 
-int GameControl::mCurrentStage = 1;	// [1-35]
+int GameControl::mCurrentStage = 2;	// [1-35]
 GameControl::GameControl( Graphics* grap, HDC des_hdc, HDC image_hdc, BoxMarkStruct* bms)
 {
 	mGraphics = grap;
@@ -17,17 +17,15 @@ GameControl::~GameControl()
 
 void GameControl::Init()
 {
-	// 灰色背景
-	mGrayBackgroundImage = Image::FromFile(L"./res/big/bg_gray.png");
-	// 黑色背景
-	mBlackBackgroundImage = Image::FromFile(L"./res/big/bg_black.png");
 
-	mStoneImage		= Image::FromFile(L"./res/big/stone.gif");				// 12*12的石头
-	mForestImage	= Image::FromFile(L"./res/big/forest.gif");				// 树林
-	mIceImage		= Image::FromFile(L"./res/big/ice.gif");				// 冰块
-	mRiverImage[0]	= Image::FromFile(L"./res/big/river-0.gif");			// 河流
-	mRiverImage[1]	= Image::FromFile(L"./res/big/river-1.gif");			//
-	mWallImage		= Image::FromFile(L"./res/big/wall.gif");				// 泥墙
+	loadimage( &mBlackBackgroundImage, _T("./res/big/bg_black.gif"	));		// 黑色背景
+	loadimage( &mGrayBackgroundImage , _T("./res/big/bg_gray.gif"	));		// 灰色背景
+	loadimage( &mStoneImage			 , _T("./res/big/stone.gif"		));		// 12*12的石头
+	loadimage( &mForestImage		 , _T("./res/big/forest.gif"	));		// 树林
+	loadimage( &mIceImage			 , _T("./res/big/ice.gif"		));		// 冰块
+	loadimage( &mRiverImage[0]		 , _T("./res/big/river-0.gif"	));		// 河流
+	loadimage( &mRiverImage[1]		 , _T("./res/big/river-1.gif"	));		//
+	loadimage( &mWallImage			 , _T("./res/big/wall.gif"		));		// 泥墙
 
 	mActiveEnemyTankNumber = 0;												// 已经出现在地图上的敌机数量,最多显示6架
 	mRemainEnemyTankNumber = 20;											// 剩余未出现的敌机数量
@@ -71,7 +69,6 @@ void GameControl::LoadMap()
 	{
 		Sleep(30);
 	}
-	//StartGame();
 }
 
 bool GameControl::StartGame()
@@ -81,17 +78,26 @@ bool GameControl::StartGame()
 	HDC hdc = g->GetHDC();
 	BitBlt(mImage_hdc, 0, 0, CANVAS_WIDTH + 10, CANVAS_HEIGHT + 10, hdc, 0, 0, SRCCOPY );
 	g->ReleaseHDC(hdc);*/
-	mGraphics->DrawImage(mGrayBackgroundImage, 0, 0, CANVAS_WIDTH + 10, CANVAS_HEIGHT + 10);			// 灰色背景
-	mGraphics->DrawImage(mBlackBackgroundImage, CENTER_X, CENTER_Y, CENTER_WIDTH, CENTER_HEIGHT);		// 中心黑色背景游戏区
-	//BitBlt(mImage_hdc, 0, 0, CANVAS_WIDTH + 10, CANVAS_HEIGHT + 10, Graphics::FromImage(mBlackBackgroundImage)->GetHDC(), 0, 0, SRCCOPY );
+	//mGraphics->DrawImage(mGrayBackgroundImage, 0, 0, CANVAS_WIDTH + 10, CANVAS_HEIGHT + 10);			// 灰色背景
+	//mGraphics->DrawImage(mBlackBackgroundImage, CENTER_X, CENTER_Y, CENTER_WIDTH, CENTER_HEIGHT);		// 中心黑色背景游戏区
+	StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&mGrayBackgroundImage), 0, 0, 66, 66, SRCCOPY);
+	BitBlt(mImage_hdc, CENTER_X, CENTER_Y, CENTER_WIDTH, CENTER_HEIGHT, GetImageHDC(&mBlackBackgroundImage), 0, 0, SRCCOPY );
 
+	// 玩家1P\2P\坦克图标\生命数
+	list<PlayerBase>::iterator itor;
+	for (itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+	{
+		itor->DrawPlayerTankIco(mGraphics);		// 坦克图标
+		itor->DrawPlayerTank(mImage_hdc);		// 坦克
+		if (itor->PlayerControl(mBoxMarkStruct) == false)
+			return false;
+	}
 
 	/* 开始根据数据文件绘制地图
 	* 划分为 BOX_SIZE x BOX_SIZE 的格子
 	* x坐标： j*BOX_SIZE + CENTER_X
 	* y坐标： i*BOX_SIZE + CENTER_Y
 	*/
-	
 	int x = 0, y = 0;
 	for ( int i = 0; i < 26; i++ )
 	{
@@ -102,19 +108,19 @@ bool GameControl::StartGame()
 			switch(mBoxMarkStruct->box_12[i][j])
 			{
 			case _WALL:
-				mGraphics->DrawImage(mWallImage, x, y, BOX_SIZE, BOX_SIZE);
+				BitBlt(mImage_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mWallImage), 0, 0, SRCCOPY );
 				break;
 			case _FOREST:
-				mGraphics->DrawImage(mForestImage, x, y, BOX_SIZE, BOX_SIZE);
+				BitBlt(mImage_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, SRCCOPY);
 				break;
 			case _ICE:
-				mGraphics->DrawImage(mIceImage, x, y, BOX_SIZE, BOX_SIZE);
+				BitBlt(mImage_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mIceImage), 0, 0, SRCCOPY);
 				break;
 			case _RIVER:
-				mGraphics->DrawImage(mRiverImage[0], x, y, BOX_SIZE, BOX_SIZE);
+				BitBlt(mImage_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mRiverImage[0]), 0, 0, SRCCOPY);
 				break;
 			case _STONE:
-				mGraphics->DrawImage( mStoneImage, x, y, BOX_SIZE, BOX_SIZE );
+				BitBlt(mImage_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mStoneImage), 0, 0, SRCCOPY);
 				break;
 			default:
 				break;
@@ -125,15 +131,6 @@ bool GameControl::StartGame()
 	// 显示敌机数量图标
 	ShowEnemyTankIco();		
 
-	// 玩家1P\2P\坦克图标\生命数
-	list<PlayerBase>::iterator itor;
-	for ( itor = PlayerList.begin(); itor != PlayerList.end(); itor++ )
-	{
-		itor->DrawPlayerTankIco( mGraphics );		// 坦克图标
-		itor->DrawPlayerTank( mGraphics );			// 坦克
-		if( itor->PlayerControl( mBoxMarkStruct ) == false )
-			return false;
-	}
 	// 旗子
 	mGraphics->DrawImage( mFlagImage, 232, 177, FLAG_ICO_SIZE_X, FLAG_ICO_SIZE_Y );
 
@@ -146,7 +143,7 @@ bool GameControl::StartGame()
 		mGraphics->DrawImage( mBlackNumberImage, Rect( 241, 193, 7, 7), 7 * (mCurrentStage % 10), 0, 7, 7, UnitPixel );
 	}
 
-	// 缩放显示 image 到主窗口
+	// 整张画布缩放显示 image 到主窗口
 	StretchBlt( mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY );
 	FlushBatchDraw();
 
@@ -168,7 +165,7 @@ bool GameControl::StartGame()
 */
 void GameControl::ShowEnemyTankIco()
 {
-	int x[2] = {233, 240};
+	int x[2] = {233, 241};
 	int n, index;
 	for ( int i = 0; i < mRemainEnemyTankNumber; i++ )
 	{

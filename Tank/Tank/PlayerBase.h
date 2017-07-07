@@ -25,7 +25,7 @@ public:
 	PlayerBase(byte player);				// player [0-1]
 	~PlayerBase();
 	void DrawPlayerTankIco( Graphics* );	// 绘制玩家左下坦克图标
-	void DrawPlayerTank( Graphics* );		// 绘制玩家坦克
+	void DrawPlayerTank( HDC );				// 绘制玩家坦克
 	bool PlayerControl( BoxMarkStruct* );	// 玩家控制坦克移动
 private:
 	byte player_id : 1;						// [0-1] 玩家
