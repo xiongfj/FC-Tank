@@ -40,13 +40,14 @@ using namespace Gdiplus;
 
 #define BOX_SIZE 8			// 26*26 的格子
 
-#define ENEMY_TANK_ICO_SIZE		7		// 敌机图标大小
-#define PLAYER_TANK_ICO_X		7		// 玩家图标大小
-#define PLAYER_TANK_ICO_Y		8
-#define PLAYER_12_ICO_X			15		// 1P\2P 图标大小
-#define PLAYER_12_ICO_Y			8
-#define FLAG_ICO_SIZE			17		// 旗子大小
-#define PLAYER_LIFE_NUMBER_SIZE 7		// 玩家生命数字大小
+#define ENEMY_TANK_ICO_SIZE			7		// 敌机图标大小
+#define PLAYER_TANK_ICO_SIZE_X		7		// 玩家图标大小
+#define PLAYER_TANK_ICO_SIZE_Y		8
+#define PLAYER_12_ICO_SIZE_X		14		// 1P\2P 图标大小
+#define PLAYER_12_ICO_SIZE_Y		7
+#define FLAG_ICO_SIZE_X				16		// 旗子大小
+#define FLAG_ICO_SIZE_Y				15
+#define PLAYER_LIFE_NUMBER_SIZE		7		// 玩家生命数字大小
 
 #define DIR_LEFT	0
 #define DIR_UP		1

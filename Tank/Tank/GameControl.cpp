@@ -22,20 +22,19 @@ void GameControl::Init()
 	// 黑色背景
 	mBlackBackgroundImage = Image::FromFile(L"./res/big/bg_black.png");
 
-	mStoneImage		= Image::FromFile(L"./res/big/stone.png");				// 12*12的石头
-	mForestImage	= Image::FromFile(L"./res/big/forest.png");				// 树林
-	mIceImage		= Image::FromFile(L"./res/big/ice.png");				// 冰块
-	mRiverImage[0]	= Image::FromFile(L"./res/big/river-0.png");			// 河流
-	mRiverImage[1]	= Image::FromFile(L"./res/big/river-1.png");			//
-	mRiverImage[2]	= Image::FromFile(L"./res/big/river-2.png");			//
-	mWallImage		= Image::FromFile(L"./res/big/wall.png");				// 泥墙
+	mStoneImage		= Image::FromFile(L"./res/big/stone.gif");				// 12*12的石头
+	mForestImage	= Image::FromFile(L"./res/big/forest.gif");				// 树林
+	mIceImage		= Image::FromFile(L"./res/big/ice.gif");				// 冰块
+	mRiverImage[0]	= Image::FromFile(L"./res/big/river-0.gif");			// 河流
+	mRiverImage[1]	= Image::FromFile(L"./res/big/river-1.gif");			//
+	mWallImage		= Image::FromFile(L"./res/big/wall.gif");				// 泥墙
 
 	mActiveEnemyTankNumber = 0;												// 已经出现在地图上的敌机数量,最多显示6架
 	mRemainEnemyTankNumber = 20;											// 剩余未出现的敌机数量
 
-	mEnemyTankIcoImage = Image::FromFile( L"./res/big/enemytank-ico.png" );	// 敌机图标
-	mFlagImage = Image::FromFile( L"./res/big/flag.png");					// 旗子
-	mBlackNumberImage = Image::FromFile(L"./res/big/black-number.png");		// 0123456789 黑色数字
+	mEnemyTankIcoImage = Image::FromFile( L"./res/big/enemytank-ico.gif" );	// 敌机图标
+	mFlagImage = Image::FromFile( L"./res/big/flag.gif");					// 旗子
+	mBlackNumberImage = Image::FromFile(L"./res/big/black-number.gif");		// 0123456789 黑色数字
 }
 
 // 添加玩家进链表
@@ -136,15 +135,15 @@ bool GameControl::StartGame()
 			return false;
 	}
 	// 旗子
-	mGraphics->DrawImage( mFlagImage, 350, 261, FLAG_ICO_SIZE, FLAG_ICO_SIZE );
+	mGraphics->DrawImage( mFlagImage, 232, 177, FLAG_ICO_SIZE_X, FLAG_ICO_SIZE_Y );
 
 	// 关卡
 	if ( mCurrentStage < 10 )
-		mGraphics->DrawImage( mBlackNumberImage, Rect( 360, 288, 11, 11), 11 * mCurrentStage, 0, 11, 11, UnitPixel); // Gdiplus::Unit::UnitPixel
+		mGraphics->DrawImage( mBlackNumberImage, Rect( 238, 193, 7, 7), 7 * mCurrentStage, 0, 7, 7, UnitPixel ); // Gdiplus::Unit::UnitPixel
 	else	// 10,11,12 .. 双位数关卡
 	{
-		mGraphics->DrawImage( mBlackNumberImage, Rect( 358, 288, 11, 11), 11 * (mCurrentStage / 10), 0, 11, 11, UnitPixel );
-		mGraphics->DrawImage( mBlackNumberImage, Rect( 370, 288, 11, 11), 11 * (mCurrentStage % 10), 0, 11, 11, UnitPixel );
+		mGraphics->DrawImage( mBlackNumberImage, Rect( 233, 193, 7, 7), 7 * (mCurrentStage / 10), 0, 7, 7, UnitPixel );
+		mGraphics->DrawImage( mBlackNumberImage, Rect( 241, 193, 7, 7), 7 * (mCurrentStage % 10), 0, 7, 7, UnitPixel );
 	}
 
 	// 缩放显示 image 到主窗口
@@ -169,14 +168,14 @@ bool GameControl::StartGame()
 */
 void GameControl::ShowEnemyTankIco()
 {
-	int x[2] = {350, 361};
+	int x[2] = {233, 240};
 	int n, index;
 	for ( int i = 0; i < mRemainEnemyTankNumber; i++ )
 	{
 		n = i / 2;
 		index = i % 2;
 
-		mGraphics->DrawImage(mEnemyTankIcoImage, x[index], 23 + n * 12, ENEMY_TANK_ICO_SIZE, ENEMY_TANK_ICO_SIZE );
+		mGraphics->DrawImage(mEnemyTankIcoImage, x[index], 19 + n * 8, ENEMY_TANK_ICO_SIZE, ENEMY_TANK_ICO_SIZE );
 	}
 }
 

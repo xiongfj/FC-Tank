@@ -38,7 +38,7 @@ private:
 	Image *mStoneImage;				// 石头
 	Image *mForestImage;			// 树林
 	Image *mIceImage;				// 冰块
-	Image *mRiverImage[3];			// 河流
+	Image *mRiverImage[2];			// 河流
 	Image *mWallImage;				// 泥墙
 
 	// 初始 mActiveEnemyTankNumber + mRemainEnemyTankNumber = 20

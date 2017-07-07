@@ -49,5 +49,5 @@ private:
 
 	///////////////// 待修改,修改成根据坦克级别,移动速度不同
 	int mSpeed;								// mSpeed * mDevXY 得到运动速度
-	byte mKeyCounter : 2;					// 按键计数,多长间隔响应依次按键
+	//byte mKeyCounter : 2;					// 按键计数,多长间隔响应依次按键
 };

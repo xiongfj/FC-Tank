@@ -11,37 +11,37 @@ PlayerBase::PlayerBase( byte player )
 	// 不同玩家数据不同
 	if (player_id == 0)
 	{
-		m12PImage = Image::FromFile(L"./res/big/1p.png");	// 1P\2P图标
-		m12PImage_x = 350;									// 1P\2P 坐标
-		m12PImage_y = 190;
-		mPlayerTankIcoImage_x = 348;						// 玩家坦克图标坐标
-		mPlayerTankIcoImage_y = 203;
-		mPlayerLife_x = 361;								// 玩家生命值坐标
-		mPlayerLife_y = 203;
-		mTankX =  4 * 24 + CENTER_X;						// 坦克首次出现时候的坐标
-		mTankY = 7 * 24 + CENTER_Y;
+		m12PImage = Image::FromFile(L"./res/big/1P.gif");	// 1P\2P图标
+		m12PImage_x = 233;									// 1P\2P 坐标
+		m12PImage_y = 129;
+		mPlayerTankIcoImage_x = 232;						// 玩家坦克图标坐标
+		mPlayerTankIcoImage_y = 135;
+		mPlayerLife_x = 241;								// 玩家生命值坐标
+		mPlayerLife_y = 135;
+		mTankX =  4 * 16 + CENTER_X;						// 坦克首次出现时候的坐标
+		mTankY = 7 * 16 + CENTER_Y;
 	}
 	else
 	{
-		m12PImage = Image::FromFile(L"./res/big/2p.png");
-		m12PImage_x = 350;
-		m12PImage_y = 226;
-		mPlayerTankIcoImage_x = 348;
-		mPlayerTankIcoImage_y = 239;
-		mPlayerLife_x = 361;
-		mPlayerLife_y = 239;
-		mTankX =  8 * 24 + CENTER_X;
-		mTankY = 12 * 24 + CENTER_Y;
+		m12PImage = Image::FromFile(L"./res/big/2P.gif");
+		m12PImage_x = 233;
+		m12PImage_y = 153;
+		mPlayerTankIcoImage_x = 232;
+		mPlayerTankIcoImage_y = 162;
+		mPlayerLife_x = 241;
+		mPlayerLife_y = 162;
+		mTankX =  8 * 16 + CENTER_X;
+		mTankY = 12 * 16 + CENTER_Y;
 	}
 
 	// 共同的数据
-	mPlayerTankIcoImage = Image::FromFile(L"./res/big/playertank-ico.png");		// 玩家坦克图标
+	mPlayerTankIcoImage = Image::FromFile(L"./res/big/playertank-ico.gif");		// 玩家坦克图标
 	mPlayerLife = 2;
-	mBlackNumberImage = Image::FromFile(L"./res/big/black-number.png");
+	mBlackNumberImage = Image::FromFile(L"./res/big/black-number.gif");
 	mPlayerTankLevel = 0;
 	mTankDir = DIR_LEFT;
 	mSpeed = 4;
-	mKeyCounter = 3;
+	//mKeyCounter = 3;
 }
 
 PlayerBase::~PlayerBase()
@@ -51,11 +51,11 @@ PlayerBase::~PlayerBase()
 void PlayerBase::DrawPlayerTankIco( Graphics* graphics )
 {
 	// 绘制1P/2P
-	graphics->DrawImage( m12PImage, m12PImage_x, m12PImage_y, PLAYER_12_ICO_X, PLAYER_12_ICO_Y ); 
+	graphics->DrawImage( m12PImage, m12PImage_x, m12PImage_y, PLAYER_12_ICO_SIZE_X, PLAYER_12_ICO_SIZE_Y );
 	// 绘制坦克图标
-	graphics->DrawImage( mPlayerTankIcoImage, mPlayerTankIcoImage_x, mPlayerTankIcoImage_y, PLAYER_TANK_ICO_X, PLAYER_TANK_ICO_Y );
+	graphics->DrawImage( mPlayerTankIcoImage, mPlayerTankIcoImage_x, mPlayerTankIcoImage_y, PLAYER_TANK_ICO_SIZE_X, PLAYER_TANK_ICO_SIZE_Y );
 	// 绘制玩家生命数字
-	graphics->DrawImage( mBlackNumberImage, Rect(mPlayerLife_x, mPlayerLife_y, 11, 11), 11 * mPlayerLife, 0, 11, 11, UnitPixel);
+	graphics->DrawImage( mBlackNumberImage, Rect(mPlayerLife_x, mPlayerLife_y, 7, 7), 7 * mPlayerLife, 0, 7, 7, UnitPixel);
 }
 
 void PlayerBase::DrawPlayerTank( Graphics* graphics )
