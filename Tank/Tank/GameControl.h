@@ -25,9 +25,8 @@ public:
 	bool StartGame();								// 更新绘制游戏各种东西, 返回 false 结束游戏
 
 private:
-	void ShowEnemyTankIco();						// 根据剩余敌机数量显示敌机图标数量
 	void SignBoxMark(int i, int j, int sign_val);	// 标记格子, LoadMap() 内调用
-	void RefreshRightPanel();						// 刷新右边信息面板数据
+	void RefreshRightPanel();						// 刷新右边信息面板数据, 根据数据变化才调用更新
 	void RefreshCenterPanel();						// 刷新中间游戏区域 208 * 208
 
 public:
@@ -36,8 +35,10 @@ public:
 private:
 	// 窗口绘图接口
 	Graphics* mGraphics;
-	IMAGE mCenterImage;								// 用于保持 mCenter_hdc 存在有效性.
-	HDC mDes_hdc, mImage_hdc, mCenter_hdc;			// 主窗口hdc, 256*224 的 hdc, 208*208 的 hdc, mCenter_hdc 是游戏区域,分开,经常更新,坐标也容易设定
+	IMAGE mCenterImage;				// 用于保持 mCenter_hdc 存在有效性.
+	HDC mDes_hdc,					// 主窗口hdc, main 传入
+		mImage_hdc,					// 256*224 的 hdc, main 传入
+		mCenter_hdc;				// 208*208 的 hdc, 本类产生, 是游戏区域,分开,经常更新,坐标也容易设定
 
 	BoxMarkStruct* mBoxMarkStruct;	// 存储格子标记
 	list<PlayerBase> PlayerList;	// 存储玩家列表

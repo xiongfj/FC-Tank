@@ -76,57 +76,11 @@ void GameControl::LoadMap()
 
 bool GameControl::StartGame()
 {
-	// 更新右边面板的数据, 待判断, 因为不需要更新
+	// 更新右边面板的数据, 待判断, 因为不需要经常更新 mImage_hdc
 	RefreshRightPanel();
-	
-	BitBlt(mCenter_hdc, 0, 0, CENTER_WIDTH, CENTER_HEIGHT, GetImageHDC(&mBlackBackgroundImage), 0, 0, SRCCOPY );// 中心黑色背景游戏区
 
-	// 玩家1P\2P\坦克图标\生命数
-	for (itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
-	{
-		itor->DrawPlayerTank(mCenter_hdc);		// 坦克
-		if (itor->PlayerControl(mBoxMarkStruct) == false)
-			return false;
-	}
-
-	/* 开始根据数据文件绘制地图
-	* 划分为 BOX_SIZE x BOX_SIZE 的格子
-	* x坐标： j*BOX_SIZE
-	* y坐标： i*BOX_SIZE
-	*/
-	int x = 0, y = 0;
-	for ( int i = 0; i < 26; i++ )
-	{
-		for ( int j = 0; j < 26; j++ )
-		{
-			x = j * BOX_SIZE;// +CENTER_X;
-			y = i * BOX_SIZE;// +CENTER_Y;
-			switch(mBoxMarkStruct->box_8[i][j])
-			{
-			case _WALL:
-				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mWallImage), 0, 0, SRCCOPY );
-				break;
-			case _FOREST:
-				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, SRCCOPY);
-				break;
-			case _ICE:
-				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mIceImage), 0, 0, SRCCOPY);
-				break;
-			case _RIVER:
-				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mRiverImage[0]), 0, 0, SRCCOPY);
-				break;
-			case _STONE:
-				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mStoneImage), 0, 0, SRCCOPY);
-				break;
-			default:
-				break;
-			}
-		}
-	}
-	
-	// 大本营
-	TransparentBlt( mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
-								GetImageHDC(&mCamp), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000 );
+	// 更新中心游戏区域: mCenter_hdc
+	RefreshCenterPanel();
 
 	// 将中心画布印到主画布 mImage_hdc 上
 	BitBlt( mImage_hdc, CENTER_X, CENTER_Y, CENTER_WIDTH, CENTER_HEIGHT, mCenter_hdc, 0, 0, SRCCOPY );
@@ -141,19 +95,6 @@ bool GameControl::StartGame()
 /////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////// 私有函数,本类使用 //////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-
-/* 根据剩余敌机数量显示右上边图标
-								敌 敌
-								敌 敌
-								敌 敌
-								敌 敌
-								敌 敌
-								敌 敌
-								...
-*/
-void GameControl::ShowEnemyTankIco()
-{
-}
 
 // 标记 26*26 和 52*52 的格子
 void GameControl::SignBoxMark(int i, int j, int sign_val)
@@ -206,6 +147,55 @@ void GameControl::RefreshRightPanel()
 	}
 }
 
+// 更新中间游戏区域
 void GameControl::RefreshCenterPanel()
 {
+
+	BitBlt(mCenter_hdc, 0, 0, CENTER_WIDTH, CENTER_HEIGHT, GetImageHDC(&mBlackBackgroundImage), 0, 0, SRCCOPY);// 中心黑色背景游戏区
+																											  
+	// 绘制坦克\玩家按键操作
+	for (itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+	{
+		itor->DrawPlayerTank(mCenter_hdc);		// 坦克
+		itor->PlayerControl(mBoxMarkStruct);
+	}
+
+	/* 开始根据数据文件绘制地图
+	* 划分为 BOX_SIZE x BOX_SIZE 的格子
+	* x坐标： j*BOX_SIZE
+	* y坐标： i*BOX_SIZE
+	*/
+	int x = 0, y = 0;
+	for (int i = 0; i < 26; i++)
+	{
+		for (int j = 0; j < 26; j++)
+		{
+			x = j * BOX_SIZE;// +CENTER_X;
+			y = i * BOX_SIZE;// +CENTER_Y;
+			switch (mBoxMarkStruct->box_8[i][j])
+			{
+			case _WALL:
+				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mWallImage), 0, 0, SRCCOPY);
+				break;
+			case _FOREST:
+				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, SRCCOPY);
+				break;
+			case _ICE:
+				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mIceImage), 0, 0, SRCCOPY);
+				break;
+			case _RIVER:
+				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mRiverImage[0]), 0, 0, SRCCOPY);
+				break;
+			case _STONE:
+				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mStoneImage), 0, 0, SRCCOPY);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	// 大本营
+	TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
+		GetImageHDC(&mCamp), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }

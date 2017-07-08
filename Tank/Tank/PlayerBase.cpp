@@ -1,14 +1,15 @@
 #include "stdafx.h"
 #include "PlayerBase.h"
 
-//BoxMarkStruct* PlayerBase::mBms = NULL;
 int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 依次左上右下
+IMAGE PlayerBase::mBulletImage[4];
+int PlayerBase::mBulletSize[4][2] = { { 4,3 },{ 3,4 },{ 4,3 },{ 3,4 } };
 
 PlayerBase::PlayerBase(byte player)
 {
+	int i = 0;
 	player_id = player;
 	mPlayerTank = new PlayerTank(player_id);
-	//mBms = bms;												// 格子标记结构指针, 指向 main 文件定义的一个结构体
 
 	// 不同玩家数据不同
 	if (player_id == 0)
@@ -40,10 +41,28 @@ PlayerBase::PlayerBase(byte player)
 	loadimage(&mPlayerTankIcoImage, _T("./res/big/playertank-ico.gif"	));	// 玩家坦克图标
 	loadimage(&mBlackNumberImage,	_T("./res/big/black-number.gif"		));	// 黑色数字
 	mPlayerLife = 2;
-	mPlayerTankLevel = 3;
-	mTankDir = DIR_LEFT;
-	mSpeed = 3;
-	//mKeyCounter = 3;
+	mPlayerTankLevel = 0;													// 坦克级别 [0-3]
+	mTankDir = DIR_UP;
+
+	// 不同级别坦克移动速度系数
+	int temp[4] = {2, 3, 3, 3};
+	for ( i = 0; i < 4; i++ )
+		mSpeed[i] = temp[i];
+
+	// 加载子弹图片,			重复一次, 因为静态 IMAGE 不好初始化?!
+	TCHAR buf[100];
+	for (i = 0; i < 4; i++)
+	{
+		_stprintf_s(buf, _T("./res/big/bullet-%d.gif"), i);
+		loadimage(&mBulletImage[i], buf);
+	}
+
+	// 子弹坐标
+	for (i = 0; i < 2; i++)
+	{
+		mBulletX[i] = mBulletY[i] = SHOOTABLE_X;
+		mBulletDir[i] = DIR_UP;
+	}
 }
 
 PlayerBase::~PlayerBase()
@@ -90,8 +109,8 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 			{
 				if (CheckMoveable(DIR_LEFT, bms))
 				{
-					mTankX += mDevXY[DIR_LEFT][0] * mSpeed;
-					mTankY += mDevXY[DIR_LEFT][1] * mSpeed;
+					mTankX += mDevXY[DIR_LEFT][0] * mSpeed[mPlayerTankLevel];
+					mTankY += mDevXY[DIR_LEFT][1] * mSpeed[mPlayerTankLevel];
 				}
 			}
 		}
@@ -105,8 +124,8 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 			{
 				if (CheckMoveable(DIR_UP, bms))
 				{
-					mTankX += mDevXY[DIR_UP][0] * mSpeed;
-					mTankY += mDevXY[DIR_UP][1] * mSpeed;
+					mTankX += mDevXY[DIR_UP][0] * mSpeed[mPlayerTankLevel];
+					mTankY += mDevXY[DIR_UP][1] * mSpeed[mPlayerTankLevel];
 				}
 			}
 		}
@@ -120,8 +139,8 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 			{
 				if (CheckMoveable(DIR_RIGHT, bms))
 				{
-					mTankX += mDevXY[DIR_RIGHT][0] * mSpeed;
-					mTankY += mDevXY[DIR_RIGHT][1] * mSpeed;
+					mTankX += mDevXY[DIR_RIGHT][0] * mSpeed[mPlayerTankLevel];
+					mTankY += mDevXY[DIR_RIGHT][1] * mSpeed[mPlayerTankLevel];
 				}
 			}
 		}
@@ -135,10 +154,13 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 			{
 				if (CheckMoveable(DIR_DOWN, bms))
 				{
-					mTankX += mDevXY[DIR_DOWN][0] * mSpeed;
-					mTankY += mDevXY[DIR_DOWN][1] * mSpeed;
+					mTankX += mDevXY[DIR_DOWN][0] * mSpeed[mPlayerTankLevel];
+					mTankY += mDevXY[DIR_DOWN][1] * mSpeed[mPlayerTankLevel];
 				}
 			}
+		}
+		else if (GetAsyncKeyState('J') & 0x8000)	// 发射子弹
+		{
 		}
 		break;
 
@@ -153,8 +175,8 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 			{
 				if (CheckMoveable(DIR_LEFT, bms))
 				{
-					mTankX += mDevXY[DIR_LEFT][0] * mSpeed;
-					mTankY += mDevXY[DIR_LEFT][1] * mSpeed;
+					mTankX += mDevXY[DIR_LEFT][0] * mSpeed[mPlayerTankLevel];
+					mTankY += mDevXY[DIR_LEFT][1] * mSpeed[mPlayerTankLevel];
 				}
 			}
 		}
@@ -168,8 +190,8 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 			{
 				if (CheckMoveable(DIR_UP, bms))
 				{
-					mTankX += mDevXY[DIR_UP][0] * mSpeed;
-					mTankY += mDevXY[DIR_UP][1] * mSpeed;
+					mTankX += mDevXY[DIR_UP][0] * mSpeed[mPlayerTankLevel];
+					mTankY += mDevXY[DIR_UP][1] * mSpeed[mPlayerTankLevel];
 				}
 			}
 		}
@@ -183,8 +205,8 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 			{
 				if (CheckMoveable(DIR_RIGHT, bms))
 				{
-					mTankX += mDevXY[DIR_RIGHT][0] * mSpeed;
-					mTankY += mDevXY[DIR_RIGHT][1] * mSpeed;
+					mTankX += mDevXY[DIR_RIGHT][0] * mSpeed[mPlayerTankLevel];
+					mTankY += mDevXY[DIR_RIGHT][1] * mSpeed[mPlayerTankLevel];
 				}
 			}
 		}
@@ -198,8 +220,8 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 			{
 				if (CheckMoveable(DIR_DOWN, bms))
 				{
-					mTankX += mDevXY[DIR_DOWN][0] * mSpeed;
-					mTankY += mDevXY[DIR_DOWN][1] * mSpeed;
+					mTankX += mDevXY[DIR_DOWN][0] * mSpeed[mPlayerTankLevel];
+					mTankY += mDevXY[DIR_DOWN][1] * mSpeed[mPlayerTankLevel];
 				}
 			}
 		}
@@ -209,6 +231,25 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 	}
 
 	return true;
+}
+
+//
+void PlayerBase::BulletMoving(HDC center_hdc)
+{
+	// 1号子弹在移动
+	if (mBulletX[0] != SHOOTABLE_X)
+	{
+		mBulletX[0] += mDevXY[mBulletDir[0]][0] * 6;
+		mBulletY[0] += mDevXY[mBulletDir[0]][1] * 6;
+
+		//TransparentBlt(center_hdc, mBulletX[0], mBulletY[0], mBulletSize[mBulletDir[0]][0] );
+	}
+
+	if (mPlayerTankLevel > 1 && mBulletX[1] != SHOOTABLE_X)
+	{
+		mBulletX[1] += mDevXY[mBulletDir[1]][0] * 6;
+		mBulletY[1] += mDevXY[mBulletDir[1]][1] * 6;
+	}
 }
 
 //---------------------------------------------------------------- private function ---------
@@ -249,12 +290,13 @@ void PlayerBase::ChangeDir(int new_dir)
 * 如果 (x,y) 在 a 点出, 转换后的 i,j 属于格子 4
 * 如果 x 值在 a 点左边, 则转换后的 j 属于 1或3; 右边则属于 2或4
 * 如果 y 值在 a 点以上, 则转换后的 i 属于 1或2; 以下则属于 3或4
+** 如果 tempx,tempy 跨越了格子又遇到障碍, 那么就将 mTankX 或 mTankY 调整到格子线上,
 */
 bool PlayerBase::CheckMoveable(byte dir, BoxMarkStruct* bms)
 {
 	// 坦克中心坐标
-	int tempx = mTankX + mDevXY[mTankDir][0] * mSpeed;
-	int tempy = mTankY + mDevXY[mTankDir][1] * mSpeed;
+	int tempx = mTankX + mDevXY[mTankDir][0] * mSpeed[mPlayerTankLevel];
+	int tempy = mTankY + mDevXY[mTankDir][1] * mSpeed[mPlayerTankLevel];
 
 	if (tempx < BOX_SIZE || tempy < BOX_SIZE || tempy > CENTER_WIDTH - BOX_SIZE || tempx > CENTER_HEIGHT - BOX_SIZE)
 	{
@@ -290,4 +332,36 @@ bool PlayerBase::CheckMoveable(byte dir, BoxMarkStruct* bms)
 		return false;
 	}
 	return true;
+}
+
+// 发射子弹
+bool PlayerBase::ShootBullet( int bullet_id )
+{
+	int dev[4][2] = { {-BOX_SIZE - 1, 0}, {0, -BOX_SIZE - 1}, {BOX_SIZE + 1, 0}, {0, BOX_SIZE + 1} };
+	switch (bullet_id)
+	{
+		case 0:
+			if (mBulletX[0] != SHOOTABLE_X)		// 1号子弹发射失败
+				return false;
+
+			// 子弹发射点坐标
+			mBulletX[0] = mTankX + dev[mTankDir][0];
+			mBulletY[0] = mTankY + dev[mTankDir][1];
+			return true;
+
+		case 1:
+			// 级别小于2不能发射 2号子弹
+			if (mPlayerTankLevel < 2 || mBulletX[1] != SHOOTABLE_X)
+				return false;
+
+			// 子弹发射点坐标
+			mBulletX[1] = mTankX + dev[mTankDir][0];
+			mBulletY[1] = mTankY + dev[mTankDir][1];
+			return true;
+
+		default:
+			break;
+	}
+
+	return false;
 }
