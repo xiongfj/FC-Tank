@@ -158,6 +158,7 @@ void GameControl::RefreshCenterPanel()
 	{
 		itor->DrawPlayerTank(mCenter_hdc);		// 坦克
 		itor->PlayerControl(mBoxMarkStruct);
+		itor->BulletMoving(mCenter_hdc);
 	}
 
 	/* 开始根据数据文件绘制地图

@@ -25,10 +25,13 @@ struct BoxMarkStruct
 
 struct BulletStruct
 {
-	int x, y;					// 子弹坐标, 根据不同方向指定不同的位置代表 x,y
+	int x, y;					// 子弹坐标, 根据不同方向指定不同的位置代表 x,y, 指定 x=SHOOTABLE_X 的时候可以发射子弹
 	int dir;					// 子弹方向
-	int speed;					// 子弹速度
-	IMAGE mBulletImage[4];		// 图片
+	int speed[4];				// 子弹速度, 根据坦克级别给予不同速度系数
+	
+	static IMAGE mBulletImage[4];		// 图片
+	static int mBulletSize[4][2];		// {{4,3},{3,4},{4,3},{3,4}} 尺寸: 上下-3*4 / 左右-4*3
+	static int devto_tank[4][2];		// 规定子弹的坐标相对于tank中心点的偏移量
 };
 
 /************* 玩家控制 *************
@@ -73,8 +76,10 @@ private:
 	static int mDevXY[4][2];				// 四个方向的偏移量
 	int mSpeed[4];							// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样
 
-	static IMAGE mBulletImage[4];			// 四个方向子弹, 
-	static int mBulletSize[4][2];			// {{4,3},{3,4},{4,3},{3,4}} 尺寸: 上下-3*4 / 左右-4*3
-	int mBulletX[2], mBulletY[2];			// 子弹坐标, 一个玩家两对; 3/4级别的坦克可以发射两颗子弹
-	int mBulletDir[2];						// 子弹方向
+	//static IMAGE mBulletImage[4];			// 四个方向子弹, 
+	//static int mBulletSize[4][2];			// {{4,3},{3,4},{4,3},{3,4}} 尺寸: 上下-3*4 / 左右-4*3
+	//int mBulletX[2], mBulletY[2];			// 子弹坐标, 一个玩家两对; 3/4级别的坦克可以发射两颗子弹
+	//int mBulletDir[2];					// 子弹方向
+
+	BulletStruct mBulletStruct[2];			// 两颗子弹
 };
