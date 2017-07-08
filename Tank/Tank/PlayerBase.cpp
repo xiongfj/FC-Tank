@@ -42,7 +42,7 @@ PlayerBase::PlayerBase(byte player)
 	mPlayerLife = 2;
 	mPlayerTankLevel = 3;
 	mTankDir = DIR_LEFT;
-	mSpeed = 2;
+	mSpeed = 3;
 	//mKeyCounter = 3;
 }
 
@@ -237,30 +237,56 @@ void PlayerBase::ChangeDir(int new_dir)
 	mTankDir = new_dir;
 }
 
-// 判断当前方向可否移动
+/* 判断当前方向可否移动
+	box_8[i][j]
+	i = y / BOX_SIZE		// y 坐标对应的是 i 值
+	j = x / BOX_SIZE		// x 坐标对应的是 j 值
+	---------
+	| 1 | 2	|
+	----a----
+	| 3 | 4	|
+	---------
+* 如果 (x,y) 在 a 点出, 转换后的 i,j 属于格子 4
+* 如果 x 值在 a 点左边, 则转换后的 j 属于 1或3; 右边则属于 2或4
+* 如果 y 值在 a 点以上, 则转换后的 i 属于 1或2; 以下则属于 3或4
+*/
 bool PlayerBase::CheckMoveable(byte dir, BoxMarkStruct* bms)
 {
+	// 坦克中心坐标
 	int tempx = mTankX + mDevXY[mTankDir][0] * mSpeed;
 	int tempy = mTankY + mDevXY[mTankDir][1] * mSpeed;
 
+	if (tempx < BOX_SIZE || tempy < BOX_SIZE || tempy > CENTER_WIDTH - BOX_SIZE || tempx > CENTER_HEIGHT - BOX_SIZE)
+	{
+		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
+		switch (dir)
+		{
+		case DIR_LEFT:	mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;	break;	// mTankX 与 tempx 之间跨越了格子, 将坦克放到mTankX所在的格子线上
+		case DIR_UP:	mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;	break;
+		case DIR_RIGHT: mTankX = (tempx  / BOX_SIZE) * BOX_SIZE;	break;
+		case DIR_DOWN:	mTankY = (tempy  / BOX_SIZE) * BOX_SIZE;	break;
+		default:													break;
+		}
+		return false;
+	}
 	// 转换像素点所在的 xy[26][26] 下标
-	int index_i = tempx / BOX_SIZE;
-	int index_j = tempy / BOX_SIZE;
+	int index_i = tempy / BOX_SIZE;
+	int index_j = tempx / BOX_SIZE;
 
 	int dev[4][2][2] = { {{-1,-1},{0,-1}},  {{-1,-1},{-1,0}},  {{-1,1},{0,1}}, { {1,-1},{1,0}} };
 
-	if (bms->box_8[index_j + dev[dir][0][0]][index_i + dev[dir][0][1]] > 2 ||
-		bms->box_8[index_j + dev[dir][1][0]][index_i + dev[dir][1][1]] > 2 )
+	if (bms->box_8[index_i + dev[dir][0][0]][index_j + dev[dir][0][1]] > 2 ||
+		bms->box_8[index_i + dev[dir][1][0]][index_j + dev[dir][1][1]] > 2 )
 	{
-		printf("%d-%d; %d-%d\n", mTankX, mTankY, mTankX / 8, mTankY / 8);
-		printf("%d, %d - %d/%d/%d/%d - %d, %d\n", index_i, index_j,
-			index_j + dev[dir][0][0],
-			index_i + dev[dir][0][1],
-			index_j + dev[dir][1][0],
-			index_i + dev[dir][1][1],
-			bms->box_8[index_j + dev[dir][0][0]][index_i + dev[dir][0][1]],
-			bms->box_8[index_j + dev[dir][1][0]][index_i + dev[dir][1][1]]);
-	
+		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
+		switch (dir)
+		{
+		case DIR_LEFT:	mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;	break;	// mTankX 与 tempx 之间跨越了格子, 将坦克放到mTankX所在的格子线上
+		case DIR_UP:	mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;	break;
+		case DIR_RIGHT: mTankX = (tempx  / BOX_SIZE) * BOX_SIZE;	break;
+		case DIR_DOWN:	mTankY = (tempy  / BOX_SIZE) * BOX_SIZE;	break;
+		default:													break;
+		}
 		return false;
 	}
 	return true;

@@ -2,11 +2,19 @@
 #include "TankClass.h"
 
 /* 对应数值
-* 	#define _WALL		'1'
-	#define _FOREST		'2'
-	#define _ICE		'3'
-	#define _RIVER		'4'
-	#define _STONE		'5'
+* 	#defien _EMPTY		0
+	#define _WALL		3
+	#define _FOREST		1
+	#define _ICE		2
+	#define _RIVER		4
+	#define _STONE		5
+-------------------------------
+* 对应坐标关系
+box[0][0-25] : 第一行( y=0; x=[0-25] )
+box[1][0-25] : 第二行( y=1; x=[0-25] )
+...
+box[y/BOX_SIZE][x/BOX_SIZE]
+-------------------------------
 */
 struct BoxMarkStruct
 {
@@ -48,7 +56,7 @@ private:
 	int mPlayerLife_x, mPlayerLife_y;		// 图标坐标
 	IMAGE mBlackNumberImage;				// 0123456789 黑色数字
 
-	int mTankX, mTankY;						// 玩家控制的坦克坐标, 坦克中心点坐标
+	int mTankX, mTankY;						// 坦克中心点坐标
 	byte mPlayerTankLevel : 2;				// [0-3] 坦克级别,获得道具后升级坦克
 	byte mTankDir : 2;						// 当前坦克方向0-左,1-上,2右,3-下
 	static int mDevXY[4][2];				// 四个方向的偏移量

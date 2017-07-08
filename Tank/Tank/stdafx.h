@@ -24,8 +24,8 @@ using namespace Gdiplus;
 #pragma comment ( lib, "./gdi+/Lib/GdiPlus.lib" )
 #endif
 
-#define WINDOW_WIDTH	786		// 窗口大小，可以由玩家修改，
-#define WINDOW_HEIGHT	672
+#define WINDOW_WIDTH	256		// 窗口大小，可以由玩家修改，
+#define WINDOW_HEIGHT	224
 #define CANVAS_WIDTH	256		// 画布 image 大小，不会改变，左右绘图都在 image 上操作，然后一次性绘制到主窗口
 #define CANVAS_HEIGHT	224
 #define CENTER_WIDTH	208		// 中间黑色游戏区域

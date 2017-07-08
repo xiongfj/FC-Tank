@@ -91,8 +91,8 @@ bool GameControl::StartGame()
 
 	/* 开始根据数据文件绘制地图
 	* 划分为 BOX_SIZE x BOX_SIZE 的格子
-	* x坐标： j*BOX_SIZE + CENTER_X
-	* y坐标： i*BOX_SIZE + CENTER_Y
+	* x坐标： j*BOX_SIZE
+	* y坐标： i*BOX_SIZE
 	*/
 	int x = 0, y = 0;
 	for ( int i = 0; i < 26; i++ )
