@@ -40,7 +40,7 @@ void GameControl::Init()
 void GameControl::AddPlayer(int player_num)
 {
 	for ( int i = 0; i < player_num; i++ )
-		PlayerList.push_back( *(new PlayerBase(i)) );	// 后面插入数据
+		PlayerList.push_back( *(new PlayerBase(i, mBoxMarkStruct)) );	// 后面插入数据
 }
 
 /*
@@ -159,7 +159,7 @@ void GameControl::RefreshCenterPanel()
 	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
 		PlayerItor->DrawPlayerTank(mCenter_hdc);		// 坦克
-		PlayerItor->PlayerControl(mBoxMarkStruct);
+		PlayerItor->PlayerControl();
 		PlayerItor->BulletMoving(mCenter_hdc);
 	}
 

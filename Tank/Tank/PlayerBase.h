@@ -12,6 +12,14 @@ struct BulletStruct
 	static IMAGE mBulletImage[4];		// 图片
 	static int mBulletSize[4][2];		// {{4,3},{3,4},{4,3},{3,4}} 尺寸: 上下-3*4 / 左右-4*3
 	static int devto_tank[4][2];		// 规定子弹的坐标相对于tank中心点的偏移量
+	static int devto_head[4][2];		// 规定子弹图片左上角相对于弹头坐标的偏移量;上下方向弹头坐标在弹头的右边;左右则在弹头的上面那个点
+	static int bomb_box[4][2];			// 弹头周围四个 1/4 格子的偏移量, 检测该四个格子,判断是否爆炸
+};
+
+struct BombStruct
+{
+	IMAGE mBombImage[3];					// 子弹爆炸图
+	int mBombX, mBombY;						// 爆炸点中心坐标
 };
 
 /************* 玩家控制 *************
@@ -22,21 +30,23 @@ struct BulletStruct
 class PlayerBase
 {
 public:
-	PlayerBase(byte player);						// player [0-1]
+	PlayerBase(byte player, BoxMarkStruct*);						// player [0-1]
 	~PlayerBase();
 	void DrawPlayerTankIco(const HDC& );					// 绘制右侧面板的\2P\1P\坦克图标\剩余生命值
 	void DrawPlayerTank( const HDC& );						// 绘制玩家坦克
-	bool PlayerControl(BoxMarkStruct*);				// 玩家控制坦克移动
+	bool PlayerControl();				// 玩家控制坦克移动
 	void BulletMoving(const HDC&);							// 子弹移动, 在GameControl 内循环调用
 
 private:
-	void Move(int new_dir, BoxMarkStruct*);			// 更改方向, 或移动. 同时调整坐标到格子整数处, 
-	bool CheckMoveable( byte dir, BoxMarkStruct*);	// 检测当前操作是否可以移动
+	void Move(int new_dir);					// 更改方向, 或移动. 同时调整坐标到格子整数处, 
+	bool CheckMoveable( byte dir);			// 检测当前操作是否可以移动
 	bool ShootBullet(int bullet_id);				// 发射 id 号子弹[0,1]
+	void CheckBomb(int);						// 检测可否爆炸
 
 private:
 	byte player_id : 1;						// [0-1] 玩家
 	PlayerTank* mPlayerTank;				// 坦克类
+	BoxMarkStruct* bms;
 
 	IMAGE m12PImage;						// 1P\2P 图标
 	int m12PImage_x, m12PImage_y;			// 图标坐标
@@ -66,6 +76,5 @@ private:
 	int mBullet_1_counter;					// 子弹 1 的计数, 子弹 1 发射多久后才能发射子弹 2
 	bool mMoving;							// 指示坦克是否移动, 传递到 GetTankImage() 获取移动的坦克
 
-	IMAGE mBombImage[3];					// 子弹爆炸图
-	int mBombX, mBombY;						// 爆炸点中心坐标
+	BombStruct mBombS;						// 爆炸结构体
 };

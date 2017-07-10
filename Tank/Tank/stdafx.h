@@ -43,6 +43,7 @@ using namespace Gdiplus;
 #define _STONE		5		// 石头
 
 #define BOX_SIZE					8		// 26*26 的格子
+#define SMALL_BOX_SIZE				4		// 52*52 格子大小
 #define BLACK_NUMBER_SIZE			7		// 黑色数字大小
 
 #define ENEMY_TANK_ICO_SIZE			7		// 敌机图标大小

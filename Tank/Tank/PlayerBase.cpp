@@ -8,15 +8,22 @@ int BulletStruct::mBulletSize[4][2] = { { 4,3 },{ 3,4 },{ 4,3 },{ 3,4 } };			// 
 // 子弹相对坦克中心的偏移量
 int BulletStruct::devto_tank[4][2] = { { -BOX_SIZE - 1, -1 },{ -2, -BOX_SIZE - 1 },{ BOX_SIZE - 3, -1 },{ -2, BOX_SIZE - 3 } };
 
+// 子弹图片左上角坐标转换到弹头坐标,左右方向在凸出的上面那点, 上下方向则在凸出的右边那点
+int BulletStruct::devto_head[4][2] = { {0, 1}, {2, 0}, {4, 1}, {2, 4} };
+
+// 弹头四周,四个格子偏移量
+int BulletStruct::bomb_box[4][2] = { {-1, -1},{-1, 0},{0, -1},{0, 0} };
+
 //----------------- PlayerBase 类静态数据
 
 int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 依次左上右下
 
-PlayerBase::PlayerBase(byte player)
+PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 {
 	int i = 0;
 	player_id = player;
 	mPlayerTank = new PlayerTank(player_id);
+	bms = b;
 
 	// 不同玩家数据不同
 	if (player_id == 0)
@@ -88,9 +95,9 @@ PlayerBase::PlayerBase(byte player)
 	for (int i = 0; i < 3; i++)
 	{
 		_stprintf_s(c, _T("./res/big/bumb%d.gif"), i);
-		loadimage(&mBombImage[i], c);
+		loadimage(&mBombS.mBombImage[i], c);
 	}
-	mBombX = mBombY = -100;
+	mBombS.mBombX = mBombS.mBombY = -100;
 }
 
 PlayerBase::~PlayerBase()
@@ -119,7 +126,7 @@ void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 }
 
 //
-bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
+bool PlayerBase::PlayerControl()
 {
 	if (GetAsyncKeyState(27) & 0x8000)
 		return false;
@@ -130,22 +137,22 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 		if (GetAsyncKeyState('A') & 0x8000)
 		{
 			mMoving = true;
-			Move(DIR_LEFT, bms);
+			Move(DIR_LEFT);
 		}
 		else if (GetAsyncKeyState('W') & 0x8000)
 		{
 			mMoving = true;
-			Move(DIR_UP, bms);
+			Move(DIR_UP);
 		}
 		else if (GetAsyncKeyState('D') & 0x8000)
 		{
 			mMoving = true;
-			Move(DIR_RIGHT, bms);
+			Move(DIR_RIGHT);
 		}
 		else if (GetAsyncKeyState('S') & 0x8000)
 		{
 			mMoving = true;
-			Move(DIR_DOWN, bms);
+			Move(DIR_DOWN);
 		}
 		else
 		{
@@ -164,22 +171,22 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 		if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 		{
 			mMoving = true;
-			Move(DIR_LEFT, bms);
+			Move(DIR_LEFT);
 		}
 		else if (GetAsyncKeyState(VK_UP) & 0x8000)
 		{
 			mMoving = true;
-			Move(DIR_UP, bms);
+			Move(DIR_UP);
 		}
 		else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 		{
 			mMoving = true;
-			Move(DIR_RIGHT, bms);
+			Move(DIR_RIGHT);
 		}
 		else if (GetAsyncKeyState(VK_DOWN) & 0x8000)
 		{
 			mMoving = true;
-			Move(DIR_DOWN, bms);
+			Move(DIR_DOWN);
 		}else
 		{
 			mMoving = false;
@@ -214,9 +221,13 @@ void PlayerBase::BulletMoving(const HDC& center_hdc)
 				BulletStruct::mBulletSize[dir][1], GetImageHDC(&BulletStruct::mBulletImage[dir]),
 				0, 0, BulletStruct::mBulletSize[dir][0], BulletStruct::mBulletSize[dir][1], 0x000000);
 
-			if (mBulletStruct[i].x < 0 || mBulletStruct[i].x > CENTER_WIDTH || mBulletStruct[i].y < 0 || mBulletStruct[i].y > CENTER_HEIGHT)
+			if (mBulletStruct[i].x <= 0 || mBulletStruct[i].x >= CENTER_WIDTH || mBulletStruct[i].y <= 0 || mBulletStruct[i].y >= CENTER_HEIGHT)
 				mBulletStruct[i].x = SHOOTABLE_X;
+			
+			// 检测打中障碍物与否
+			CheckBomb(i);
 
+			// 记录子弹 1 的步数, 决定可否发射子弹 2
 			if ( i == 0 )
 				mBullet_1_counter--;
 		}
@@ -232,7 +243,7 @@ void PlayerBase::BulletMoving(const HDC& center_hdc)
 //---------------------------------------------------------------- private function ---------
 
 // 变向的同时调整坦克所在格子. 必须保证坦克中心在格子线上
-void PlayerBase::Move(int new_dir, BoxMarkStruct* bms)
+void PlayerBase::Move(int new_dir)
 {
 	if (mTankDir != new_dir)
 	{
@@ -258,7 +269,7 @@ void PlayerBase::Move(int new_dir, BoxMarkStruct* bms)
 	}
 	else								// 移动
 	{
-		if (CheckMoveable(mTankDir, bms))
+		if (CheckMoveable(mTankDir))
 		{
 			mTankX += mDevXY[mTankDir][0] * mSpeed[mPlayerTankLevel];
 			mTankY += mDevXY[mTankDir][1] * mSpeed[mPlayerTankLevel];
@@ -280,7 +291,7 @@ void PlayerBase::Move(int new_dir, BoxMarkStruct* bms)
 * 如果 y 值在 a 点以上, 则转换后的 i 属于 1或2; 以下则属于 3或4
 ** 如果 tempx,tempy 跨越了格子又遇到障碍, 那么就将 mTankX 或 mTankY 调整到格子线上,
 */
-bool PlayerBase::CheckMoveable(byte dir, BoxMarkStruct* bms)
+bool PlayerBase::CheckMoveable(byte dir)
 {
 	// 坦克中心坐标
 	int tempx = mTankX + mDevXY[mTankDir][0] * mSpeed[mPlayerTankLevel];
@@ -339,7 +350,7 @@ bool PlayerBase::ShootBullet( int bullet_id )
 			mBullet_1_counter = 6;
 			return true;
 
-		case 1:printf("%d\n", mBullet_1_counter);
+		case 1:
 			// 2 号子弹发射失败
 			if (mPlayerTankLevel < 2 || mBulletStruct[1].x != SHOOTABLE_X || mBullet_1_counter > 0)
 				return false;
@@ -354,4 +365,33 @@ bool PlayerBase::ShootBullet( int bullet_id )
 			break;
 	}
 	return false;
+}
+
+//
+void PlayerBase::CheckBomb(int i)
+{
+	int tempi, tempj;
+
+	int dir = mBulletStruct[i].dir;
+	int bombx = mBulletStruct[i].x + BulletStruct::devto_head[dir][0] * SMALL_BOX_SIZE;
+	int bomby = mBulletStruct[i].y + BulletStruct::devto_head[dir][1] * SMALL_BOX_SIZE;
+
+	int bi = bomby / SMALL_BOX_SIZE;
+	int bj = bombx / SMALL_BOX_SIZE;
+
+	for (int n = 0; n < 4; n++)
+	{
+		tempi = bi + BulletStruct::bomb_box[n][0];
+		tempj = bj + BulletStruct::bomb_box[n][1];
+
+		// 如果检测范围超出游戏区域
+		if (tempi < 0 || tempi > 51 || tempj < 0 || tempj > 51)
+			continue;
+
+		if (bms->box_4[tempi][tempj] != 0)
+		{
+			// bomb
+			printf("%d\n", bms->box_4[tempi][tempj]);
+		}
+	}
 }
