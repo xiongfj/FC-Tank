@@ -48,7 +48,7 @@ PlayerBase::PlayerBase(byte player)
 	loadimage(&mPlayerTankIcoImage, _T("./res/big/playertank-ico.gif"	));	// 玩家坦克图标
 	loadimage(&mBlackNumberImage,	_T("./res/big/black-number.gif"		));	// 黑色数字
 	mPlayerLife = 2;		// 玩家 HP
-	mPlayerTankLevel = 0;													// 坦克级别 [0-3]
+	mPlayerTankLevel = 2;													// 坦克级别 [0-3]
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 不同级别坦克移动速度系数
@@ -68,7 +68,7 @@ PlayerBase::PlayerBase(byte player)
 	}
 
 	// 子弹结构数据
-	int temp_speed[4] = {6, 7, 7, 8};			// 根据坦克级别分配子弹速度系数
+	int temp_speed[4] = {2, 3, 3, 5};			// 根据坦克级别分配子弹速度系数
 	for (i = 0; i < 2; i++)
 	{
 		mBulletStruct[i].x = SHOOTABLE_X;		// x 坐标用于判断是否可以发射
@@ -80,7 +80,17 @@ PlayerBase::PlayerBase(byte player)
 			mBulletStruct[i].speed[j] = temp_speed[j];
 	}
 
+	mBullet_1_counter = 9;				// 子弹 1 运动 N 个循环后才可以发射子弹 2 
 	mMoving = false;
+
+	// 爆炸图片
+	TCHAR c[100];
+	for (int i = 0; i < 3; i++)
+	{
+		_stprintf_s(c, _T("./res/big/bumb%d.gif"), i);
+		loadimage(&mBombImage[i], c);
+	}
+	mBombX = mBombY = -100;
 }
 
 PlayerBase::~PlayerBase()
@@ -191,19 +201,25 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 //
 void PlayerBase::BulletMoving(const HDC& center_hdc)
 {
-	// 1号子弹在移动
-	if (mBulletStruct[0].x != SHOOTABLE_X)
+	for (int i = 0; i < 2; i++)
 	{
-		int dir = mBulletStruct[0].dir;
-		mBulletStruct[0].x += mDevXY[dir][0] * mBulletStruct[0].speed[mPlayerTankLevel];
-		mBulletStruct[0].y += mDevXY[dir][1] * mBulletStruct[0].speed[mPlayerTankLevel];
+		// 子弹在移动
+		if (mBulletStruct[i].x != SHOOTABLE_X)
+		{
+			int dir = mBulletStruct[i].dir;
+			mBulletStruct[i].x += mDevXY[dir][0] * mBulletStruct[i].speed[mPlayerTankLevel];
+			mBulletStruct[i].y += mDevXY[dir][1] * mBulletStruct[i].speed[mPlayerTankLevel];
 
-		TransparentBlt(center_hdc, mBulletStruct[0].x, mBulletStruct[0].y, BulletStruct::mBulletSize[dir][0],
-			BulletStruct::mBulletSize[dir][1], GetImageHDC(&BulletStruct::mBulletImage[dir]),
-			0, 0, BulletStruct::mBulletSize[dir][0], BulletStruct::mBulletSize[dir][1], 0x000000);
+			TransparentBlt(center_hdc, mBulletStruct[i].x, mBulletStruct[i].y, BulletStruct::mBulletSize[dir][0],
+				BulletStruct::mBulletSize[dir][1], GetImageHDC(&BulletStruct::mBulletImage[dir]),
+				0, 0, BulletStruct::mBulletSize[dir][0], BulletStruct::mBulletSize[dir][1], 0x000000);
 
-		if (mBulletStruct[0].x < 0 || mBulletStruct[0].x > CENTER_WIDTH || mBulletStruct[0].y < 0 || mBulletStruct[0].y > CENTER_HEIGHT)
-			mBulletStruct[0].x = SHOOTABLE_X;
+			if (mBulletStruct[i].x < 0 || mBulletStruct[i].x > CENTER_WIDTH || mBulletStruct[i].y < 0 || mBulletStruct[i].y > CENTER_HEIGHT)
+				mBulletStruct[i].x = SHOOTABLE_X;
+
+			if ( i == 0 )
+				mBullet_1_counter--;
+		}
 	}
 	/*
 	if (mPlayerTankLevel > 1 && mBulletX[1] != SHOOTABLE_X)
@@ -320,17 +336,18 @@ bool PlayerBase::ShootBullet( int bullet_id )
 			mBulletStruct[0].x = mTankX + BulletStruct::devto_tank[mTankDir][0];
 			mBulletStruct[0].y = mTankY + BulletStruct::devto_tank[mTankDir][1];
 			mBulletStruct[0].dir = mTankDir;
+			mBullet_1_counter = 6;
 			return true;
 
-		case 1:
+		case 1:printf("%d\n", mBullet_1_counter);
 			// 2 号子弹发射失败
-			if (mPlayerTankLevel < 2 || mBulletStruct[1].x != SHOOTABLE_X)
+			if (mPlayerTankLevel < 2 || mBulletStruct[1].x != SHOOTABLE_X || mBullet_1_counter > 0)
 				return false;
 
 			// 子弹发射点坐标
 			mBulletStruct[1].x = mTankX + BulletStruct::devto_tank[mTankDir][0];
 			mBulletStruct[1].y = mTankY + BulletStruct::devto_tank[mTankDir][1];
-			mBulletStruct[0].dir = mTankDir;
+			mBulletStruct[1].dir = mTankDir;
 			return true;
 
 		default:

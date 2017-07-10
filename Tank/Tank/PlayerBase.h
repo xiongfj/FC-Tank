@@ -61,6 +61,11 @@ private:
 	//int mBulletX[2], mBulletY[2];			// 子弹坐标, 一个玩家两对; 3/4级别的坦克可以发射两颗子弹
 	//int mBulletDir[2];					// 子弹方向
 
+	
 	BulletStruct mBulletStruct[2];			// 两颗子弹
+	int mBullet_1_counter;					// 子弹 1 的计数, 子弹 1 发射多久后才能发射子弹 2
 	bool mMoving;							// 指示坦克是否移动, 传递到 GetTankImage() 获取移动的坦克
+
+	IMAGE mBombImage[3];					// 子弹爆炸图
+	int mBombX, mBombY;						// 爆炸点中心坐标
 };
