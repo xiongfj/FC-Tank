@@ -1,0 +1,49 @@
+#pragma once
+#include "TankClass.h"
+
+#define STOP_SHOW_STAR	false		// 四角星显示结束
+#define SHOWING_STAR	true		// 正在显示四角星
+
+/************** 敌机坦克 ************
+* 一个敌机实例化一个对象
+* 提供敌机类别(是否是道具坦克), 敌机级别[0-4]
+* 默认生成 0-0 敌机, 即0级的道具坦克
+************************************/
+class EnemyBase
+{
+public:
+	EnemyBase(byte kind, int level, BoxMarkStruct*);	// kind[0-1]; level [0-4]
+	~EnemyBase();
+	bool ShowStar(const HDC& center_hdc, int& total );		// 显示闪烁四角星, true-正在显示, false-显示完毕
+	void TankMoving(const HDC& center_hdc);		// 敌机移动
+
+private:
+	void SignBox_4(int value);		// 标记 4*4 大小的格子为坦克;
+	void UnSignBox_4();				// 取消标记, 坦克移动前需要取消, 移动后再标记
+	bool CheckSignBox(int, int);	// 检测某个 box 是否可以放置坦克, 参数是8*8 格子的中心点, 与坦克坐标规则相同
+	bool CheckMoveable();			// 
+	void RejustDirPosition();		// 重新定位坦克方向, 调正坦克位置, 保持在格子上
+
+private:
+	byte mEnemyTankKind;		// 敌机类别, 道具坦克和普通坦克两种, [0-1]
+	int mEnemyTankLevel;		// 敌机坦克4个级别 [0-3]
+	TankInfo* mEnemyTank;		// 指向坦克详细信息
+	BoxMarkStruct* bms;			// 指向格子标记结构, 由 GameControl 传递进来
+
+	int mTankX, mTankY;			// 坦克坐标, 坦克的中心点
+	byte mTankDir : 2;			// 坦克方向
+
+	IMAGE mStarImage[4];		// 四角星图片
+	int mStarIndexDev ;			// 索引的变化量, -1, 1  -1是star由小变大, 1 是star由大变小
+	byte mStarIndex : 2;		// 四角星下标索引变化规律 0-1-2-3-2-1-0-1-2-3-...
+	int mStarCounter;			// 计数,多少次变更一次图像
+	int mTankOutAfterCounter;	// 一个随机计数之后, 四角星开始闪烁,坦克出现
+	bool mIsOuted;				// 四角星小时候坦克出现, 停止播放四角星闪烁图
+	//static bool isOuting;		// 当前是否有坦克正在出现, 如果有,其他坦克不能出现,等该坦克出现完之后才开始 mTankOutAfterCounter
+
+	int mStep;					// 当前方向移动的步数, 一定步数后或者遇到障碍物变换方向并重新计算;
+	static int mDevXY[4][2];				// 四个方向的偏移量
+	int mSpeed[4];							// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样
+
+	bool mTankNumberReduce;		// 当四角星开始, true-坦克总数减一,然后设该值=false, 只减一次
+};

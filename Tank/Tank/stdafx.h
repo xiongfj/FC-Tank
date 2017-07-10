@@ -24,8 +24,8 @@ using namespace Gdiplus;
 #pragma comment ( lib, "./gdi+/Lib/GdiPlus.lib" )
 #endif
 
-#define WINDOW_WIDTH	256		// 窗口大小，可以由玩家修改，
-#define WINDOW_HEIGHT	224
+#define WINDOW_WIDTH	512		// 窗口大小，可以由玩家修改，
+#define WINDOW_HEIGHT	448
 #define CANVAS_WIDTH	256		// 画布 image 大小，不会改变，左右绘图都在 image 上操作，然后一次性绘制到主窗口
 #define CANVAS_HEIGHT	224
 #define CENTER_WIDTH	208		// 中间黑色游戏区域
@@ -58,3 +58,28 @@ using namespace Gdiplus;
 #define DIR_UP		1
 #define DIR_RIGHT	2
 #define DIR_DOWN	3
+
+// 4*4格子标记
+#define ENEMY_SIGN	100
+
+
+/* 对应数值
+* 	#defien _EMPTY		0
+#define _WALL		3
+#define _FOREST		1
+#define _ICE		2
+#define _RIVER		4
+#define _STONE		5
+-------------------------------
+* 对应坐标关系
+box[0][0-25] : 第一行( y=0; x=[0-25] )
+box[1][0-25] : 第二行( y=1; x=[0-25] )
+...
+box[y/BOX_SIZE][x/BOX_SIZE]
+-------------------------------
+*/
+struct BoxMarkStruct
+{
+	int box_8[26][26];			// 8*8 格子的标记, 坦克移动,击中用该格子检测
+	int box_4[52][52];			// 4*4 格子的标记, 墙被击中用该标记检测
+};

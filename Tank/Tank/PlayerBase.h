@@ -2,26 +2,6 @@
 #include "TankClass.h"
 
 #define SHOOTABLE_X		-100	// 规定子弹坐标 x = -100 子弹可以发射
-/* 对应数值
-* 	#defien _EMPTY		0
-	#define _WALL		3
-	#define _FOREST		1
-	#define _ICE		2
-	#define _RIVER		4
-	#define _STONE		5
--------------------------------
-* 对应坐标关系
-box[0][0-25] : 第一行( y=0; x=[0-25] )
-box[1][0-25] : 第二行( y=1; x=[0-25] )
-...
-box[y/BOX_SIZE][x/BOX_SIZE]
--------------------------------
-*/
-struct BoxMarkStruct
-{
-	int box_8[26][26];			// 8*8 格子的标记, 坦克移动,击中用该格子检测
-	int box_4[52][52];			// 4*4 格子的标记, 墙被击中用该标记检测
-};
 
 struct BulletStruct
 {
@@ -44,13 +24,13 @@ class PlayerBase
 public:
 	PlayerBase(byte player);						// player [0-1]
 	~PlayerBase();
-	void DrawPlayerTankIco( HDC );					// 绘制右侧面板的\2P\1P\坦克图标\剩余生命值
-	void DrawPlayerTank( HDC );						// 绘制玩家坦克
+	void DrawPlayerTankIco(const HDC& );					// 绘制右侧面板的\2P\1P\坦克图标\剩余生命值
+	void DrawPlayerTank( const HDC& );						// 绘制玩家坦克
 	bool PlayerControl(BoxMarkStruct*);				// 玩家控制坦克移动
-	void BulletMoving(HDC);							// 子弹移动, 在GameControl 内循环调用
+	void BulletMoving(const HDC&);							// 子弹移动, 在GameControl 内循环调用
 
 private:
-	void ChangeDir(int new_dir);					// 更改方向, 同时调整坐标到格子整数处
+	void Move(int new_dir, BoxMarkStruct*);			// 更改方向, 或移动. 同时调整坐标到格子整数处, 
 	bool CheckMoveable( byte dir, BoxMarkStruct*);	// 检测当前操作是否可以移动
 	bool ShootBullet(int bullet_id);				// 发射 id 号子弹[0,1]
 
@@ -82,4 +62,5 @@ private:
 	//int mBulletDir[2];					// 子弹方向
 
 	BulletStruct mBulletStruct[2];			// 两颗子弹
+	bool mMoving;							// 指示坦克是否移动, 传递到 GetTankImage() 获取移动的坦克
 };

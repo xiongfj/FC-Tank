@@ -145,6 +145,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EnemyBase.h" />
     <ClInclude Include="GameControl.h" />
     <ClInclude Include="PlayerBase.h" />
     <ClInclude Include="SelectPanel.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="EnemyBase.cpp" />
     <ClCompile Include="GameControl.cpp" />
     <ClCompile Include="PlayerBase.cpp" />
     <ClCompile Include="SelectPanel.cpp" />

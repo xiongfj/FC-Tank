@@ -52,7 +52,7 @@ PlayerBase::PlayerBase(byte player)
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 不同级别坦克移动速度系数
-	int temp[4] = {2, 3, 3, 3};
+	int temp[4] = {4, 2, 3, 3};
 	for ( i = 0; i < 4; i++ )
 		mSpeed[i] = temp[i];
 
@@ -79,6 +79,8 @@ PlayerBase::PlayerBase(byte player)
 		for (int j = 0; j < 4; j++)
 			mBulletStruct[i].speed[j] = temp_speed[j];
 	}
+
+	mMoving = false;
 }
 
 PlayerBase::~PlayerBase()
@@ -86,7 +88,7 @@ PlayerBase::~PlayerBase()
 }
 
 // 绘制玩家的一些数据: 1P\2P 坦克图标 生命
-void PlayerBase::DrawPlayerTankIco(HDC right_panel_hdc)
+void PlayerBase::DrawPlayerTankIco(const HDC& right_panel_hdc)
 {
 	// 绘制1P/2P
 	TransparentBlt(right_panel_hdc, m12PImage_x, m12PImage_y, PLAYER_12_ICO_SIZE_X, PLAYER_12_ICO_SIZE_Y,
@@ -100,9 +102,9 @@ void PlayerBase::DrawPlayerTankIco(HDC right_panel_hdc)
 }
 
 //
-void PlayerBase::DrawPlayerTank(HDC canvas_hdc)
+void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 {
-	IMAGE tank = mPlayerTank->GetTankImage(mPlayerTankLevel, mTankDir);
+	IMAGE tank = mPlayerTank->GetTankImage(mPlayerTankLevel, mTankDir, mMoving);
 	TransparentBlt(canvas_hdc, mTankX - BOX_SIZE, mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2, GetImageHDC(&tank), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }
 
@@ -117,63 +119,27 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 	case 0:										// 玩家一
 		if (GetAsyncKeyState('A') & 0x8000)
 		{
-			if (mTankDir != DIR_LEFT)			// 仅转向
-			{
-				ChangeDir(DIR_LEFT);
-			}
-			else								// 移动
-			{
-				if (CheckMoveable(DIR_LEFT, bms))
-				{
-					mTankX += mDevXY[DIR_LEFT][0] * mSpeed[mPlayerTankLevel];
-					mTankY += mDevXY[DIR_LEFT][1] * mSpeed[mPlayerTankLevel];
-				}
-			}
+			mMoving = true;
+			Move(DIR_LEFT, bms);
 		}
 		else if (GetAsyncKeyState('W') & 0x8000)
 		{
-			if (mTankDir != DIR_UP)			// 仅转向
-			{
-				ChangeDir(DIR_UP);
-			}
-			else								// 移动
-			{
-				if (CheckMoveable(DIR_UP, bms))
-				{
-					mTankX += mDevXY[DIR_UP][0] * mSpeed[mPlayerTankLevel];
-					mTankY += mDevXY[DIR_UP][1] * mSpeed[mPlayerTankLevel];
-				}
-			}
+			mMoving = true;
+			Move(DIR_UP, bms);
 		}
 		else if (GetAsyncKeyState('D') & 0x8000)
 		{
-			if (mTankDir != DIR_RIGHT)		// 仅转向
-			{
-				ChangeDir(DIR_RIGHT);
-			}
-			else								// 移动
-			{
-				if (CheckMoveable(DIR_RIGHT, bms))
-				{
-					mTankX += mDevXY[DIR_RIGHT][0] * mSpeed[mPlayerTankLevel];
-					mTankY += mDevXY[DIR_RIGHT][1] * mSpeed[mPlayerTankLevel];
-				}
-			}
+			mMoving = true;
+			Move(DIR_RIGHT, bms);
 		}
 		else if (GetAsyncKeyState('S') & 0x8000)
 		{
-			if (mTankDir != DIR_DOWN)			// 仅转向
-			{
-				ChangeDir(DIR_DOWN);
-			}
-			else								// 移动
-			{
-				if (CheckMoveable(DIR_DOWN, bms))
-				{
-					mTankX += mDevXY[DIR_DOWN][0] * mSpeed[mPlayerTankLevel];
-					mTankY += mDevXY[DIR_DOWN][1] * mSpeed[mPlayerTankLevel];
-				}
-			}
+			mMoving = true;
+			Move(DIR_DOWN, bms);
+		}
+		else
+		{
+			mMoving = false;
 		}
 
 		// 不能加 else if, 不然移动时候无法发射子弹
@@ -187,64 +153,29 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 	case 1:										// 玩家二
 		if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 		{
-			if (mTankDir != DIR_LEFT)			// 仅转向
-			{
-				ChangeDir(DIR_LEFT);
-			}
-			else								// 移动
-			{
-				if (CheckMoveable(DIR_LEFT, bms))
-				{
-					mTankX += mDevXY[DIR_LEFT][0] * mSpeed[mPlayerTankLevel];
-					mTankY += mDevXY[DIR_LEFT][1] * mSpeed[mPlayerTankLevel];
-				}
-			}
+			mMoving = true;
+			Move(DIR_LEFT, bms);
 		}
 		else if (GetAsyncKeyState(VK_UP) & 0x8000)
 		{
-			if (mTankDir != DIR_UP)			// 仅转向
-			{
-				ChangeDir(DIR_UP);
-			}
-			else								// 移动
-			{
-				if (CheckMoveable(DIR_UP, bms))
-				{
-					mTankX += mDevXY[DIR_UP][0] * mSpeed[mPlayerTankLevel];
-					mTankY += mDevXY[DIR_UP][1] * mSpeed[mPlayerTankLevel];
-				}
-			}
+			mMoving = true;
+			Move(DIR_UP, bms);
 		}
 		else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 		{
-			if (mTankDir != DIR_RIGHT)		// 仅转向
-			{
-				ChangeDir(DIR_RIGHT);
-			}
-			else								// 移动
-			{
-				if (CheckMoveable(DIR_RIGHT, bms))
-				{
-					mTankX += mDevXY[DIR_RIGHT][0] * mSpeed[mPlayerTankLevel];
-					mTankY += mDevXY[DIR_RIGHT][1] * mSpeed[mPlayerTankLevel];
-				}
-			}
+			mMoving = true;
+			Move(DIR_RIGHT, bms);
 		}
 		else if (GetAsyncKeyState(VK_DOWN) & 0x8000)
 		{
-			if (mTankDir != DIR_DOWN)			// 仅转向
-			{
-				ChangeDir(DIR_DOWN);
-			}
-			else								// 移动
-			{
-				if (CheckMoveable(DIR_DOWN, bms))
-				{
-					mTankX += mDevXY[DIR_DOWN][0] * mSpeed[mPlayerTankLevel];
-					mTankY += mDevXY[DIR_DOWN][1] * mSpeed[mPlayerTankLevel];
-				}
-			}
+			mMoving = true;
+			Move(DIR_DOWN, bms);
+		}else
+		{
+			mMoving = false;
 		}
+
+		// 数字键 1 发射子弹
 		if (GetAsyncKeyState(VK_NUMPAD1) & 0x8000)
 		{
 			if (!ShootBullet(0))
@@ -254,12 +185,11 @@ bool PlayerBase::PlayerControl(BoxMarkStruct* bms)
 	default:
 		break;
 	}
-
 	return true;
 }
 
 //
-void PlayerBase::BulletMoving(HDC center_hdc)
+void PlayerBase::BulletMoving(const HDC& center_hdc)
 {
 	// 1号子弹在移动
 	if (mBulletStruct[0].x != SHOOTABLE_X)
@@ -286,27 +216,38 @@ void PlayerBase::BulletMoving(HDC center_hdc)
 //---------------------------------------------------------------- private function ---------
 
 // 变向的同时调整坦克所在格子. 必须保证坦克中心在格子线上
-void PlayerBase::ChangeDir(int new_dir)
+void PlayerBase::Move(int new_dir, BoxMarkStruct* bms)
 {
-	// 原左右变上下方向
-	if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
+	if (mTankDir != new_dir)
 	{
-		if (mTankX > (mTankX / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2 - 1)	// 如果是靠近格子线上的右边节点, -1是修正
-			mTankX = (mTankX / BOX_SIZE + 1) * BOX_SIZE;
+		// 原左右变上下方向
+		if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
+		{
+			if (mTankX > (mTankX / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2 - 1)	// 如果是靠近格子线上的右边节点, -1是修正
+				mTankX = (mTankX / BOX_SIZE + 1) * BOX_SIZE;
+			else
+				mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;					// 靠近格子线上的左边节点
+		}
+		// 上下变左右
 		else
-			mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;					// 靠近格子线上的左边节点
-	}
-	// 上下变左右
-	else
-	{
-		if (mTankY > (mTankY / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2 - 1)	// 如果是靠近格子线上的下边节点, -1是修正
-			mTankY = (mTankY / BOX_SIZE + 1) * BOX_SIZE;
-		else
-			mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;					// 靠近格子线上的上边节点
-	}
+		{
+			if (mTankY > (mTankY / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2 - 1)	// 如果是靠近格子线上的下边节点, -1是修正
+				mTankY = (mTankY / BOX_SIZE + 1) * BOX_SIZE;
+			else
+				mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;					// 靠近格子线上的上边节点
+		}
 
-	// 更改方向
-	mTankDir = new_dir;
+		// 更改方向, 必须先调正位置后才能设置方向!!
+		mTankDir = new_dir;
+	}
+	else								// 移动
+	{
+		if (CheckMoveable(mTankDir, bms))
+		{
+			mTankX += mDevXY[mTankDir][0] * mSpeed[mPlayerTankLevel];
+			mTankY += mDevXY[mTankDir][1] * mSpeed[mPlayerTankLevel];
+		}
+	}
 }
 
 /* 判断当前方向可否移动

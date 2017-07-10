@@ -1,5 +1,6 @@
 #pragma once
 #include "PlayerBase.h"
+#include "EnemyBase.h"
 
 struct Map
 {
@@ -40,9 +41,12 @@ private:
 		mImage_hdc,					// 256*224 的 hdc, main 传入
 		mCenter_hdc;				// 208*208 的 hdc, 本类产生, 是游戏区域,分开,经常更新,坐标也容易设定
 
-	BoxMarkStruct* mBoxMarkStruct;	// 存储格子标记
-	list<PlayerBase> PlayerList;	// 存储玩家列表
-	list<PlayerBase>::iterator itor;// 用于遍历 PlayerList
+	BoxMarkStruct* mBoxMarkStruct;			// 存储格子标记
+	list<PlayerBase> PlayerList;			// 存储玩家列表
+	list<PlayerBase>::iterator PlayerItor;	// 用于遍历 PlayerList
+
+	list<EnemyBase> EnemyList;				// 敌机列表
+	list<EnemyBase>::iterator EnemyItor;	// 用于遍历 PlayerList
 
 	IMAGE mGrayBackgroundImage;		// 游戏灰色背景图
 	IMAGE mBlackBackgroundImage;	// 黑色背景图

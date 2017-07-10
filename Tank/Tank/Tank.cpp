@@ -61,6 +61,7 @@ void main()
 	ULONG_PTR    m_GdiplusToken;
 	GdiplusStartup(&m_GdiplusToken, &m_Gdistart, NULL);
 	/////////////////////////////////////////////////////
+	srand((unsigned)time(0));
 
 	// »ÒÉ«±³¾°
 	initgraph(WINDOW_WIDTH, WINDOW_HEIGHT, SHOWCONSOLE);

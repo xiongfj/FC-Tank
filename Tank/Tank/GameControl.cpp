@@ -63,19 +63,21 @@ void GameControl::LoadMap()
 		for ( int j = 0; j < 26; j++ )
 		{
 			SignBoxMark( i, j, mMap.buf[i][j] - '0' );		// 标记 26*26 和 52*52 格子
-			//printf("%c- ", mMap.buf[i][j] );
 		}
-		//printf("\n");
 	}
 
 	while (StartGame())
 	{
-		Sleep(40);
+		Sleep(34);
 	}
 }
 
 bool GameControl::StartGame()
 {
+	// 推送 6 架敌机到游戏区域
+	if (EnemyList.size() < 6 && mRemainEnemyTankNumber > 0)
+		EnemyList.push_back(*(new EnemyBase(1, 0, mBoxMarkStruct)));
+
 	// 更新右边面板的数据, 待判断, 因为不需要经常更新 mImage_hdc
 	RefreshRightPanel();
 
@@ -125,9 +127,9 @@ void GameControl::RefreshRightPanel()
 	}
 	
 	// 玩家1P\2P\坦克图标\生命数
-	for (itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
-		itor->DrawPlayerTankIco(mImage_hdc);		// 坦克图标
+		PlayerItor->DrawPlayerTankIco(mImage_hdc);		// 坦克图标
 	}
 
 	// 旗子
@@ -154,11 +156,25 @@ void GameControl::RefreshCenterPanel()
 	BitBlt(mCenter_hdc, 0, 0, CENTER_WIDTH, CENTER_HEIGHT, GetImageHDC(&mBlackBackgroundImage), 0, 0, SRCCOPY);// 中心黑色背景游戏区
 																											  
 	// 绘制坦克\玩家按键操作
-	for (itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
-		itor->DrawPlayerTank(mCenter_hdc);		// 坦克
-		itor->PlayerControl(mBoxMarkStruct);
-		itor->BulletMoving(mCenter_hdc);
+		PlayerItor->DrawPlayerTank(mCenter_hdc);		// 坦克
+		PlayerItor->PlayerControl(mBoxMarkStruct);
+		PlayerItor->BulletMoving(mCenter_hdc);
+	}
+
+	// 敌机移动
+	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+	{
+		EnemyItor->TankMoving(mCenter_hdc);
+	}
+	
+	// 四角星闪烁控制
+	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+	{
+		// 一个四角星动画结束后再执行下一个
+		if (EnemyItor->ShowStar(mCenter_hdc, mRemainEnemyTankNumber) == SHOWING_STAR)
+			break;
 	}
 
 	/* 开始根据数据文件绘制地图

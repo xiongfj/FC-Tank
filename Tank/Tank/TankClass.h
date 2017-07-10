@@ -11,9 +11,9 @@ public:
 	TankInfo(byte player, byte level);							// player [0-1]; level [0-3]
 	~TankInfo();
 
-	IMAGE GetTankImage( byte dir );
+	IMAGE GetTankImage( byte dir, int index = 0 );		// index 两张不同动作的图片索引 [0-1]
 private:
-	IMAGE mTankImage[4][2];		// 四个方向,一个方向两张贴图实现坦克移动动作.
+	IMAGE mTankImage[4][2];			// 四个方向,一个方向两张贴图实现坦克移动动作.
 };
 
 /************ 玩家坦克级别 **********/
@@ -23,24 +23,9 @@ class PlayerTank
 public:
 	PlayerTank(byte player);		// player [0-1]
 	~PlayerTank();
-	IMAGE GetTankImage( byte level, byte dir );
+	IMAGE GetTankImage( byte level, byte dir, bool moving = false );	// 
 private:
 	TankInfo* mTankInfo[4];			// 4 个级别坦克
+	byte mMoveIndex : 1;		// 两张坦克图片组成一个动作的 下标索引
 };
 
-/************** 敌机坦克 ************
-* 一个敌机实例化一个对象
-* 提供敌机类别(是否是道具坦克), 敌机级别[0-4]
-* 默认生成 0-0 敌机, 即0级的道具坦克
-************************************/
-class EnemyTank
-{
-public:
-	EnemyTank();
-	EnemyTank(byte kind, int level);	// kind[0-1]; level [0-4]
-	~EnemyTank();
-private:
-	byte mEnemyTankKind;		// 敌机类别, 道具坦克和普通坦克两种, [0-1]
-	int mEnemyTankLevel;		// 敌机坦克5个级别 [0-4]
-	TankInfo* mEnemyTank;		// 指向坦克详细信息
-};
