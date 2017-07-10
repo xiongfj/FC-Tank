@@ -18,8 +18,10 @@ struct BulletStruct
 
 struct BombStruct
 {
-	IMAGE mBombImage[3];					// 子弹爆炸图
+	static IMAGE mBombImage[3];				// 子弹爆炸图
 	int mBombX, mBombY;						// 爆炸点中心坐标
+	bool canBomb;							// 是否开始显示爆炸图片 flag
+	int counter;						// 取模计数器, 多少次循环更换一张图片
 };
 
 /************* 玩家控制 *************
@@ -32,15 +34,17 @@ class PlayerBase
 public:
 	PlayerBase(byte player, BoxMarkStruct*);						// player [0-1]
 	~PlayerBase();
+	void PlayerLoop(const HDC&);							// 玩家循环
 	void DrawPlayerTankIco(const HDC& );					// 绘制右侧面板的\2P\1P\坦克图标\剩余生命值
 	void DrawPlayerTank( const HDC& );						// 绘制玩家坦克
 	bool PlayerControl();				// 玩家控制坦克移动
 	void BulletMoving(const HDC&);							// 子弹移动, 在GameControl 内循环调用
+	void Bombing(const HDC&);							// 爆炸
 
 private:
 	void Move(int new_dir);					// 更改方向, 或移动. 同时调整坐标到格子整数处, 
 	bool CheckMoveable( byte dir);			// 检测当前操作是否可以移动
-	bool ShootBullet(int bullet_id);				// 发射 id 号子弹[0,1]
+	bool ShootBullet(int bullet_id);			// 发射 id 号子弹[0,1]
 	void CheckBomb(int);						// 检测可否爆炸
 
 private:
@@ -76,5 +80,5 @@ private:
 	int mBullet_1_counter;					// 子弹 1 的计数, 子弹 1 发射多久后才能发射子弹 2
 	bool mMoving;							// 指示坦克是否移动, 传递到 GetTankImage() 获取移动的坦克
 
-	BombStruct mBombS;						// 爆炸结构体
+	BombStruct mBombS[2];					// 爆炸结构体
 };

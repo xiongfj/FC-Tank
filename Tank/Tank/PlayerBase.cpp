@@ -11,8 +11,11 @@ int BulletStruct::devto_tank[4][2] = { { -BOX_SIZE - 1, -1 },{ -2, -BOX_SIZE - 1
 // 子弹图片左上角坐标转换到弹头坐标,左右方向在凸出的上面那点, 上下方向则在凸出的右边那点
 int BulletStruct::devto_head[4][2] = { {0, 1}, {2, 0}, {4, 1}, {2, 4} };
 
-// 弹头四周,四个格子偏移量
-int BulletStruct::bomb_box[4][2] = { {-1, -1},{-1, 0},{0, -1},{0, 0} };
+int BulletStruct::bomb_box[4][2] = { {-1, -1},{-1, 0},{0, -1},{0, 0} };// 弹头四周,四个格子偏移量
+
+//------------------------
+
+IMAGE BombStruct::mBombImage[3];
 
 //----------------- PlayerBase 类静态数据
 
@@ -55,11 +58,11 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 	loadimage(&mPlayerTankIcoImage, _T("./res/big/playertank-ico.gif"	));	// 玩家坦克图标
 	loadimage(&mBlackNumberImage,	_T("./res/big/black-number.gif"		));	// 黑色数字
 	mPlayerLife = 2;		// 玩家 HP
-	mPlayerTankLevel = 2;													// 坦克级别 [0-3]
+	mPlayerTankLevel = 0;													// 坦克级别 [0-3]
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 不同级别坦克移动速度系数
-	int temp[4] = {4, 2, 3, 3};
+	int temp[4] = {4, 3, 3, 3};
 	for ( i = 0; i < 4; i++ )
 		mSpeed[i] = temp[i];
 
@@ -75,7 +78,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 	}
 
 	// 子弹结构数据
-	int temp_speed[4] = {2, 3, 3, 5};			// 根据坦克级别分配子弹速度系数
+	int temp_speed[4] = {4, 4, 4, 5};			// 根据坦克级别分配子弹速度系数
 	for (i = 0; i < 2; i++)
 	{
 		mBulletStruct[i].x = SHOOTABLE_X;		// x 坐标用于判断是否可以发射
@@ -95,13 +98,27 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 	for (int i = 0; i < 3; i++)
 	{
 		_stprintf_s(c, _T("./res/big/bumb%d.gif"), i);
-		loadimage(&mBombS.mBombImage[i], c);
+		loadimage(&BombStruct::mBombImage[i], c);
 	}
-	mBombS.mBombX = mBombS.mBombY = -100;
+	for (int i = 0; i < 2; i++)
+	{
+		mBombS[i].mBombX = -100;
+		mBombS[i].mBombY = -100;
+		mBombS[i].canBomb = false;
+		mBombS[i].counter = 0;
+	}
 }
 
 PlayerBase::~PlayerBase()
 {
+}
+
+void PlayerBase::PlayerLoop(const HDC& center_hdc)
+{
+	DrawPlayerTank(center_hdc);		// 坦克
+	PlayerControl();
+	BulletMoving(center_hdc);
+	//Bombing(center_hdc);
 }
 
 // 绘制玩家的一些数据: 1P\2P 坦克图标 生命
@@ -220,9 +237,6 @@ void PlayerBase::BulletMoving(const HDC& center_hdc)
 			TransparentBlt(center_hdc, mBulletStruct[i].x, mBulletStruct[i].y, BulletStruct::mBulletSize[dir][0],
 				BulletStruct::mBulletSize[dir][1], GetImageHDC(&BulletStruct::mBulletImage[dir]),
 				0, 0, BulletStruct::mBulletSize[dir][0], BulletStruct::mBulletSize[dir][1], 0x000000);
-
-			if (mBulletStruct[i].x <= 0 || mBulletStruct[i].x >= CENTER_WIDTH || mBulletStruct[i].y <= 0 || mBulletStruct[i].y >= CENTER_HEIGHT)
-				mBulletStruct[i].x = SHOOTABLE_X;
 			
 			// 检测打中障碍物与否
 			CheckBomb(i);
@@ -238,6 +252,21 @@ void PlayerBase::BulletMoving(const HDC& center_hdc)
 		mBulletX[1] += mDevXY[mBulletDir[1]][0] * 6;
 		mBulletY[1] += mDevXY[mBulletDir[1]][1] * 6;
 	}*/
+}
+
+void PlayerBase::Bombing(const HDC& center_hdc)
+{
+	int index[5] = {0,1,2,2,0};
+	for (int i = 0; i < 2; i++)
+	{
+		if (mBombS[i].canBomb)
+		{
+			TransparentBlt(center_hdc, mBombS[i].mBombX - BOX_SIZE, mBombS[i].mBombY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
+				GetImageHDC(&BombStruct::mBombImage[index[mBombS[i].counter % 5]]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+			if (mBombS[i].counter++ == 5)
+				mBombS[i].canBomb = false;
+		}
+	}
 }
 
 //---------------------------------------------------------------- private function ---------
@@ -370,12 +399,45 @@ bool PlayerBase::ShootBullet( int bullet_id )
 //
 void PlayerBase::CheckBomb(int i)
 {
-	int tempi, tempj;
-
 	int dir = mBulletStruct[i].dir;
-	int bombx = mBulletStruct[i].x + BulletStruct::devto_head[dir][0] * SMALL_BOX_SIZE;
-	int bomby = mBulletStruct[i].y + BulletStruct::devto_head[dir][1] * SMALL_BOX_SIZE;
 
+	// 子弹头接触到障碍物的那个点, 左右方向点在上, 上下方向点在右
+	int bombx = mBulletStruct[i].x + BulletStruct::devto_head[dir][0];
+	int bomby = mBulletStruct[i].y + BulletStruct::devto_head[dir][1];
+
+	bool flag = false;
+	int adjust_x = 0, adjust_y = 0;		// 修正爆照图片显示的坐标
+	if (mBulletStruct[i].x <= 0)
+	{
+		flag = true;
+		adjust_x = 5;					// 将爆炸图片向右移一点
+	}
+	else if (mBulletStruct[i].y <= 0)
+	{
+		flag = true;
+		adjust_y = 5;
+	}
+	else if (mBulletStruct[i].x >= CENTER_WIDTH - 4 && mBulletStruct[i].dir == DIR_RIGHT)
+	{
+		flag = true;
+		adjust_x = -4;
+	}
+	else if (mBulletStruct[i].y >= CENTER_HEIGHT - 4 && mBulletStruct[i].dir == DIR_DOWN)
+	{
+		flag = true;
+		adjust_y = -2;
+	}
+	if (flag)
+	{
+		//printf("%d - %d; %d - %d\n", bombx, bomby, mBulletStruct[i].x, mBulletStruct[i].y);
+		mBulletStruct[i].x = SHOOTABLE_X;
+		mBombS[i].canBomb = true;
+		mBombS[i].mBombX = bombx + adjust_x;
+		mBombS[i].mBombY = bomby + adjust_y;
+		mBombS[i].counter = 0;
+	}
+
+	int tempi, tempj;
 	int bi = bomby / SMALL_BOX_SIZE;
 	int bj = bombx / SMALL_BOX_SIZE;
 
@@ -391,7 +453,13 @@ void PlayerBase::CheckBomb(int i)
 		if (bms->box_4[tempi][tempj] != 0)
 		{
 			// bomb
-			printf("%d\n", bms->box_4[tempi][tempj]);
+			mBulletStruct[i].x = SHOOTABLE_X;
+			mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
+			mBombS[i].mBombX = bombx;
+			mBombS[i].mBombY = bomby;
+			mBombS[i].counter = 0;
 		}
+			//printf("%d - %d\n", tempi, tempj);
 	}
 }
+

@@ -158,9 +158,7 @@ void GameControl::RefreshCenterPanel()
 	// 绘制坦克\玩家按键操作
 	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
-		PlayerItor->DrawPlayerTank(mCenter_hdc);		// 坦克
-		PlayerItor->PlayerControl();
-		PlayerItor->BulletMoving(mCenter_hdc);
+		PlayerItor->PlayerLoop(mCenter_hdc);
 	}
 
 	// 敌机移动
@@ -210,6 +208,10 @@ void GameControl::RefreshCenterPanel()
 				break;
 			}
 		}
+	}
+	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
+	{
+		PlayerItor->Bombing(mCenter_hdc);
 	}
 
 	// 大本营
