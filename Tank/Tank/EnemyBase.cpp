@@ -8,7 +8,7 @@ int EnemyBase::mDevXY[4][2] = { { -1, 0 },{ 0, -1 },{ 1, 0 },{ 0, 1 } };	// 依次
 //bool EnemyBase::isOuting = false;
 
 // 生成某个类别级别的敌机
-EnemyBase::EnemyBase(byte kind, int level, BoxMarkStruct* b)
+EnemyBase::EnemyBase( byte kind, int level, BoxMarkStruct* b)
 {
 	mEnemyTankKind = kind;
 	mEnemyTankLevel = level;
@@ -30,7 +30,7 @@ EnemyBase::EnemyBase(byte kind, int level, BoxMarkStruct* b)
 	mStarIndexDev = -1;						// 控制索引下标的增加还是减少
 	mStarIndex = 3;							// star 图片索引下标
 	mStarCounter = 0;						// 多少次更换 star 图片
-	mTankOutAfterCounter = rand() % 400 + 10;
+	mTankOutAfterCounter = rand() % 100 + 10;
 	mIsOuted = false;						// 坦克是否已经出现
 
 	mStep = rand() % 200;					// 当前方向随机移动的步数
@@ -52,7 +52,13 @@ EnemyBase::EnemyBase(byte kind, int level, BoxMarkStruct* b)
 	
 	mBulletT1 = timeGetTime();
 	mBulletT2 = timeGetTime();
-	mBulletT = rand() % 6630 + 4320;		// 发射子弹的间隔时间
+	mBulletT = rand() % 111 + 320;		// 发射子弹的间隔时间 4000 
+
+	// 爆炸图片
+	mBombS.mBombX = -100;
+	mBombS.mBombY = -100;
+	mBombS.canBomb = false;
+	mBombS.counter = 0;
 }
 
 EnemyBase::~EnemyBase()
@@ -62,7 +68,7 @@ EnemyBase::~EnemyBase()
 }
 
 // 显示坦克
-bool EnemyBase::ShowStar(const HDC& center_hdc, int& total)
+bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 {
 	// 坦克已经出现,不用闪烁,直接返回
 	if (mIsOuted == true)
@@ -75,7 +81,8 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& total)
 	// 四角星出现, 剩余坦克数-1;
 	if (mTankNumberReduce)
 	{
-		total -= 1;
+		mEnemyId = TOTAL_ENEMY_NUMBER - remainnumber;
+		remainnumber -= 1;
 		mTankNumberReduce = false;
 	}
 
@@ -127,7 +134,7 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 	// 可移动
 	if (CheckMoveable())
 	{
-		UnSignBox_4();
+		SignBox_4(0);
 		mTankX += mDevXY[mTankDir][0] * mSpeed[mEnemyTankLevel];
 		mTankY += mDevXY[mTankDir][1] * mSpeed[mEnemyTankLevel];
 		SignBox_4(ENEMY_SIGN);
@@ -146,7 +153,6 @@ bool EnemyBase::ShootBullet()
 	if (mBulletStruct.x != SHOOTABLE_X || mBulletT2 - mBulletT1 < mBulletT)
 		return false;
 
-	printf("%d\n", mBulletT2 - mBulletT1);
 	mBulletT1 = mBulletT2;
 
 	// 子弹发射点坐标
@@ -163,6 +169,9 @@ void EnemyBase::BulletMoving(const HDC& center_hdc)
 	if (mBulletStruct.x == SHOOTABLE_X)
 		return;
 
+	if (CheckBomb())
+		return;
+
 	int dir = mBulletStruct.dir;
 	mBulletStruct.x += mDevXY[dir][0] * mBulletStruct.speed[mEnemyTankLevel];
 	mBulletStruct.y += mDevXY[dir][1] * mBulletStruct.speed[mEnemyTankLevel];
@@ -170,10 +179,18 @@ void EnemyBase::BulletMoving(const HDC& center_hdc)
 	TransparentBlt(center_hdc, mBulletStruct.x, mBulletStruct.y, BulletStruct::mBulletSize[dir][0],
 		BulletStruct::mBulletSize[dir][1], GetImageHDC(&BulletStruct::mBulletImage[dir]),
 		0, 0, BulletStruct::mBulletSize[dir][0], BulletStruct::mBulletSize[dir][1], 0x000000);
+}
 
-	if (mBulletStruct.x < 0 || mBulletStruct.y < 0 || mBulletStruct.x > CENTER_WIDTH - 4 || mBulletStruct.y > CENTER_WIDTH - 4)
+//
+void EnemyBase::Bombing(const HDC & center_hdc)
+{
+	int index[3] = { 0,1,2 };
+	if (mBombS.canBomb)
 	{
-		mBulletStruct.x = SHOOTABLE_X;
+		TransparentBlt(center_hdc, mBombS.mBombX - BOX_SIZE, mBombS.mBombY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
+			GetImageHDC(&BombStruct::mBombImage[index[mBombS.counter % 3]]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+		if (mBombS.counter++ == 3)
+			mBombS.canBomb = false;
 	}
 }
 
@@ -183,8 +200,8 @@ void EnemyBase::BulletMoving(const HDC& center_hdc)
 void EnemyBase::SignBox_4(int value)
 {
 	// box_4[i][j] 对应索引
-	int ix = (int)(2 * mTankY) / BOX_SIZE - 2;		// -2 是从中心点右下第一个格子移到左上角那个格子
-	int jy = (int)(2 * mTankX) / BOX_SIZE - 2;
+	int ix = mTankY / (BOX_SIZE / 2) - 2;		// -2 是从中心点右下第一个格子移到左上角那个格子
+	int jy = mTankX / (BOX_SIZE / 2) - 2;
 	for (int i = ix; i < ix + 4; i++)
 	{
 		for (int j = jy; j < jy + 4; j++)
@@ -194,20 +211,21 @@ void EnemyBase::SignBox_4(int value)
 	}
 }
 
-// 取消标记
-void EnemyBase::UnSignBox_4()
+//
+void EnemyBase::SignBox_8(int value)
 {
-	int ix = 2 * (int)mTankY / BOX_SIZE - 2;
-	int jy = 2 * (int)mTankX / BOX_SIZE - 2;
-	for (int i = ix; i < ix + 4; i++)
+	// 右坦克中心索引转到左上角那个的 格子索引
+	int iy = mTankY / BOX_SIZE - 1;
+	int jx = mTankX / BOX_SIZE - 1;
+	for (int i = iy; i < iy + 2; i++)
 	{
-		for (int j = jy; j < jy + 4; j++)
+		for (int j = jx; j < jx + 2; j++)
 		{
-			bms->box_4[i][j] = 0;
+			bms->box_8[i][j] = value;
 		}
 	}
 }
-
+/*
 //
 bool EnemyBase::CheckSignBox(int x, int y)
 {
@@ -224,7 +242,7 @@ bool EnemyBase::CheckSignBox(int x, int y)
 	}
 
 	return true;
-}
+}*/
 
 //
 bool EnemyBase::CheckMoveable()
@@ -252,8 +270,11 @@ bool EnemyBase::CheckMoveable()
 
 	int dev[4][2][2] = { { { -1,-1 },{ 0,-1 } },{ { -1,-1 },{ -1,0 } },{ { -1,1 },{ 0,1 } },{ { 1,-1 },{ 1,0 } } };
 
+	// 如果遇到障碍物或其它敌机
 	if (bms->box_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] > 2 ||
-		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] > 2)
+		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] > 2/* ||
+		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] >= ENEMY_SIGN &&
+		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] != ENEMY_SIGN + mEnemyId*/)
 	{
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
 		switch (mTankDir)
@@ -274,7 +295,7 @@ void EnemyBase::RejustDirPosition()
 	mStep = rand() % 250;
 
 	// 需要重新标记, 更正位置可能会改变所在的 4*4 格子
-	UnSignBox_4();
+	SignBox_4(0);
 
 	// 原左右变上下方向
 	if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
@@ -296,5 +317,190 @@ void EnemyBase::RejustDirPosition()
 	// 重定向, 必须调正位置后才能设置方向
 	mTankDir = rand() % 4;
 	SignBox_4(ENEMY_SIGN);
+}
+
+//
+bool EnemyBase::CheckBomb()
+{
+	int dir = mBulletStruct.dir;
+
+	// 子弹头接触到障碍物的那个点, 左右方向点在上, 上下方向点在右
+	int bombx = mBulletStruct.x + BulletStruct::devto_head[dir][0];
+	int bomby = mBulletStruct.y + BulletStruct::devto_head[dir][1];
+
+	bool flag = false;
+	int adjust_x = 0, adjust_y = 0;		// 修正爆照图片显示的坐标
+
+	// 不能用 bombx 代替 mBulletStruct[i].x,否则会覆盖障碍物的检测
+	if (mBulletStruct.x < 0 && dir == DIR_LEFT)
+	{
+		flag = true;
+		adjust_x = 5;					// 将爆炸图片向右移一点
+	}
+	else if (mBulletStruct.y < 0 && dir == DIR_UP)
+	{
+		flag = true;
+		adjust_y = 5;
+	}
+
+	// 必须减去子弹的宽 4, 不然子弹越界, 后面检测导致 box_8 下标越界
+	else if (mBulletStruct.x >= CENTER_WIDTH - 4 && dir == DIR_RIGHT)
+	{
+		flag = true;
+		adjust_x = -4;
+	}
+	else if (mBulletStruct.y >= CENTER_HEIGHT - 4 && dir == DIR_DOWN)
+	{
+		flag = true;
+		adjust_y = -4;
+	}
+	if (flag)
+	{
+		// 设定爆炸参数, 修正爆炸中心所在的格子,左右或上下偏移一个格子之类的..
+		mBulletStruct.x = SHOOTABLE_X;
+		mBombS.canBomb = true;
+		mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[dir][0]) * SMALL_BOX_SIZE;
+		mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[dir][1]) * SMALL_BOX_SIZE;
+		mBombS.counter = 0;
+		return true;
+	}
+
+	int tempi, tempj;
+	int bi = bomby / SMALL_BOX_SIZE;
+	int bj = bombx / SMALL_BOX_SIZE;
+
+	switch (dir)
+	{
+		// 左右检测子弹头所在的4*4格子和它上面相邻的那个
+	case DIR_LEFT:
+	case DIR_RIGHT:
+	{
+		int temp[2][2] = { { 0, 0 },{ -1, 0 } };
+		for (int n = 0; n < 2; n++)
+		{
+			tempi = bi + temp[n][0];
+			tempj = bj + temp[n][1];
+			if (bms->box_4[tempi][tempj] > 2 && bms->box_4[tempi][tempj] < ENEMY_SIGN )
+			{
+				// 设定爆炸参数, 修正爆炸中心所在的格子,左右或上下偏移一个格子之类的..
+				mBulletStruct.x = SHOOTABLE_X;
+				mBombS.canBomb = true;				// 指示 i bomb 爆炸
+				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
+				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
+				mBombS.counter = 0;
+				ShootWhat(bombx, bomby);
+				return true;
+			}
+		}
+	}
+	break;
+
+	// 上下只检测左右相邻的两个格子
+	case DIR_UP:
+	case DIR_DOWN:
+	{
+		int temp[2][2] = { { 0, 0 },{ 0, -1 } };
+		for (int n = 0; n < 2; n++)
+		{
+			tempi = bi + temp[n][0];
+			tempj = bj + temp[n][1];
+			if (bms->box_4[tempi][tempj] > 2 && bms->box_4[tempi][tempj] < ENEMY_SIGN)
+			{
+				// 设定爆炸参数, 修正爆炸中心所在的格子,左右或上下偏移一个格子之类的..
+				mBulletStruct.x = SHOOTABLE_X;
+				mBombS.canBomb = true;				// 指示 i bomb 爆炸
+				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
+				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
+				mBombS.counter = 0;
+				ShootWhat(bombx, bomby);
+				return true;
+			}
+		}
+	}
+	break;
+	default:
+		break;
+	}
+	return false;
+}
+
+void EnemyBase::ShootWhat(int bulletx, int bullety)
+{
+	int boxi = bullety / SMALL_BOX_SIZE;
+	int boxj = bulletx / SMALL_BOX_SIZE;
+	int tempx, tempy;
+	switch (mBulletStruct.dir)
+	{
+	case DIR_LEFT:
+	case DIR_RIGHT:
+	{
+		// 相邻的四个 4*4 格子, 顺序不能变, 后面用到下标判断
+		int temp[4][2] = { { -2, 0 },{ -1, 0 },{ 0, 0 },{ 1, 0 } };
+		for (int i = 0; i < 4; i++)
+		{
+			tempx = boxi + temp[i][0];
+			tempy = boxj + temp[i][1];
+			if (bms->box_4[tempx][tempy] == _WALL )
+				bms->box_4[tempx][tempy] = _CLEAR;
+
+			// 转到 tempx,tempy所在的 8*8 格子索引
+			int n = tempx / 2;
+			int m = tempy / 2;
+
+			// 检测 8*8 格子内的4个 4*4 的小格子是否全部被清除,
+			bool isClear = true;
+			for (int a = 2 * n; a < 2 * n + 2; a++)
+			{
+				for (int b = 2 * m; b < 2 * m + 2; b++)
+				{
+					if (bms->box_4[a][b] != _CLEAR)
+						isClear = false;
+				}
+			}
+			if (isClear)
+			{
+				bms->box_8[n][m] = _EMPTY;
+			}
+		}
+	}
+	break;
+
+	case DIR_UP:
+	case DIR_DOWN:
+	{
+		// 相邻的四个 4*4 格子, 顺序不能变, 后面用到下标判断
+		int temp[4][2] = { { 0, -2 },{ 0, -1 },{ 0, 0 },{ 0, 1 } };
+		for (int i = 0; i < 4; i++)
+		{
+			tempx = boxi + temp[i][0];
+			tempy = boxj + temp[i][1];
+			if (bms->box_4[tempx][tempy] == _WALL )
+				bms->box_4[tempx][tempy] = _CLEAR;
+
+			// 转到 tempx,tempy所在的 8*8 格子索引
+			int n = tempx / 2;
+			int m = tempy / 2;
+
+			// 检测 8*8 格子内的4个 4*4 的小格子是否全部被清除,
+			bool isClear = true;
+			for (int a = 2 * n; a < 2 * n + 2; a++)
+			{
+				for (int b = 2 * m; b < 2 * m + 2; b++)
+				{
+					if (bms->box_4[a][b] != _CLEAR)
+						isClear = false;
+				}
+			}
+			if (isClear)
+			{
+				bms->box_8[n][m] = _EMPTY;
+			}
+		}
+	}
+	break;
+
+	default:
+		break;
+	}
 }
 

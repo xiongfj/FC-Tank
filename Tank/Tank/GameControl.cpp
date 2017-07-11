@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GameControl.h"
 
-int GameControl::mCurrentStage = 3;	// [1-35]
+int GameControl::mCurrentStage = 1;	// [1-35]
 GameControl::GameControl( Graphics* grap, HDC des_hdc, HDC image_hdc, BoxMarkStruct* bms)
 {
 	mGraphics = grap;
@@ -75,8 +75,8 @@ void GameControl::LoadMap()
 bool GameControl::StartGame()
 {
 	// 推送 6 架敌机到游戏区域
-	if (EnemyList.size() < 6 && mRemainEnemyTankNumber > 0)
-		EnemyList.push_back(*(new EnemyBase(1, 0, mBoxMarkStruct)));
+	if (EnemyList.size() < 9 && mRemainEnemyTankNumber > 0)
+		EnemyList.push_back(*(new EnemyBase( 1, 0, mBoxMarkStruct)));
 
 	// 更新右边面板的数据, 待判断, 因为不需要经常更新 mImage_hdc
 	RefreshRightPanel();
@@ -238,6 +238,12 @@ void GameControl::RefreshCenterPanel()
 			if (mBoxMarkStruct->box_8[i][j] == _FOREST)
 				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, SRCCOPY);
 		}
+	}
+
+	// 敌机子弹爆炸图
+	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+	{
+		EnemyItor->Bombing(mCenter_hdc);
 	}
 
 	// 森林不能爆炸图

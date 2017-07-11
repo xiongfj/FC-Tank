@@ -46,7 +46,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 不同级别坦克移动速度系数
-	int temp[4] = {1, 1, 1, 1};
+	int temp[4] = {2, 2, 3, 3};
 	for ( i = 0; i < 4; i++ )
 		mSpeed[i] = temp[i];
 
@@ -419,7 +419,6 @@ bool PlayerBase::CheckBomb(int i)
 	}
 	if (flag)
 	{
-		//printf("12312\n");
 		// 设定爆炸参数, 修正爆炸中心所在的格子,左右或上下偏移一个格子之类的..
 		mBulletStruct[i].x = SHOOTABLE_X;
 		mBombS[i].canBomb = true;

@@ -4,6 +4,7 @@
 
 #define STOP_SHOW_STAR	false		// 四角星显示结束
 #define SHOWING_STAR	true		// 正在显示四角星
+#define TOTAL_ENEMY_NUMBER	20
 
 /************** 敌机坦克 ************
 * 一个敌机实例化一个对象
@@ -19,15 +20,19 @@ public:
 	void TankMoving(const HDC& center_hdc);		// 敌机移动
 	bool ShootBullet();			// 发射子弹
 	void BulletMoving(const HDC& );			// 子弹移动
+	void Bombing(const HDC&);
 
 private:
-	void SignBox_4(int value);		// 标记 4*4 大小的格子为坦克;
-	void UnSignBox_4();				// 取消标记, 坦克移动前需要取消, 移动后再标记
-	bool CheckSignBox(int, int);	// 检测某个 box 是否可以放置坦克, 参数是8*8 格子的中心点, 与坦克坐标规则相同
+	void SignBox_4(int value);		// 标记或取消 4*4 大小的格子为坦克;
+	void SignBox_8(int value);
+	//bool CheckSignBox(int, int);	// 检测某个 box 是否可以放置坦克, 参数是8*8 格子的中心点, 与坦克坐标规则相同
 	bool CheckMoveable();			// 
 	void RejustDirPosition();		// 重新定位坦克方向, 调正坦克位置, 保持在格子上
+	bool CheckBomb();
+	void ShootWhat(int, int);		// 检测射中何物
 
 private:
+	int mEnemyId;				// 区别敌机与敌机
 	byte mEnemyTankKind;		// 敌机类别, 道具坦克和普通坦克两种, [0-1]
 	int mEnemyTankLevel;		// 敌机坦克4个级别 [0-3]
 	TankInfo* mEnemyTank;		// 指向坦克详细信息
@@ -53,4 +58,6 @@ private:
 	BulletStruct mBulletStruct;
 	DWORD mBulletT1, mBulletT2;	// 计数器, 多久发射一次子弹
 	DWORD mBulletT;
+
+	BombStruct mBombS;					// 爆炸结构体
 };
