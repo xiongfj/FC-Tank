@@ -65,6 +65,9 @@ using namespace Gdiplus;
 #define ENEMY_SIGN	100
 
 
+#define SHOOTABLE_X		-100	// 规定子弹坐标 x = -100 子弹可以发射
+
+
 /* 对应数值
 * 	#defien _EMPTY		0
 #define _WALL		3

@@ -1,5 +1,6 @@
 #pragma once
 #include "TankClass.h"
+#include "struct.h"
 
 #define STOP_SHOW_STAR	false		// 四角星显示结束
 #define SHOWING_STAR	true		// 正在显示四角星
@@ -16,6 +17,8 @@ public:
 	~EnemyBase();
 	bool ShowStar(const HDC& center_hdc, int& total );		// 显示闪烁四角星, true-正在显示, false-显示完毕
 	void TankMoving(const HDC& center_hdc);		// 敌机移动
+	bool ShootBullet();			// 发射子弹
+	void BulletMoving(const HDC& );			// 子弹移动
 
 private:
 	void SignBox_4(int value);		// 标记 4*4 大小的格子为坦克;
@@ -32,6 +35,7 @@ private:
 
 	int mTankX, mTankY;			// 坦克坐标, 坦克的中心点
 	byte mTankDir : 2;			// 坦克方向
+	byte mTankImageIndex : 1;	// 坦克移动切换图片
 
 	IMAGE mStarImage[4];		// 四角星图片
 	int mStarIndexDev ;			// 索引的变化量, -1, 1  -1是star由小变大, 1 是star由大变小
@@ -39,11 +43,14 @@ private:
 	int mStarCounter;			// 计数,多少次变更一次图像
 	int mTankOutAfterCounter;	// 一个随机计数之后, 四角星开始闪烁,坦克出现
 	bool mIsOuted;				// 四角星小时候坦克出现, 停止播放四角星闪烁图
-	//static bool isOuting;		// 当前是否有坦克正在出现, 如果有,其他坦克不能出现,等该坦克出现完之后才开始 mTankOutAfterCounter
 
 	int mStep;					// 当前方向移动的步数, 一定步数后或者遇到障碍物变换方向并重新计算;
-	static int mDevXY[4][2];				// 四个方向的偏移量
-	int mSpeed[4];							// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样
+	static int mDevXY[4][2];	// 四个方向的偏移量
+	int mSpeed[4];					// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样
 
 	bool mTankNumberReduce;		// 当四角星开始, true-坦克总数减一,然后设该值=false, 只减一次
+
+	BulletStruct mBulletStruct;
+	DWORD mBulletT1, mBulletT2;	// 计数器, 多久发射一次子弹
+	DWORD mBulletT;
 };

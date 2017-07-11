@@ -65,5 +65,8 @@
     <ClCompile Include="EnemyBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="struct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

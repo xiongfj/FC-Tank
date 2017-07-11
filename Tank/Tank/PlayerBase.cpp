@@ -1,22 +1,6 @@
 #include "stdafx.h"
 #include "PlayerBase.h"
 
-// ---------------- 子弹结构静态数据
-IMAGE BulletStruct::mBulletImage[4];
-int BulletStruct::mBulletSize[4][2] = { { 4,3 },{ 3,4 },{ 4,3 },{ 3,4 } };			// 不同方向子弹尺寸(width height)
-
-// 子弹相对坦克中心的偏移量
-int BulletStruct::devto_tank[4][2] = { { -BOX_SIZE, -1 },{ -2, -BOX_SIZE },{ BOX_SIZE - 4, -1 },{ -2, BOX_SIZE - 4 } };
-
-// 子弹图片左上角坐标转换到弹头坐标,左右方向在凸出的上面那点, 上下方向则在凸出的右边那点
-int BulletStruct::devto_head[4][2] = { {0, 1}, {2, 0}, {4, 1}, {2, 4} };
-
-int BulletStruct::bomb_center_dev[4][2] = { { 1, 0 }, { 0, 1 }, { 0, 0 }, { 0, 0 } };	// 爆炸中心相对于子弹头的偏移量
-
-//------------------------
-
-IMAGE BombStruct::mBombImage[3];
-
 //----------------- PlayerBase 类静态数据
 
 int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 依次左上右下
@@ -58,7 +42,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 	loadimage(&mPlayerTankIcoImage, _T("./res/big/playertank-ico.gif"	));	// 玩家坦克图标
 	loadimage(&mBlackNumberImage,	_T("./res/big/black-number.gif"		));	// 黑色数字
 	mPlayerLife = 2;		// 玩家 HP
-	mPlayerTankLevel = 2;													// 坦克级别 [0-3]
+	mPlayerTankLevel = 3;													// 坦克级别 [0-3]
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 不同级别坦克移动速度系数

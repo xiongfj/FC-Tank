@@ -68,7 +68,7 @@ void GameControl::LoadMap()
 
 	while (StartGame())
 	{
-		Sleep(24);
+		Sleep(34);
 	}
 }
 
@@ -224,6 +224,8 @@ void GameControl::RefreshCenterPanel()
 	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 	{
 		EnemyItor->TankMoving(mCenter_hdc);
+		EnemyItor->ShootBullet();
+		EnemyItor->BulletMoving(mCenter_hdc);
 	}
 
 	// 森林,放在坦克子弹绘图后面, 遮挡坦克..

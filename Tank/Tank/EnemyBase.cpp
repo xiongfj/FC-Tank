@@ -19,6 +19,7 @@ EnemyBase::EnemyBase(byte kind, int level, BoxMarkStruct* b)
 	mTankX = tempx[rand() % 3];
 	mTankY = BOX_SIZE;
 	mTankDir = DIR_DOWN;
+	mTankImageIndex = 0;
 
 	TCHAR buf[100];
 	for (int i = 0; i < 4; i++)
@@ -40,6 +41,18 @@ EnemyBase::EnemyBase(byte kind, int level, BoxMarkStruct* b)
 		mSpeed[i] = temp[i];
 
 	mTankNumberReduce = true;				// 坦克总数减一标志
+
+	// 子弹初始化
+	// .. 其它数据在 PlayerBase 加载了
+	mBulletStruct.x = SHOOTABLE_X;
+	mBulletStruct.y = -100;
+	mBulletStruct.dir = DIR_DOWN;
+	for (int i = 0; i < 4; i++)
+		mBulletStruct.speed[i] = 3;		// 不能超过 4
+	
+	mBulletT1 = timeGetTime();
+	mBulletT2 = timeGetTime();
+	mBulletT = rand() % 6630 + 4320;		// 发射子弹的间隔时间
 }
 
 EnemyBase::~EnemyBase()
@@ -86,6 +99,7 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& total)
 		if (mStarCounter == 35)
 		{
 			mIsOuted = true;				// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
+			mBulletT1 = timeGetTime();
 			return STOP_SHOW_STAR;
 		}
 	}
@@ -101,12 +115,14 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 	if (!mIsOuted)
 		return;
 
+	mBulletT2 = timeGetTime();
+
 	// 重定向
 	if (mStep-- < 0)
 		RejustDirPosition();
 
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
-			GetImageHDC(&mEnemyTank->GetTankImage(mTankDir)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+			GetImageHDC(&mEnemyTank->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 	
 	// 可移动
 	if (CheckMoveable())
@@ -121,6 +137,43 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 	else
 	{
 		RejustDirPosition();
+	}
+}
+
+//
+bool EnemyBase::ShootBullet()
+{
+	if (mBulletStruct.x != SHOOTABLE_X || mBulletT2 - mBulletT1 < mBulletT)
+		return false;
+
+	printf("%d\n", mBulletT2 - mBulletT1);
+	mBulletT1 = mBulletT2;
+
+	// 子弹发射点坐标
+	mBulletStruct.x = mTankX + BulletStruct::devto_tank[mTankDir][0];
+	mBulletStruct.y = mTankY + BulletStruct::devto_tank[mTankDir][1];
+	mBulletStruct.dir = mTankDir;
+
+	return true;
+}
+
+//
+void EnemyBase::BulletMoving(const HDC& center_hdc)
+{
+	if (mBulletStruct.x == SHOOTABLE_X)
+		return;
+
+	int dir = mBulletStruct.dir;
+	mBulletStruct.x += mDevXY[dir][0] * mBulletStruct.speed[mEnemyTankLevel];
+	mBulletStruct.y += mDevXY[dir][1] * mBulletStruct.speed[mEnemyTankLevel];
+
+	TransparentBlt(center_hdc, mBulletStruct.x, mBulletStruct.y, BulletStruct::mBulletSize[dir][0],
+		BulletStruct::mBulletSize[dir][1], GetImageHDC(&BulletStruct::mBulletImage[dir]),
+		0, 0, BulletStruct::mBulletSize[dir][0], BulletStruct::mBulletSize[dir][1], 0x000000);
+
+	if (mBulletStruct.x < 0 || mBulletStruct.y < 0 || mBulletStruct.x > CENTER_WIDTH - 4 || mBulletStruct.y > CENTER_WIDTH - 4)
+	{
+		mBulletStruct.x = SHOOTABLE_X;
 	}
 }
 
@@ -218,7 +271,7 @@ bool EnemyBase::CheckMoveable()
 
 void EnemyBase::RejustDirPosition()
 {
-	mStep = rand() % 50;
+	mStep = rand() % 250;
 
 	// 需要重新标记, 更正位置可能会改变所在的 4*4 格子
 	UnSignBox_4();
@@ -244,3 +297,4 @@ void EnemyBase::RejustDirPosition()
 	mTankDir = rand() % 4;
 	SignBox_4(ENEMY_SIGN);
 }
+
