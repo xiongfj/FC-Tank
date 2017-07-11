@@ -7,13 +7,13 @@ struct BulletStruct
 {
 	int x, y;					// 子弹坐标, 根据不同方向指定不同的位置代表 x,y, 指定 x=SHOOTABLE_X 的时候可以发射子弹
 	int dir;					// 子弹方向
-	int speed[4];				// 子弹速度, 根据坦克级别给予不同速度系数
+	int speed[4];				// 子弹速度, 根据坦克级别给予不同速度系数. 每次移动不能超过4个像素点!! 不然会跨越 4*4 的格子!!检测bug
 	
 	static IMAGE mBulletImage[4];		// 图片
 	static int mBulletSize[4][2];		// {{4,3},{3,4},{4,3},{3,4}} 尺寸: 上下-3*4 / 左右-4*3
 	static int devto_tank[4][2];		// 规定子弹的坐标相对于tank中心点的偏移量
 	static int devto_head[4][2];		// 规定子弹图片左上角相对于弹头坐标的偏移量;上下方向弹头坐标在弹头的右边;左右则在弹头的上面那个点
-	static int bomb_box[4][2];			// 弹头周围四个 1/4 格子的偏移量, 检测该四个格子,判断是否爆炸
+	//static int bomb_box[4][2];			// 弹头周围四个 1/4 格子的偏移量, 检测该四个格子,判断是否爆炸
 };
 
 struct BombStruct
@@ -45,7 +45,7 @@ private:
 	void Move(int new_dir);					// 更改方向, 或移动. 同时调整坐标到格子整数处, 
 	bool CheckMoveable( byte dir);			// 检测当前操作是否可以移动
 	bool ShootBullet(int bullet_id);			// 发射 id 号子弹[0,1]
-	void CheckBomb(int);						// 检测可否爆炸
+	bool CheckBomb(int);						// 检测可否爆炸
 
 private:
 	byte player_id : 1;						// [0-1] 玩家

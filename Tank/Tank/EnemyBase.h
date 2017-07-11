@@ -30,7 +30,7 @@ private:
 	TankInfo* mEnemyTank;		// 指向坦克详细信息
 	BoxMarkStruct* bms;			// 指向格子标记结构, 由 GameControl 传递进来
 
-	int mTankX, mTankY;			// 坦克坐标, 坦克的中心点
+	float mTankX, mTankY;			// 坦克坐标, 坦克的中心点
 	byte mTankDir : 2;			// 坦克方向
 
 	IMAGE mStarImage[4];		// 四角星图片
@@ -43,7 +43,7 @@ private:
 
 	int mStep;					// 当前方向移动的步数, 一定步数后或者遇到障碍物变换方向并重新计算;
 	static int mDevXY[4][2];				// 四个方向的偏移量
-	int mSpeed[4];							// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样
+	float mSpeed[4];							// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样
 
 	bool mTankNumberReduce;		// 当四角星开始, true-坦克总数减一,然后设该值=false, 只减一次
 };
