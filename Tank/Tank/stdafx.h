@@ -34,6 +34,7 @@ using namespace Gdiplus;
 #define CENTER_Y		9
 
 // 标记, 用于 markxx[26][26]
+#define _CLEAR		-1		// 标记障碍物被消除的格子, 用于扫描时与 0 区分开, 然后绘制黑色图片, 避免对 0 也进行多余操作
 #define _EMPTY		0		// 空地
 #define _FOREST		1		// 森林
 #define _ICE		2		// 冰

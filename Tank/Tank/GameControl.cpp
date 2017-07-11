@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GameControl.h"
 
-int GameControl::mCurrentStage = 2;	// [1-35]
+int GameControl::mCurrentStage = 3;	// [1-35]
 GameControl::GameControl( Graphics* grap, HDC des_hdc, HDC image_hdc, BoxMarkStruct* bms)
 {
 	mGraphics = grap;
@@ -209,6 +209,20 @@ void GameControl::RefreshCenterPanel()
 			}
 		}
 	}
+
+	// 检测被销毁的障碍物, 绘制黑色图片擦除
+	for (int i = 0; i < 52; i++)
+	{
+		for (int j = 0; j < 52; j++)
+		{
+			if (mBoxMarkStruct->box_4[i][j] == _CLEAR)
+			{
+				BitBlt(mCenter_hdc, j * SMALL_BOX_SIZE, i * SMALL_BOX_SIZE, SMALL_BOX_SIZE, SMALL_BOX_SIZE,
+					GetImageHDC(&mBlackBackgroundImage), 0, 0, SRCCOPY);
+			}
+		}
+	}
+
 	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
 		PlayerItor->Bombing(mCenter_hdc);

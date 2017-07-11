@@ -13,7 +13,7 @@ struct BulletStruct
 	static int mBulletSize[4][2];		// {{4,3},{3,4},{4,3},{3,4}} 尺寸: 上下-3*4 / 左右-4*3
 	static int devto_tank[4][2];		// 规定子弹的坐标相对于tank中心点的偏移量
 	static int devto_head[4][2];		// 规定子弹图片左上角相对于弹头坐标的偏移量;上下方向弹头坐标在弹头的右边;左右则在弹头的上面那个点
-	//static int bomb_box[4][2];			// 弹头周围四个 1/4 格子的偏移量, 检测该四个格子,判断是否爆炸
+	static int bomb_center_dev[4][2];		// 爆炸中心相对于子弹头的偏移量
 };
 
 struct BombStruct
@@ -46,6 +46,7 @@ private:
 	bool CheckMoveable( byte dir);			// 检测当前操作是否可以移动
 	bool ShootBullet(int bullet_id);			// 发射 id 号子弹[0,1]
 	bool CheckBomb(int);						// 检测可否爆炸
+	void ClearWallOrStone(int, int,int);				// 擦除墙或者石头
 
 private:
 	byte player_id : 1;						// [0-1] 玩家
