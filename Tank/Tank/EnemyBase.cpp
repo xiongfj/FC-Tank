@@ -134,10 +134,10 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 	// 可移动
 	if (CheckMoveable())
 	{
-		SignBox_4(0);
+		SignBox_8(0);
 		mTankX += mDevXY[mTankDir][0] * mSpeed[mEnemyTankLevel];
 		mTankY += mDevXY[mTankDir][1] * mSpeed[mEnemyTankLevel];
-		SignBox_4(ENEMY_SIGN);
+		SignBox_8(ENEMY_SIGN + mEnemyId);
 	}
 
 	// 不可移动,重定向
@@ -253,6 +253,7 @@ bool EnemyBase::CheckMoveable()
 
 	if (tempx < BOX_SIZE || tempy < BOX_SIZE || tempy > CENTER_WIDTH - BOX_SIZE || tempx > CENTER_HEIGHT - BOX_SIZE)
 	{
+		SignBox_8(_EMPTY);
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
 		switch (mTankDir)
 		{
@@ -262,6 +263,7 @@ bool EnemyBase::CheckMoveable()
 		case DIR_DOWN:	mTankY = (tempy / BOX_SIZE) * BOX_SIZE;	break;
 		default:														break;
 		}
+		SignBox_8(ENEMY_SIGN + mEnemyId);
 		return false;
 	}
 	// 转换像素点所在的 xy[26][26] 下标
@@ -271,11 +273,12 @@ bool EnemyBase::CheckMoveable()
 	int dev[4][2][2] = { { { -1,-1 },{ 0,-1 } },{ { -1,-1 },{ -1,0 } },{ { -1,1 },{ 0,1 } },{ { 1,-1 },{ 1,0 } } };
 
 	// 如果遇到障碍物或其它敌机
-	if (bms->box_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] > 2 ||
-		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] > 2/* ||
-		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] >= ENEMY_SIGN &&
-		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] != ENEMY_SIGN + mEnemyId*/)
+	if (bms->box_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] > 2 &&
+		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][0][1]] != ENEMY_SIGN + mEnemyId ||
+		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] > 2 &&
+		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] != ENEMY_SIGN + mEnemyId)
 	{
+		SignBox_8(_EMPTY);
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
 		switch (mTankDir)
 		{
@@ -285,17 +288,22 @@ bool EnemyBase::CheckMoveable()
 		case DIR_DOWN:	mTankY = (tempy  / BOX_SIZE) * BOX_SIZE;	break;
 		default:													break;
 		}
+		SignBox_8(ENEMY_SIGN + mEnemyId);
 		return false;
 	}
 	return true;
 }
+
+7.11 日记
+
+* 未知 bug 太多, 都在修改代码, 只增加了敌机可以发射子弹消除障碍物..
 
 void EnemyBase::RejustDirPosition()
 {
 	mStep = rand() % 250;
 
 	// 需要重新标记, 更正位置可能会改变所在的 4*4 格子
-	SignBox_4(0);
+	SignBox_8(0);
 
 	// 原左右变上下方向
 	if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
@@ -316,7 +324,7 @@ void EnemyBase::RejustDirPosition()
 
 	// 重定向, 必须调正位置后才能设置方向
 	mTankDir = rand() % 4;
-	SignBox_4(ENEMY_SIGN);
+	SignBox_8(ENEMY_SIGN + mEnemyId);
 }
 
 //
