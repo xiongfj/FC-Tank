@@ -58,11 +58,11 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 	loadimage(&mPlayerTankIcoImage, _T("./res/big/playertank-ico.gif"	));	// 玩家坦克图标
 	loadimage(&mBlackNumberImage,	_T("./res/big/black-number.gif"		));	// 黑色数字
 	mPlayerLife = 2;		// 玩家 HP
-	mPlayerTankLevel = 3;													// 坦克级别 [0-3]
+	mPlayerTankLevel = 2;													// 坦克级别 [0-3]
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 不同级别坦克移动速度系数
-	int temp[4] = {2, 3, 3, 3};
+	int temp[4] = {1, 1, 1, 1};
 	for ( i = 0; i < 4; i++ )
 		mSpeed[i] = temp[i];
 
@@ -118,7 +118,6 @@ void PlayerBase::PlayerLoop(const HDC& center_hdc)
 	DrawPlayerTank(center_hdc);		// 坦克
 	PlayerControl();
 	BulletMoving(center_hdc);
-	//Bombing(center_hdc);
 }
 
 // 绘制玩家的一些数据: 1P\2P 坦克图标 生命
@@ -139,7 +138,7 @@ void PlayerBase::DrawPlayerTankIco(const HDC& right_panel_hdc)
 void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 {
 	IMAGE tank = mPlayerTank->GetTankImage(mPlayerTankLevel, mTankDir, mMoving);
-	TransparentBlt(canvas_hdc, mTankX - BOX_SIZE, mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2, GetImageHDC(&tank), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+	TransparentBlt(canvas_hdc, (int)(mTankX - BOX_SIZE), (int)(mTankY - BOX_SIZE), BOX_SIZE * 2, BOX_SIZE * 2, GetImageHDC(&tank), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }
 
 //
@@ -341,8 +340,8 @@ bool PlayerBase::CheckMoveable(byte dir)
 		return false;
 	}
 	// 转换像素点所在的 xy[26][26] 下标
-	int index_i = tempy / BOX_SIZE;
-	int index_j = tempx / BOX_SIZE;
+	int index_i = (int)tempy / BOX_SIZE;
+	int index_j = (int)tempx / BOX_SIZE;
 
 	int dev[4][2][2] = { {{-1,-1},{0,-1}},  {{-1,-1},{-1,0}},  {{-1,1},{0,1}}, { {1,-1},{1,0}} };
 
@@ -374,8 +373,8 @@ bool PlayerBase::ShootBullet( int bullet_id )
 				return false;
 
 			// 子弹发射点坐标
-			mBulletStruct[0].x = mTankX + BulletStruct::devto_tank[mTankDir][0];
-			mBulletStruct[0].y = mTankY + BulletStruct::devto_tank[mTankDir][1];
+			mBulletStruct[0].x = (int)(mTankX + BulletStruct::devto_tank[mTankDir][0]);
+			mBulletStruct[0].y = (int)(mTankY + BulletStruct::devto_tank[mTankDir][1]);
 			mBulletStruct[0].dir = mTankDir;
 			mBullet_1_counter = 6;
 			return true;
@@ -386,8 +385,8 @@ bool PlayerBase::ShootBullet( int bullet_id )
 				return false;
 
 			// 子弹发射点坐标
-			mBulletStruct[1].x = mTankX + BulletStruct::devto_tank[mTankDir][0];
-			mBulletStruct[1].y = mTankY + BulletStruct::devto_tank[mTankDir][1];
+			mBulletStruct[1].x = (int)(mTankX + BulletStruct::devto_tank[mTankDir][0]);
+			mBulletStruct[1].y = (int)(mTankY + BulletStruct::devto_tank[mTankDir][1]);
 			mBulletStruct[1].dir = mTankDir;
 			return true;
 
@@ -417,7 +416,7 @@ bool PlayerBase::CheckBomb(int i)
 		flag = true;
 		adjust_x = 5;					// 将爆炸图片向右移一点
 	}
-	else if (mBulletStruct[i].y <= 0 && mBulletStruct[i].dir == DIR_UP)
+	else if (mBulletStruct[i].y < 0 && mBulletStruct[i].dir == DIR_UP)
 	{
 		flag = true;
 		adjust_y = 5;
@@ -523,7 +522,8 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 		{
 			tempx = boxi + temp[i][0];
 			tempy = boxj + temp[i][1];
-			bms->box_4[tempx][tempy] = _CLEAR;
+			if (bms->box_4[tempx][tempy] == _WALL || mPlayerTankLevel == 3 && bms->box_4[tempx][tempy] == _STONE)
+				bms->box_4[tempx][tempy] = _CLEAR;
 
 			// 转到 tempx,tempy所在的 8*8 格子索引
 			int n = tempx / 2;
@@ -556,7 +556,8 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 		{
 			tempx = boxi + temp[i][0];
 			tempy = boxj + temp[i][1];
-			bms->box_4[tempx][tempy] = _CLEAR;
+			if (bms->box_4[tempx][tempy] == _WALL || mPlayerTankLevel == 3 && bms->box_4[tempx][tempy] == _STONE)
+				bms->box_4[tempx][tempy] = _CLEAR;
 
 			// 转到 tempx,tempy所在的 8*8 格子索引
 			int n = tempx / 2;

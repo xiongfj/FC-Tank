@@ -65,7 +65,7 @@ private:
 		mPlayerLife_y;
 
 	IMAGE mBlackNumberImage;				// 0123456789 黑色数字
-	int mTankX, mTankY;						// 坦克中心点坐标
+	int mTankX, mTankY;					// 坦克中心点坐标
 	byte mPlayerTankLevel : 2;				// [0-3] 坦克级别,获得道具后升级坦克
 	byte mTankDir : 2;						// 当前坦克方向0-左,1-上,2右,3-下
 	static int mDevXY[4][2];				// 四个方向的偏移量

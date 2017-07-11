@@ -68,7 +68,7 @@ void GameControl::LoadMap()
 
 	while (StartGame())
 	{
-		Sleep(34);
+		Sleep(24);
 	}
 }
 
@@ -155,18 +155,6 @@ void GameControl::RefreshCenterPanel()
 
 	BitBlt(mCenter_hdc, 0, 0, CENTER_WIDTH, CENTER_HEIGHT, GetImageHDC(&mBlackBackgroundImage), 0, 0, SRCCOPY);// 中心黑色背景游戏区
 																											  
-	// 绘制坦克\玩家按键操作
-	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
-	{
-		PlayerItor->PlayerLoop(mCenter_hdc);
-	}
-
-	// 敌机移动
-	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
-	{
-		EnemyItor->TankMoving(mCenter_hdc);
-	}
-	
 	// 四角星闪烁控制
 	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 	{
@@ -192,9 +180,9 @@ void GameControl::RefreshCenterPanel()
 			case _WALL:
 				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mWallImage), 0, 0, SRCCOPY);
 				break;
-			case _FOREST:
-				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, SRCCOPY);
-				break;
+			//case _FOREST:
+			//	BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, SRCCOPY);
+				//break;
 			case _ICE:
 				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mIceImage), 0, 0, SRCCOPY);
 				break;
@@ -222,7 +210,35 @@ void GameControl::RefreshCenterPanel()
 			}
 		}
 	}
+	// 以下的擦除障碍物才绘制, 不然会坦克被擦除-------------------------
 
+	// 玩家
+	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
+	{
+		PlayerItor->DrawPlayerTank(mCenter_hdc);		// 坦克
+		PlayerItor->PlayerControl();
+		PlayerItor->BulletMoving(mCenter_hdc);
+	}
+
+	// 敌机
+	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+	{
+		EnemyItor->TankMoving(mCenter_hdc);
+	}
+
+	// 森林,放在坦克子弹绘图后面, 遮挡坦克..
+	for (int i = 0; i < 26; i++)
+	{
+		for (int j = 0; j < 26; j++)
+		{
+			x = j * BOX_SIZE;// +CENTER_X;
+			y = i * BOX_SIZE;// +CENTER_Y;
+			if (mBoxMarkStruct->box_8[i][j] == _FOREST)
+				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, SRCCOPY);
+		}
+	}
+
+	// 森林不能爆炸图
 	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
 		PlayerItor->Bombing(mCenter_hdc);

@@ -15,7 +15,7 @@ EnemyBase::EnemyBase(byte kind, int level, BoxMarkStruct* b)
 	mEnemyTank = new TankInfo(mEnemyTankKind, mEnemyTankLevel, true);
 	bms = b;
 
-	float tempx[3] = {BOX_SIZE, 13 * BOX_SIZE, 25 * BOX_SIZE};	// 坦克随机出现的三个位置 x 坐标
+	int tempx[3] = {BOX_SIZE, 13 * BOX_SIZE, 25 * BOX_SIZE};	// 坦克随机出现的三个位置 x 坐标
 	mTankX = tempx[rand() % 3];
 	mTankY = BOX_SIZE;
 	mTankDir = DIR_DOWN;
@@ -35,7 +35,7 @@ EnemyBase::EnemyBase(byte kind, int level, BoxMarkStruct* b)
 	mStep = rand() % 200;					// 当前方向随机移动的步数
 
 	// 不同级别坦克移动速度系数
-	float temp[4] = { 0.5, 0.5, 0.5, 0.5 };
+	int temp[4] = { 1, 1, 1, 1 };
 	for (int i = 0; i < 4; i++)
 		mSpeed[i] = temp[i];
 
@@ -177,25 +177,25 @@ bool EnemyBase::CheckSignBox(int x, int y)
 bool EnemyBase::CheckMoveable()
 {
 	// 坦克中心坐标
-	int tempx = (int)(mTankX + mDevXY[mTankDir][0] * mSpeed[mEnemyTankLevel]);
-	int tempy = (int)(mTankY + mDevXY[mTankDir][1] * mSpeed[mEnemyTankLevel]);
+	int tempx = mTankX + mDevXY[mTankDir][0] * mSpeed[mEnemyTankLevel];
+	int tempy = mTankY + mDevXY[mTankDir][1] * mSpeed[mEnemyTankLevel];
 
 	if (tempx < BOX_SIZE || tempy < BOX_SIZE || tempy > CENTER_WIDTH - BOX_SIZE || tempx > CENTER_HEIGHT - BOX_SIZE)
 	{
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
 		switch (mTankDir)
 		{
-		case DIR_LEFT:	mTankX = (float)(mTankX / BOX_SIZE) * BOX_SIZE;	break;	// mTankX 与 tempx 之间跨越了格子, 将坦克放到mTankX所在的格子线上
-		case DIR_UP:	mTankY = (float)(mTankY / BOX_SIZE) * BOX_SIZE;	break;
-		case DIR_RIGHT: mTankX = (float)(tempx / BOX_SIZE) * BOX_SIZE;	break;
-		case DIR_DOWN:	mTankY = (float)(tempy / BOX_SIZE) * BOX_SIZE;	break;
+		case DIR_LEFT:	mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;	break;	// mTankX 与 tempx 之间跨越了格子, 将坦克放到mTankX所在的格子线上
+		case DIR_UP:	mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;	break;
+		case DIR_RIGHT: mTankX = (tempx / BOX_SIZE) * BOX_SIZE;	break;
+		case DIR_DOWN:	mTankY = (tempy / BOX_SIZE) * BOX_SIZE;	break;
 		default:														break;
 		}
 		return false;
 	}
 	// 转换像素点所在的 xy[26][26] 下标
-	int index_i = tempy / BOX_SIZE;
-	int index_j = tempx / BOX_SIZE;
+	int index_i = (int)tempy / BOX_SIZE;
+	int index_j = (int)tempx / BOX_SIZE;
 
 	int dev[4][2][2] = { { { -1,-1 },{ 0,-1 } },{ { -1,-1 },{ -1,0 } },{ { -1,1 },{ 0,1 } },{ { 1,-1 },{ 1,0 } } };
 
@@ -205,10 +205,10 @@ bool EnemyBase::CheckMoveable()
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
 		switch (mTankDir)
 		{
-		case DIR_LEFT:	mTankX = (float)(mTankX / BOX_SIZE) * BOX_SIZE;	break;	// mTankX 与 tempx 之间跨越了格子, 将坦克放到mTankX所在的格子线上
-		case DIR_UP:	mTankY = (float)(mTankY / BOX_SIZE) * BOX_SIZE;	break;
-		case DIR_RIGHT: mTankX = (float)(tempx  / BOX_SIZE) * BOX_SIZE;	break;
-		case DIR_DOWN:	mTankY = (float)(tempy  / BOX_SIZE) * BOX_SIZE;	break;
+		case DIR_LEFT:	mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;	break;	// mTankX 与 tempx 之间跨越了格子, 将坦克放到mTankX所在的格子线上
+		case DIR_UP:	mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;	break;
+		case DIR_RIGHT: mTankX = (tempx  / BOX_SIZE) * BOX_SIZE;	break;
+		case DIR_DOWN:	mTankY = (tempy  / BOX_SIZE) * BOX_SIZE;	break;
 		default:													break;
 		}
 		return false;
