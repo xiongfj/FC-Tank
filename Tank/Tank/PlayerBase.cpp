@@ -408,24 +408,27 @@ bool PlayerBase::CheckBomb(int i)
 	int bombx = mBulletStruct[i].x + BulletStruct::devto_head[dir][0];
 	int bomby = mBulletStruct[i].y + BulletStruct::devto_head[dir][1];
 
+	// 爆炸中心相对于子弹头的偏移量
+	int bomb_center_dev[4][2] = { { 1, 0 },{ 0, 1 },{ 0, 0 },{ 0, 0 } };
+
 	bool flag = false;
 	int adjust_x = 0, adjust_y = 0;		// 修正爆照图片显示的坐标
-	if (mBulletStruct[i].x <= 0)
+	if (bombx <= 0 && mBulletStruct[i].dir == DIR_LEFT)
 	{
 		flag = true;
 		adjust_x = 5;					// 将爆炸图片向右移一点
 	}
-	else if (mBulletStruct[i].y <= 0)
+	else if (bomby <= 0 && mBulletStruct[i].dir == DIR_UP)
 	{
 		flag = true;
 		adjust_y = 5;
 	}
-	else if (mBulletStruct[i].x >= CENTER_WIDTH - 4 && mBulletStruct[i].dir == DIR_RIGHT)
+	else if (bombx >= CENTER_WIDTH && mBulletStruct[i].dir == DIR_RIGHT)
 	{
 		flag = true;
 		adjust_x = -4;
 	}
-	else if (mBulletStruct[i].y >= CENTER_HEIGHT - 4 && mBulletStruct[i].dir == DIR_DOWN)
+	else if (bomby >= CENTER_HEIGHT && mBulletStruct[i].dir == DIR_DOWN)
 	{
 		flag = true;
 		adjust_y = -4;
@@ -435,8 +438,8 @@ bool PlayerBase::CheckBomb(int i)
 		//printf("%d - %d; %d - %d\n", bombx, bomby, mBulletStruct[i].x, mBulletStruct[i].y);
 		mBulletStruct[i].x = SHOOTABLE_X;
 		mBombS[i].canBomb = true;
-		mBombS[i].mBombX = bombx + adjust_x;
-		mBombS[i].mBombY = bomby + adjust_y;
+		mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
+		mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 		mBombS[i].counter = 0;
 
 		return true;
@@ -446,8 +449,6 @@ bool PlayerBase::CheckBomb(int i)
 	int bi = bomby / SMALL_BOX_SIZE;
 	int bj = bombx / SMALL_BOX_SIZE;
 
-	// 爆炸中心相对于子弹头的偏移量
-	int bomb_center_dev[4][2] = { {1, 0}, {0, 1}, {0, 0}, {0, 0} };
 	switch (mBulletStruct[i].dir)
 	{
 	// 左右检测子弹头所在的4*4格子和它上面相邻的那个
