@@ -404,10 +404,10 @@ bool EnemyBase::CheckBomb()
 		int temp[2][2] = { { 0, 0 },{ -1, 0 } };
 		for (int n = 0; n < 2; n++)
 		{
-			// 8*8 格子, 判断是否击中敌机
+			// 8*8 格子, 判断是否击中玩家
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
-			if (bms->box_8[tempi][tempj] == PLAYER_SIGN )
+			if (bms->box_8[tempi][tempj] == PLAYER_SIGN || bms->box_8[tempi][tempj] == PLAYER_SIGN + 1)
 			{
 				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
@@ -442,10 +442,10 @@ bool EnemyBase::CheckBomb()
 		int temp[2][2] = { { 0, 0 },{ 0, -1 } };
 		for (int n = 0; n < 2; n++)
 		{
-			// 8*8 格子, 判断是否击中敌机
+			// 8*8 格子, 判断是否击中
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
-			if (bms->box_8[tempi][tempj] == PLAYER_SIGN)
+			if (bms->box_8[tempi][tempj] == PLAYER_SIGN || bms->box_8[tempi][tempj] == PLAYER_SIGN + 1)
 			{
 				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
