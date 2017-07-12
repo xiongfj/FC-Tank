@@ -30,7 +30,8 @@ private:
 	void SignBoxMark(int i, int j, int sign_val);	// 标记格子, LoadMap() 内调用
 	void RefreshRightPanel();						// 刷新右边信息面板数据, 根据数据变化才调用更新
 	void RefreshCenterPanel();						// 刷新中间游戏区域 208 * 208
-	void CheckKillEnemy(list<PlayerBase>::iterator);							// 检测玩家是否击中敌机, 击中则删除该敌机
+	void CheckKillEnemy(list<PlayerBase>::iterator);		// 检测玩家是否击中敌机, 击中则删除该敌机
+	void CheckKillPlayer(list<EnemyBase>::iterator);					// 
 	//void SignBox_8(int i, int j, int val);					// 根据参数左上角 8*8 格子的索引, 标记 四个 8*8 格子
 
 public:

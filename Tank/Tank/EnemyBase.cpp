@@ -62,6 +62,9 @@ EnemyBase::EnemyBase( byte kind, int level, BoxMarkStruct* b)
 	mBombS.mBombY = -100;
 	mBombS.canBomb = false;
 	mBombS.counter = 0;
+
+	// 存储子弹击中玩家,玩家的id
+	mShootedPlayerID = 0;
 }
 
 EnemyBase::~EnemyBase()
@@ -246,6 +249,14 @@ bool EnemyBase::Blasting(const HDC& center_hdc)
 bool EnemyBase::IsShootCamp()
 {
 	return mIsShootCamp;
+}
+
+// 返回被击中玩家 id 或者 0 没有击中
+int EnemyBase::IsShootToPlayer()
+{
+	int temp = mShootedPlayerID;
+	mShootedPlayerID = 0;			// 获取后归零! 不然一直被标记击中该玩家
+	return temp;
 }
 
 int EnemyBase::GetId()
@@ -456,6 +467,8 @@ bool EnemyBase::CheckBomb()
 				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
+
+				mShootedPlayerID = bms->box_8[tempi][tempj];
 				return true;
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
@@ -502,6 +515,8 @@ bool EnemyBase::CheckBomb()
 				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
+
+				mShootedPlayerID = bms->box_8[tempi][tempj];
 				return true;
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)

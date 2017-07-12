@@ -7,6 +7,7 @@ int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 依次左上
 
 PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 {
+	mDied = false;
 	int i = 0;
 	player_id = player;
 	mPlayerTank = new PlayerTank(player_id);
@@ -46,7 +47,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 不同级别坦克移动速度系数
-	int temp[4] = {2, 2, 3, 3};
+	int temp[4] = {2, 2, 3, 2};
 	for ( i = 0; i < 4; i++ )
 		mSpeed[i] = temp[i];
 
@@ -99,13 +100,6 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 		_stprintf_s(buf, _T("./res/big/blast/%d.gif"), i);
 		loadimage(&BlastStruct::image[i], buf);
 	}
-	for (i = 0; i < 2; i++)
-	{
-		mBlast[i].blastx = -100;
-		mBlast[i].blasty = -100;
-		mBlast[i].counter = 0;
-		mBlast[i].canBlast = false;
-	}
 
 	// 是否击中大本营
 	mIsShootCamp = false;
@@ -113,13 +107,6 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 
 PlayerBase::~PlayerBase()
 {
-}
-
-void PlayerBase::PlayerLoop(const HDC& center_hdc)
-{
-	DrawPlayerTank(center_hdc);		// 坦克
-	PlayerControl();
-	BulletMoving(center_hdc);
 }
 
 // 绘制玩家的一些数据: 1P\2P 坦克图标 生命
@@ -146,8 +133,8 @@ void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 //
 bool PlayerBase::PlayerControl()
 {
-	if (GetAsyncKeyState(27) & 0x8000)
-		return false;
+	if (mDied)
+		return true;
 
 	switch (player_id)
 	{
@@ -226,6 +213,9 @@ bool PlayerBase::PlayerControl()
 //
 void PlayerBase::BulletMoving(const HDC& center_hdc)
 {
+	if (mDied)
+		return;
+
 	for (int i = 0; i < 2; i++)
 	{
 		// 子弹在移动
@@ -256,6 +246,7 @@ void PlayerBase::BulletMoving(const HDC& center_hdc)
 	}*/
 }
 
+
 void PlayerBase::Bombing(const HDC& center_hdc)
 {
 	int index[3] = {0,1,2};
@@ -285,6 +276,40 @@ void PlayerBase::GetKillEnemy(int& bullet1, int& bullet2)
 bool PlayerBase::IsShootCamp()
 {
 	return mIsShootCamp;
+}
+
+void PlayerBase::BeKill()
+{
+	mDied = true;
+	SignBox_8(mTankX, mTankY, _EMPTY);
+
+	// 设置爆炸坐标
+	mBlast.blastx = mTankX;
+	mBlast.blasty = mTankY;
+	mBlast.canBlast = true;
+}
+
+// 玩家被击中爆炸
+bool PlayerBase::Blasting(const HDC & center_hdc)
+{
+	int index[6] = { 0,1,2,3,4,2 };
+	if (mBlast.canBlast)
+	{
+		TransparentBlt(center_hdc, mBlast.blastx - BOX_SIZE * 2, mBlast.blasty - BOX_SIZE * 2, BOX_SIZE * 4, BOX_SIZE * 4,
+			GetImageHDC(&BlastStruct::image[index[mBlast.counter % 6]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+		if (mBlast.counter++ == 6)
+		{
+			mBlast.canBlast = false;
+			return true;
+		}
+	}
+	return false;
+}
+
+//
+int PlayerBase::GetID()
+{
+	return player_id;
 }
 
 //---------------------------------------------------------------- private function ---------
@@ -318,7 +343,7 @@ void PlayerBase::Move(int new_dir)
 	}
 	else								// 移动
 	{
-		if (CheckMoveable(mTankDir))
+		if (CheckMoveable())
 		{
 			mTankX += mDevXY[mTankDir][0] * mSpeed[mPlayerTankLevel];
 			mTankY += mDevXY[mTankDir][1] * mSpeed[mPlayerTankLevel];
@@ -341,7 +366,7 @@ void PlayerBase::Move(int new_dir)
 * 如果 y 值在 a 点以上, 则转换后的 i 属于 1或2; 以下则属于 3或4
 ** 如果 tempx,tempy 跨越了格子又遇到障碍, 那么就将 mTankX 或 mTankY 调整到格子线上,
 */
-bool PlayerBase::CheckMoveable(byte dir)
+bool PlayerBase::CheckMoveable()
 {
 	// 坦克中心坐标
 	int tempx = mTankX + mDevXY[mTankDir][0] * mSpeed[mPlayerTankLevel];
@@ -350,7 +375,7 @@ bool PlayerBase::CheckMoveable(byte dir)
 	if (tempx < BOX_SIZE || tempy < BOX_SIZE || tempy > CENTER_WIDTH - BOX_SIZE || tempx > CENTER_HEIGHT - BOX_SIZE)
 	{
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
-		switch (dir)
+		switch (mTankDir)
 		{
 		case DIR_LEFT:	mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;	break;	// mTankX 与 tempx 之间跨越了格子, 将坦克放到mTankX所在的格子线上
 		case DIR_UP:	mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;	break;
@@ -366,11 +391,11 @@ bool PlayerBase::CheckMoveable(byte dir)
 
 	int dev[4][2][2] = { {{-1,-1},{0,-1}},  {{-1,-1},{-1,0}},  {{-1,1},{0,1}}, { {1,-1},{1,0}} };
 
-	if (bms->box_8[index_i + dev[dir][0][0]][index_j + dev[dir][0][1]] > 2 ||
-		bms->box_8[index_i + dev[dir][1][0]][index_j + dev[dir][1][1]] > 2 )
+	if (bms->box_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] > 2 ||
+		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] > 2 )
 	{
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
-		switch (dir)
+		switch (mTankDir)
 		{
 		case DIR_LEFT:	mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;	break;	// mTankX 与 tempx 之间跨越了格子, 将坦克放到mTankX所在的格子线上
 		case DIR_UP:	mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;	break;

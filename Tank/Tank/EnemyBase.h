@@ -24,6 +24,8 @@ public:
 	void BeKill();					// 敌机被消灭, 清除 SignBox 标记
 	bool Blasting(const HDC& );		// 显示坦克爆炸图, true 标识爆炸完,GameControl 获取返回值然后将该敌机删除
 	bool IsShootCamp();				// 是否击中大本营, GeamControl 内循环检测
+	int  IsShootToPlayer();			// 获取被击中的玩家 id
+
 	int GetId();				// 返回敌机 id
 
 private:
@@ -65,6 +67,8 @@ private:
 	DWORD mBulletT1, mBulletT2;	// 计数器, 多久发射一次子弹
 	DWORD mBulletT;
 
-	BombStruct mBombS;					// 爆炸结构体
+	BombStruct mBombS;			// 爆炸结构体
 	BlastStruct mBlast;			// 坦克爆炸结构
+
+	int mShootedPlayerID;		// 被击中玩家的id
 };

@@ -12,24 +12,109 @@ class PlayerBase
 public:
 	PlayerBase(byte player, BoxMarkStruct*);						// player [0-1]
 	~PlayerBase();
-	void PlayerLoop(const HDC&);							// 玩家循环
-	void DrawPlayerTankIco(const HDC& );					// 绘制右侧面板的\2P\1P\坦克图标\剩余生命值
-	void DrawPlayerTank( const HDC& );						// 绘制玩家坦克
-	bool PlayerControl();				// 玩家控制坦克移动
-	void BulletMoving(const HDC&);							// 子弹移动, 在GameControl 内循环调用
-	void Bombing(const HDC&);							// 爆炸
-	void GetKillEnemy(int&, int&);						// GameControl 内调用, 通过参数将 mBulletStruct.mKillId 传递进去
-	bool IsShootCamp();						// 玩家是否击中大本营
+
+	/*
+	* GameControl 内循环调用
+	*/
+	void DrawPlayerTankIco(const HDC& );
+
+	/*
+	* GameControl 内循环调用
+	* 纯绘制坦克操作
+	*/
+	void DrawPlayerTank( const HDC& );
+
+	/*
+	* GameControl 内循环调用
+	* 检测按键
+	*/
+	bool PlayerControl();
+
+	/*
+	* GameControl 内循环调用,
+	* mBulletStruct[i].x = SHOOTABLE_X 子弹才运动
+	*/
+	void BulletMoving(const HDC&);
+
+	/*
+	* GameControl 内循环调用
+	* 函数内是否显示爆炸效果由 检测子弹击中 的函数决定
+	*/
+	void Bombing(const HDC&);
+
+	/*
+	* GameControl 内调用, 通过参数获取被击中的敌机 id
+	* a : 1 号子弹击中敌机的 id
+	* b : 2 号子弹击中敌机的 id
+	*/
+	void GetKillEnemy(int& a, int& b);
+
+	/*
+	* GameControl 内循环检测该值
+	* 检测玩家是否击中大本营
+	* 函数内的成员 mIsShootCamp 在检测子弹击中的函数中赋值
+	*/
+	bool IsShootCamp();
+
+	/*
+	* 在 GameControl 内检测调用
+	* GameControl 内循环调用 EnemyBase->IsShootToPlayer() 获取被击中玩家的 id
+	* 然后调用对应玩家的 BeKill 函数
+	* BeKill() 控制爆炸图显示
+	*/
+	void BeKill();
+
+	/*
+	* GameControl 内循环调用
+	* BeKill 被调用后设置一个 flag = true,
+	* 该函数检测这个 flag 然后显示爆炸图
+	*/
+	bool Blasting(const HDC&);
+
+	int GetID();
+private:
+	/*
+	* PlayerControl() 内调用
+	* 判断并更改方向或者移动
+	* 同时调整坐标到格子整数处, 
+	*/
+	void Move(int new_dir);	
+
+	/*
+	* Move() 内调用
+	* 检测当前方向移动的可能性
+	*/
+	bool CheckMoveable();
+
+	/*
+	* PlayerControl() 内调用
+	* 发射 id 号子弹[0,1]
+	* 按下 J 或 1 键调用
+	*/
+	bool ShootBullet(int bullet_id);
+
+	/*
+	* BulletMoving() 内调用
+	* 检测子弹移动过程是否击中东西
+	*/
+	bool CheckBomb(int);
+
+	/*
+	* CheckBomb() 内击中障碍物时调用
+	* id  : 子弹 id
+	* x,y : 子弹凸出点的坐标, 根据不同方向位置不一样
+	*/
+	void ClearWallOrStone(int id, int x, int y);
+
+	/*
+	* 标记 4 个 8*8 的格子
+	* x,y : 16*16 格子的中心点坐标
+	* val : 需要标记的值
+	*/
+	void SignBox_8(int x, int y, int val);
 
 private:
-	void Move(int new_dir);					// 更改方向, 或移动. 同时调整坐标到格子整数处, 
-	bool CheckMoveable( byte dir);			// 检测当前操作是否可以移动
-	bool ShootBullet(int bullet_id);			// 发射 id 号子弹[0,1]
-	bool CheckBomb(int);						// 检测可否爆炸
-	void ClearWallOrStone(int, int,int);				// 擦除墙或者石头
-	void SignBox_8(int x, int y, int val);						// 标记坦克所在的 8*8 的格子
-
-private:
+	bool mDied;								// 生命是否用完,死亡
 	byte player_id : 1;						// [0-1] 玩家
 	PlayerTank* mPlayerTank;				// 坦克类
 	BoxMarkStruct* bms;
@@ -63,7 +148,7 @@ private:
 	bool mMoving;							// 指示坦克是否移动, 传递到 GetTankImage() 获取移动的坦克
 
 	BombStruct mBombS[2];					// 爆炸结构体
-	BlastStruct mBlast[2];				// 坦克爆炸结构, 可以两架坦克同时爆炸,所有要两个
+	BlastStruct mBlast;				// 坦克爆炸结构, 
 
 	bool mIsShootCamp;					// 是否击中大本营
 };

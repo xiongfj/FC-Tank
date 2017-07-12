@@ -232,7 +232,6 @@ void GameControl::RefreshCenterPanel()
 			}
 		}
 	}
-	// 以下的擦除障碍物才绘制, 不然会坦克被擦除-------------------------
 
 	// 玩家
 	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
@@ -246,10 +245,10 @@ void GameControl::RefreshCenterPanel()
 		{
 			if (mBlast.canBlast == false)
 			{
-				int index[16] = { 0,0,0,1,1,1,2,2,2,3,3,4,4,4,4,4 };
+				int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
 				TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
-					GetImageHDC(&BlastStruct::image[index[mBlast.counter % 16]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
-				if (mBlast.counter++ == 16)
+					GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+				if (mBlast.counter++ == 17)
 					mBlast.canBlast = true;
 				mCampDie = true;
 			}
@@ -262,9 +261,10 @@ void GameControl::RefreshCenterPanel()
 		EnemyItor->TankMoving(mCenter_hdc);
 		EnemyItor->ShootBullet();
 		EnemyItor->BulletMoving(mCenter_hdc);
+		CheckKillPlayer(EnemyItor);
 	}
 
-	// 森林,放在坦克子弹绘图后面, 遮挡坦克..
+	// 森林
 	for (int i = 0; i < 26; i++)
 	{
 		for (int j = 0; j < 26; j++)
@@ -293,20 +293,27 @@ void GameControl::RefreshCenterPanel()
 		{
 			if (mBlast.canBlast == false)
 			{
-				int index[16] = { 0,0,0,1,1,1,2,2,2,3,3,4,4,4,4,4 };
+				int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
 				TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
-					GetImageHDC(&BlastStruct::image[index[mBlast.counter % 16]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
-				if (mBlast.counter++ == 16)
+					GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+				if (mBlast.counter++ == 17)
 					mBlast.canBlast = true;
 				mCampDie = true;
 			}
 		}
 	}
 
-	// 森林不能爆炸图
+	// 玩家子弹爆炸
 	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
 		PlayerItor->Bombing(mCenter_hdc);
+
+		// 爆炸完成后
+		if (PlayerItor->Blasting(mCenter_hdc))
+		{
+			PlayerList.erase(PlayerItor);
+			break;
+		}
 	}
 
 	// 大本营
@@ -342,6 +349,22 @@ void GameControl::CheckKillEnemy(list<PlayerBase>::iterator pb)
 					break;
 				}
 			}
+		}
+	}
+}
+
+void GameControl::CheckKillPlayer(list<EnemyBase>::iterator enemyItor)
+{
+	int id = enemyItor->IsShootToPlayer();
+	if (id == 0)
+		return;
+
+	for (list<PlayerBase>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+	{
+		if (itor->GetID() + PLAYER_SIGN == id)
+		{
+			itor->BeKill();
+			break;
 		}
 	}
 }
