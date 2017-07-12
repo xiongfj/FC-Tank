@@ -135,20 +135,19 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 
 	mBulletT2 = timeGetTime();
 
+	SignBox_8(_EMPTY);
+
 	// 重定向
 	if (mStep-- < 0)
 		RejustDirPosition();
-
-	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
-			GetImageHDC(&mEnemyTank->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 	
 	// 可移动
 	if (CheckMoveable())
 	{
-		SignBox_8(0);
+		//SignBox_8(0);
 		mTankX += mDevXY[mTankDir][0] * mSpeed[mEnemyTankLevel];
 		mTankY += mDevXY[mTankDir][1] * mSpeed[mEnemyTankLevel];
-		SignBox_8(ENEMY_SIGN + mEnemyId);
+		//SignBox_8(ENEMY_SIGN + mEnemyId);
 	}
 
 	// 不可移动,重定向
@@ -156,6 +155,11 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 	{
 		RejustDirPosition();
 	}
+
+	SignBox_8(ENEMY_SIGN + mEnemyId);
+
+	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
+			GetImageHDC(&mEnemyTank->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }
 
 //
@@ -262,7 +266,7 @@ bool EnemyBase::CheckMoveable()
 
 	if (tempx < BOX_SIZE || tempy < BOX_SIZE || tempy > CENTER_WIDTH - BOX_SIZE || tempx > CENTER_HEIGHT - BOX_SIZE)
 	{
-		SignBox_8(_EMPTY);
+		//SignBox_8(_EMPTY);
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
 		switch (mTankDir)
 		{
@@ -272,7 +276,7 @@ bool EnemyBase::CheckMoveable()
 		case DIR_DOWN:	mTankY = (tempy / BOX_SIZE) * BOX_SIZE;	break;
 		default:														break;
 		}
-		SignBox_8(ENEMY_SIGN + mEnemyId);
+		//SignBox_8(ENEMY_SIGN + mEnemyId);
 		return false;
 	}
 	// 转换像素点所在的 xy[26][26] 下标
@@ -287,7 +291,7 @@ bool EnemyBase::CheckMoveable()
 		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] > 2 &&
 		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] != ENEMY_SIGN + mEnemyId)
 	{
-		SignBox_8(_EMPTY);
+		//SignBox_8(_EMPTY);
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
 		switch (mTankDir)
 		{
@@ -297,7 +301,7 @@ bool EnemyBase::CheckMoveable()
 		case DIR_DOWN:	mTankY = (tempy  / BOX_SIZE) * BOX_SIZE;	break;
 		default:													break;
 		}
-		SignBox_8(ENEMY_SIGN + mEnemyId);
+		//SignBox_8(ENEMY_SIGN + mEnemyId);
 		return false;
 	}
 	return true;
@@ -309,7 +313,7 @@ void EnemyBase::RejustDirPosition()
 	mStep = rand() % 250;
 
 	// 需要重新标记, 更正位置可能会改变所在的 4*4 格子
-	SignBox_8(0);
+	//SignBox_8(0);
 
 	// 原左右变上下方向
 	if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
@@ -330,7 +334,7 @@ void EnemyBase::RejustDirPosition()
 
 	// 重定向, 必须调正位置后才能设置方向
 	mTankDir = rand() % 4;
-	SignBox_8(ENEMY_SIGN + mEnemyId);
+	//SignBox_8(ENEMY_SIGN + mEnemyId);
 }
 
 //
