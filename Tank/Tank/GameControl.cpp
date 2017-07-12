@@ -236,6 +236,7 @@ void GameControl::RefreshCenterPanel()
 	// Íæ¼Ò
 	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
+		PlayerItor->ShowStar(mCenter_hdc);
 		PlayerItor->DrawPlayerTank(mCenter_hdc);		// Ì¹¿Ë
 		PlayerItor->PlayerControl();
 		PlayerItor->BulletMoving(mCenter_hdc);

@@ -128,9 +128,49 @@ void PlayerBase::DrawPlayerTankIco(const HDC& right_panel_hdc)
 		GetImageHDC(&mBlackNumberImage), BLACK_NUMBER_SIZE * mPlayerLife, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0xffffff );
 }
 
+bool PlayerBase::ShowStar(const HDC& center_hdc)
+{
+	// 坦克已经出现,不用闪烁,直接返回
+	if (mStar.mIsOuted == true)
+		return STOP_SHOW_STAR;
+
+	// 开始闪烁四角星
+	if (mStar.mStarCounter++ % 2 == 0)
+	{
+		if (mStar.mStarIndex + mStar.mStarIndexDev < 0)
+		{
+			mStar.mStarIndex = 1;
+			mStar.mStarIndexDev = 1;
+		}
+		else if (mStar.mStarIndex + mStar.mStarIndexDev > 3)
+		{
+			mStar.mStarIndex = 2;
+			mStar.mStarIndexDev = -1;
+		}
+		else
+		{
+			mStar.mStarIndex += mStar.mStarIndexDev;
+		}
+		if (mStar.mStarCounter == 25)
+		{
+			mStar.mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
+			SignBox_8(mTankX, mTankY, PLAYER_SIGN + player_id);		// 坦克出现, 将四角星标记改为坦克标记
+			return STOP_SHOW_STAR;
+		}
+	}
+
+	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
+		GetImageHDC(&StarClass::mStarImage[mStar.mStarIndex]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+
+	return SHOWING_STAR;
+}
+
 //
 void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 {
+	if (!mStar.mIsOuted)
+		return;
+
 	IMAGE tank = mPlayerTank->GetTankImage(mPlayerTankLevel, mTankDir, mMoving);
 	TransparentBlt(canvas_hdc, (int)(mTankX - BOX_SIZE), (int)(mTankY - BOX_SIZE), BOX_SIZE * 2, BOX_SIZE * 2, GetImageHDC(&tank), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }

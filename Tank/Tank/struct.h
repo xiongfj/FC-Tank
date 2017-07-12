@@ -1,6 +1,8 @@
 #pragma once
 
 #define TOTAL_ENEMY_NUMBER	20
+#define SHOWING_STAR	true		// 正在显示四角星
+#define STOP_SHOW_STAR	false		// 四角星显示结束
 
 struct BulletStruct
 {
@@ -47,7 +49,7 @@ public:
 	int mStarIndexDev;			// 索引的变化量, -1, 1  -1是star由小变大, 1 是star由大变小
 	byte mStarIndex : 2;		// 四角星下标索引变化规律 0-1-2-3-2-1-0-1-2-3-...
 	int mStarCounter;			// 计数,多少次变更一次图像
-	bool mIsOuted;				// 四角星小时候坦克出现, 停止播放四角星闪烁图
+	bool mIsOuted;				// 四角星消失的时候坦克出现, 停止播放四角星闪烁图
 
 	// Enemy 专用! Player 用不到
 	int mTankOutAfterCounter;	// 一个随机计数之后, 四角星开始闪烁,坦克出现

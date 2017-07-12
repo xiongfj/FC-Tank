@@ -19,7 +19,7 @@ public:
 	void DrawPlayerTankIco(const HDC& );
 
 	/* 玩家坦克闪烁出现*/
-	void ShowStar();
+	bool ShowStar(const HDC& center_hdc);
 
 	/*
 	* GameControl 内循环调用

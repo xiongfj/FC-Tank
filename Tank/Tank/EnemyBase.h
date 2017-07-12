@@ -2,9 +2,6 @@
 #include "TankClass.h"
 #include "struct.h"
 
-#define STOP_SHOW_STAR	false		// 四角星显示结束
-#define SHOWING_STAR	true		// 正在显示四角星
-
 
 /************** 敌机坦克 ************
 * 一个敌机实例化一个对象
