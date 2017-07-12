@@ -43,7 +43,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 	loadimage(&mPlayerTankIcoImage, _T("./res/big/playertank-ico.gif"	));	// 玩家坦克图标
 	loadimage(&mBlackNumberImage,	_T("./res/big/black-number.gif"		));	// 黑色数字
 	mPlayerLife = 2;		// 玩家 HP
-	mPlayerTankLevel = 3;													// 坦克级别 [0-3]
+	mPlayerTankLevel = 0;													// 坦克级别 [0-3]
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 不同级别坦克移动速度系数
@@ -103,10 +103,18 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 	// 是否击中大本营
 	mIsShootCamp = false;
 
+	// 出生四角星闪烁
 	for (int i = 0; i < 4; i++)
 	{
 		_stprintf_s(buf, _T("./res/big/star%d.gif"), i);
 		loadimage(&StarClass::mStarImage[i], buf);
+	}
+
+	// 出生保护环
+	for (int i = 0; i < 2; i++)
+	{
+		_stprintf_s(buf, _T("./res/big/ring%d.gif"), i);
+		loadimage(&RingClass::image[i], buf);
 	}
 }
 
@@ -173,6 +181,9 @@ void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 
 	IMAGE tank = mPlayerTank->GetTankImage(mPlayerTankLevel, mTankDir, mMoving);
 	TransparentBlt(canvas_hdc, (int)(mTankX - BOX_SIZE), (int)(mTankY - BOX_SIZE), BOX_SIZE * 2, BOX_SIZE * 2, GetImageHDC(&tank), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+
+	if (mRing.canshow)
+		mRing.ShowRing(canvas_hdc, mTankX, mTankY);
 }
 
 //

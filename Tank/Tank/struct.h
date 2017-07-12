@@ -54,3 +54,14 @@ public:
 	// Enemy 专用! Player 用不到
 	int mTankOutAfterCounter;	// 一个随机计数之后, 四角星开始闪烁,坦克出现
 };
+
+// 玩家坦克出现的时候显示的闪烁环状保护圈
+class RingClass
+{
+public:
+	RingClass();
+	void ShowRing(const HDC&, int centerx, int centery);		// 
+	static IMAGE image[2];
+	bool canshow;			// 是否可以显示环状
+	int index_counter;		// 变化下标索引
+};

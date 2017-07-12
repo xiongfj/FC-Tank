@@ -156,4 +156,5 @@ private:
 	bool mIsShootCamp;					// 是否击中大本营
 
 	StarClass mStar;				// 坦克出现前的四角星闪烁
+	RingClass mRing;				// 保护圈类
 };

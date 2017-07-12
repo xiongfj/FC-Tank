@@ -40,3 +40,22 @@ StarClass::StarClass()
 	mTankOutAfterCounter = rand() % 100 + 10;
 	mIsOuted = false;						// 坦克是否已经出现
 }
+
+//------------------------------------------
+IMAGE RingClass::image[2];
+RingClass::RingClass()
+{
+	canshow = true;
+	index_counter = 0;
+}
+
+void RingClass::ShowRing(const HDC &canvas_hdc, int mTankX, int mTankY)
+{
+	if (index_counter > 190)
+	{
+		canshow = false;
+		return;
+	}
+	TransparentBlt(canvas_hdc, (int)(mTankX - BOX_SIZE), (int)(mTankY - BOX_SIZE), BOX_SIZE * 2, 
+			BOX_SIZE * 2, GetImageHDC(&image[index_counter++ % 2]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+}
