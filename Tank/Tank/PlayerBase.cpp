@@ -68,6 +68,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 		mBulletStruct[i].x = SHOOTABLE_X;		// x 坐标用于判断是否可以发射
 		mBulletStruct[i].y = -1000;
 		mBulletStruct[i].dir = DIR_UP;
+		mBulletStruct[i].mKillId = 0;			// 记录击中的敌机 id
 
 		// 根据坦克级别分配子弹速度系数
 		for (int j = 0; j < 4; j++)
@@ -251,6 +252,17 @@ void PlayerBase::Bombing(const HDC& center_hdc)
 				mBombS[i].canBomb = false;
 		}
 	}
+}
+
+// GameControl 内调用, 通过参数将 mBulletStruct.mKillId 传递进去
+void PlayerBase::IsKillEnemy(int& bullet1, int& bullet2)
+{
+	bullet1 = mBulletStruct[0].mKillId;
+	bullet2 = mBulletStruct[1].mKillId;
+
+	// 重置标志
+	mBulletStruct[0].mKillId = 0;
+	mBulletStruct[1].mKillId = 0;
 }
 
 //---------------------------------------------------------------- private function ---------
@@ -461,6 +473,9 @@ bool PlayerBase::CheckBomb(int i)
 				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
 				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 				mBombS[i].counter = 0;
+
+				// 标记击中了敌机的 id
+				mBulletStruct[i].mKillId = bms->box_8[tempi][tempj];
 				return true;
 			}
 
@@ -499,6 +514,9 @@ bool PlayerBase::CheckBomb(int i)
 				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
 				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 				mBombS[i].counter = 0;
+
+				// 标记击中了敌机的 id
+				mBulletStruct[i].mKillId = bms->box_8[tempi][tempj];
 				return true;
 			}
 

@@ -8,6 +8,10 @@ struct BulletStruct
 	int dir;					// 子弹方向
 	int speed[4];				// 子弹速度, 根据坦克级别给予不同速度系数. 每次移动不能超过4个像素点!! 不然会跨越 4*4 的格子!!检测bug
 
+	/* 如果玩家击中敌机,设置该值为敌机的id, GameControl 循环内检测该值, 然后删除该敌机
+	* 如果是敌机击中玩家, 设置该值为玩家id, 游戏循环内再检测该值处理玩家数据*/
+	int mKillId;				// 记录子弹击中的敌机/玩家 id
+
 	static IMAGE mBulletImage[4];		// 图片
 	static int mBulletSize[4][2];		// {{4,3},{3,4},{4,3},{3,4}} 尺寸: 上下-3*4 / 左右-4*3
 	static int devto_tank[4][2];		// 规定子弹的坐标相对于tank中心点的偏移量

@@ -49,6 +49,7 @@ EnemyBase::EnemyBase( byte kind, int level, BoxMarkStruct* b)
 	mBulletStruct.dir = DIR_DOWN;
 	for (int i = 0; i < 4; i++)
 		mBulletStruct.speed[i] = 3;		// 不能超过 4
+	mBulletStruct.mKillId = 0;			// 记录击中玩家坦克的id
 	
 	mBulletT1 = timeGetTime();
 	mBulletT2 = timeGetTime();
@@ -63,8 +64,8 @@ EnemyBase::EnemyBase( byte kind, int level, BoxMarkStruct* b)
 
 EnemyBase::~EnemyBase()
 {
-	//if (mEnemyTank != NULL)
-		//delete mEnemyTank;
+	if (mEnemyTank != NULL)
+		delete mEnemyTank;
 }
 
 // 显示坦克
@@ -209,6 +210,16 @@ void EnemyBase::Bombing(const HDC & center_hdc)
 		if (mBombS.counter++ == 3)
 			mBombS.canBomb = false;
 	}
+}
+
+void EnemyBase::BeKill()
+{
+	SignBox_8(_EMPTY);
+}
+
+int EnemyBase::GetId()
+{
+	return mEnemyId;
 }
 
 //----------------- 私有函数 ------------------------

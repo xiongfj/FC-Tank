@@ -66,6 +66,7 @@ void GameControl::LoadMap()
 		}
 	}
 
+	AddEnemy();
 	while (StartGame())
 	{
 		Sleep(34);
@@ -75,8 +76,8 @@ void GameControl::LoadMap()
 bool GameControl::StartGame()
 {
 	// 推送 6 架敌机到游戏区域
-	if (EnemyList.size() < 19 && mRemainEnemyTankNumber > 0)
-		EnemyList.push_back(*(new EnemyBase( 1, 0, mBoxMarkStruct)));
+	//if (EnemyList.size() < 19 && mRemainEnemyTankNumber > 0)
+		//EnemyList.push_back(*(new EnemyBase( 1, 0, mBoxMarkStruct)));
 
 	// 更新右边面板的数据, 待判断, 因为不需要经常更新 mImage_hdc
 	RefreshRightPanel();
@@ -97,6 +98,13 @@ bool GameControl::StartGame()
 /////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////// 私有函数,本类使用 //////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
+
+// 待修改, 添加的敌机种类需要修改
+void GameControl::AddEnemy()
+{
+	for (int i = 0; i < TOTAL_ENEMY_NUMBER; i++)
+		EnemyList.push_back(*(new EnemyBase(1, 0, mBoxMarkStruct)));
+}
 
 // 标记 26*26 和 52*52 的格子
 void GameControl::SignBoxMark(int i, int j, int sign_val)
@@ -158,9 +166,12 @@ void GameControl::RefreshCenterPanel()
 	// 四角星闪烁控制
 	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 	{
+		printf("4654564654\n");
 		// 一个四角星动画结束后再执行下一个
 		if (EnemyItor->ShowStar(mCenter_hdc, mRemainEnemyTankNumber) == SHOWING_STAR)
+		{
 			break;
+		}
 	}
 
 	/* 开始根据数据文件绘制地图
@@ -218,6 +229,7 @@ void GameControl::RefreshCenterPanel()
 		PlayerItor->DrawPlayerTank(mCenter_hdc);		// 坦克
 		PlayerItor->PlayerControl();
 		PlayerItor->BulletMoving(mCenter_hdc);
+		CheckKillEnemy(PlayerItor);
 	}
 
 	// 敌机
@@ -255,4 +267,31 @@ void GameControl::RefreshCenterPanel()
 	// 大本营
 	TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
 		GetImageHDC(&mCamp), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+}
+
+// 读取PlayerBase 内的数据, 消灭敌机
+void GameControl::CheckKillEnemy(list<PlayerBase>::iterator pb)
+{
+	int bullet[2] = {0, 0};
+	pb->IsKillEnemy(bullet[0], bullet[1]);		// 获取玩家击中的敌机id, 存储进 bullet[2] 内
+
+	for (int i = 0; i < 2; i++)
+	{
+		if (bullet[i] >= ENEMY_SIGN && bullet[i] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
+		{
+			for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+			{
+				if (EnemyItor->GetId() + ENEMY_SIGN == bullet[i])
+				{
+					//printf("jsdkfjsdl\n");
+					//delete (EnemyBase*)(&(*EnemyItor));
+					EnemyItor->BeKill();
+					EnemyItor = EnemyList.erase(EnemyItor);
+
+					printf("%d\n", EnemyList.size());
+					break;
+				}
+			}
+		}
+	}
 }

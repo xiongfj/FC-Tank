@@ -20,6 +20,9 @@ public:
 	bool ShootBullet();			// 发射子弹
 	void BulletMoving(const HDC& );			// 子弹移动
 	void Bombing(const HDC&);
+	void BeKill();					// 敌机被消灭, 清除 SignBox 标记
+
+	int GetId();				// 返回敌机 id
 
 private:
 	void SignBox_4(int value);		// 标记或取消 4*4 大小的格子为坦克;

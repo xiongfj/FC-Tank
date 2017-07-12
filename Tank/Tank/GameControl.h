@@ -26,9 +26,11 @@ public:
 	bool StartGame();								// 更新绘制游戏各种东西, 返回 false 结束游戏
 
 private:
+	void AddEnemy();						// 游戏开始前 添加20 架敌机
 	void SignBoxMark(int i, int j, int sign_val);	// 标记格子, LoadMap() 内调用
 	void RefreshRightPanel();						// 刷新右边信息面板数据, 根据数据变化才调用更新
 	void RefreshCenterPanel();						// 刷新中间游戏区域 208 * 208
+	void CheckKillEnemy(list<PlayerBase>::iterator);							// 检测玩家是否击中敌机, 击中则删除该敌机
 
 public:
 	static int mCurrentStage;						// [1-35] 当前关卡, SelectPanel 内使用, 本类内使用
