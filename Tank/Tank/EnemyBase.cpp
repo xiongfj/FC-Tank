@@ -78,12 +78,22 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 	if (mTankOutAfterCounter-- > 0)
 		return SHOWING_STAR;
 
+	// 如果坦克出现的位置被暂用了, 等待下一个随机循环在出现
+	if (CheckBox_8() == false)
+	{
+		mTankOutAfterCounter = rand() % 100 + 10;
+		return SHOWING_STAR;
+	}
+
 	// 四角星出现, 剩余坦克数-1;
 	if (mTankNumberReduce)
 	{
 		mEnemyId = TOTAL_ENEMY_NUMBER - remainnumber;
 		remainnumber -= 1;
 		mTankNumberReduce = false;
+
+		// 标记为 STAR_SIGN = 2000, 2000 属于坦克不能穿行的标志
+		SignBox_8(STAR_SIGN);
 	}
 
 	// 开始闪烁四角星
@@ -105,8 +115,9 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 		}
 		if (mStarCounter == 35)
 		{
-			mIsOuted = true;				// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
+			mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
 			mBulletT1 = timeGetTime();
+			SignBox_8(ENEMY_SIGN + mEnemyId);		// 坦克出现, 将四角星标记改为坦克标记
 			return STOP_SHOW_STAR;
 		}
 	}
@@ -225,24 +236,22 @@ void EnemyBase::SignBox_8(int value)
 		}
 	}
 }
-/*
-//
-bool EnemyBase::CheckSignBox(int x, int y)
-{
-	int ix = x / (BOX_SIZE / 2) - 2;
-	int jy = y / (BOX_SIZE / 2) - 2;
 
-	for (int i = ix; i < ix + 4; i++)
+// 检测某个16*16位置可以放坦克吗, x,y 16*16的中心点
+bool EnemyBase::CheckBox_8()
+{
+	int iy = mTankY / BOX_SIZE - 1;
+	int jx = mTankX / BOX_SIZE - 1;
+	for (int i = iy; i < iy + 2; i++)
 	{
-		for (int j = jy; j < jy + 4; j++)
+		for (int j = jx; j < jx + 2; j++)
 		{
-			if (bms->box_4[i][j] != 0)
+			if (bms->box_8[i][j] != STAR_SIGN && bms->box_8[i][j] != _EMPTY)
 				return false;
 		}
 	}
-
 	return true;
-}*/
+}
 
 //
 bool EnemyBase::CheckMoveable()
@@ -272,7 +281,7 @@ bool EnemyBase::CheckMoveable()
 
 	int dev[4][2][2] = { { { -1,-1 },{ 0,-1 } },{ { -1,-1 },{ -1,0 } },{ { -1,1 },{ 0,1 } },{ { 1,-1 },{ 1,0 } } };
 
-	// 如果遇到障碍物或其它敌机
+	// 如果遇到障碍物或其它敌机,或者其它标志..
 	if (bms->box_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] > 2 &&
 		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][0][1]] != ENEMY_SIGN + mEnemyId ||
 		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] > 2 &&
@@ -294,10 +303,7 @@ bool EnemyBase::CheckMoveable()
 	return true;
 }
 
-7.11 日记
-
-* 未知 bug 太多, 都在修改代码, 只增加了敌机可以发射子弹消除障碍物..
-
+//
 void EnemyBase::RejustDirPosition()
 {
 	mStep = rand() % 250;

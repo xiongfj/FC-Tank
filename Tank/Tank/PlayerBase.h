@@ -25,6 +25,7 @@ private:
 	bool ShootBullet(int bullet_id);			// 发射 id 号子弹[0,1]
 	bool CheckBomb(int);						// 检测可否爆炸
 	void ClearWallOrStone(int, int,int);				// 擦除墙或者石头
+	void SignBox_8(int val);						// 标记坦克所在的 8*8 的格子
 
 private:
 	byte player_id : 1;						// [0-1] 玩家

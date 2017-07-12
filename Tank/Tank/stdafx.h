@@ -61,10 +61,11 @@ using namespace Gdiplus;
 #define DIR_RIGHT	2
 #define DIR_DOWN	3
 
+#define PLAYER_SIGN	100
+
 // 4*4 或 8*8 格子标记, 加上敌机自身 id再标记
 #define ENEMY_SIGN	1000
-
-#define PLAYER_SIGN	100
+#define STAR_SIGN	2000		// 敌机出现四角星标记, 此时敌机不能进来
 
 
 #define SHOOTABLE_X		-100	// 规定子弹坐标 x = -100 子弹可以发射

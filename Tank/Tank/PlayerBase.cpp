@@ -258,6 +258,8 @@ void PlayerBase::Bombing(const HDC& center_hdc)
 // 变向的同时调整坦克所在格子. 必须保证坦克中心在格子线上
 void PlayerBase::Move(int new_dir)
 {
+	SignBox_8(_EMPTY);
+
 	if (mTankDir != new_dir)
 	{
 		// 原左右变上下方向
@@ -288,6 +290,7 @@ void PlayerBase::Move(int new_dir)
 			mTankY += mDevXY[mTankDir][1] * mSpeed[mPlayerTankLevel];
 		}
 	}
+	SignBox_8(PLAYER_SIGN);
 }
 
 /* 判断当前方向可否移动
@@ -566,6 +569,20 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 
 	default:
 		break;
+	}
+}
+
+void PlayerBase::SignBox_8(int val)
+{
+	// 右坦克中心索引转到左上角那个的 格子索引
+	int iy = mTankY / BOX_SIZE - 1;
+	int jx = mTankX / BOX_SIZE - 1;
+	for (int i = iy; i < iy + 2; i++)
+	{
+		for (int j = jx; j < jx + 2; j++)
+		{
+			bms->box_8[i][j] = val;
+		}
 	}
 }
 

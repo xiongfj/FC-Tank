@@ -75,7 +75,7 @@ void GameControl::LoadMap()
 bool GameControl::StartGame()
 {
 	// 推送 6 架敌机到游戏区域
-	if (EnemyList.size() < 9 && mRemainEnemyTankNumber > 0)
+	if (EnemyList.size() < 19 && mRemainEnemyTankNumber > 0)
 		EnemyList.push_back(*(new EnemyBase( 1, 0, mBoxMarkStruct)));
 
 	// 更新右边面板的数据, 待判断, 因为不需要经常更新 mImage_hdc
