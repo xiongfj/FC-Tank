@@ -31,6 +31,7 @@ private:
 	void RefreshRightPanel();						// 刷新右边信息面板数据, 根据数据变化才调用更新
 	void RefreshCenterPanel();						// 刷新中间游戏区域 208 * 208
 	void CheckKillEnemy(list<PlayerBase>::iterator);							// 检测玩家是否击中敌机, 击中则删除该敌机
+	//void SignBox_8(int i, int j, int val);					// 根据参数左上角 8*8 格子的索引, 标记 四个 8*8 格子
 
 public:
 	static int mCurrentStage;						// [1-35] 当前关卡, SelectPanel 内使用, 本类内使用
@@ -68,4 +69,7 @@ private:
 	// 初始 mActiveEnemyTankNumber + mRemainEnemyTankNumber = 20
 	int mActiveEnemyTankNumber;		// 当前活动的敌机数量, 最多显示 6 架
 	int mRemainEnemyTankNumber;		// 余下未显示的敌机数量, 初始值=20, 出现一架敌机该值减一
+
+	BlastStruct mBlast;				// 大本营爆炸
+	bool mCampDie;					// 大本营被击中, 不再 Camp 贴图 
 };

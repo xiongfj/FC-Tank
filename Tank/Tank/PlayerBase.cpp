@@ -106,6 +106,9 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 		mBlast[i].counter = 0;
 		mBlast[i].canBlast = false;
 	}
+
+	// 是否击中大本营
+	mIsShootCamp = false;
 }
 
 PlayerBase::~PlayerBase()
@@ -279,12 +282,17 @@ void PlayerBase::GetKillEnemy(int& bullet1, int& bullet2)
 	mBulletStruct[1].mKillId = 0;
 }
 
+bool PlayerBase::IsShootCamp()
+{
+	return mIsShootCamp;
+}
+
 //---------------------------------------------------------------- private function ---------
 
 // 变向的同时调整坦克所在格子. 必须保证坦克中心在格子线上
 void PlayerBase::Move(int new_dir)
 {
-	SignBox_8(_EMPTY);
+	SignBox_8(mTankX, mTankY, _EMPTY);
 
 	if (mTankDir != new_dir)
 	{
@@ -316,7 +324,7 @@ void PlayerBase::Move(int new_dir)
 			mTankY += mDevXY[mTankDir][1] * mSpeed[mPlayerTankLevel];
 		}
 	}
-	SignBox_8(PLAYER_SIGN + player_id);
+	SignBox_8(mTankX, mTankY, PLAYER_SIGN + player_id);
 }
 
 /* 判断当前方向可否移动
@@ -492,6 +500,14 @@ bool PlayerBase::CheckBomb(int i)
 				mBulletStruct[i].mKillId = bms->box_8[tempi][tempj];
 				return true;
 			}
+			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
+			{
+				mBulletStruct[i].x = SHOOTABLE_X;
+				mBombS[i].counter = 0;
+				mIsShootCamp = true;
+				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
+				return true;
+			}
 
 			// 检测 4*4 格子, 由此判断障碍物
 			tempi = bi + temp[n][0];
@@ -532,6 +548,14 @@ bool PlayerBase::CheckBomb(int i)
 
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_8[tempi][tempj];
+				return true;
+			}
+			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
+			{
+				mBulletStruct[i].x = SHOOTABLE_X;
+				mBombS[i].counter = 0;
+				mIsShootCamp = true;
+				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
 				return true;
 			}
 
@@ -639,11 +663,12 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 	}
 }
 
-void PlayerBase::SignBox_8(int val)
+// 参数是 16 * 16 中心点像素坐标, 与坦克中心坐标相同
+void PlayerBase::SignBox_8(int x, int y, int val)
 {
 	// 右坦克中心索引转到左上角那个的 格子索引
-	int iy = mTankY / BOX_SIZE - 1;
-	int jx = mTankX / BOX_SIZE - 1;
+	int iy = y / BOX_SIZE - 1;
+	int jx = x / BOX_SIZE - 1;
 	for (int i = iy; i < iy + 2; i++)
 	{
 		for (int j = jx; j < jx + 2; j++)

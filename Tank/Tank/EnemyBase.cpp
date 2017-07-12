@@ -96,7 +96,7 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 		mTankNumberReduce = false;
 
 		// 标记为 STAR_SIGN = 2000, 2000 属于坦克不能穿行的标志
-		SignBox_8(STAR_SIGN);
+		SignBox_8(mTankX, mTankY, STAR_SIGN);
 	}
 
 	// 开始闪烁四角星
@@ -120,7 +120,7 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 		{
 			mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
 			mBulletT1 = timeGetTime();
-			SignBox_8(ENEMY_SIGN + mEnemyId);		// 坦克出现, 将四角星标记改为坦克标记
+			SignBox_8(mTankX, mTankY, ENEMY_SIGN + mEnemyId);		// 坦克出现, 将四角星标记改为坦克标记
 			return STOP_SHOW_STAR;
 		}
 	}
@@ -139,7 +139,7 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 	mBulletT2 = timeGetTime();
 
 	// 移动前取消标记
-	SignBox_8(_EMPTY);
+	SignBox_8(mTankX, mTankY, _EMPTY);
 
 	// 重定向
 	if (mStep-- < 0)
@@ -161,7 +161,7 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 	}
 
 	// 在新位置重新标记
-	SignBox_8(ENEMY_SIGN + mEnemyId);
+	SignBox_8(mTankX, mTankY, ENEMY_SIGN + mEnemyId);
 
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
 			GetImageHDC(&mEnemyTank->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
@@ -218,7 +218,7 @@ void EnemyBase::Bombing(const HDC & center_hdc)
 void EnemyBase::BeKill()
 {
 	mDied = true;
-	SignBox_8(_EMPTY);
+	SignBox_8(mTankX, mTankY, _EMPTY);
 
 	// 设置爆炸坐标
 	mBlast.blastx = mTankX;
@@ -270,12 +270,12 @@ void EnemyBase::SignBox_4(int value)
 	}
 }
 
-//
-void EnemyBase::SignBox_8(int value)
+// x,y 是 16*16 中心点坐标
+void EnemyBase::SignBox_8(int x, int y, int value)
 {
 	// 右坦克中心索引转到左上角那个的 格子索引
-	int iy = mTankY / BOX_SIZE - 1;
-	int jx = mTankX / BOX_SIZE - 1;
+	int iy = y / BOX_SIZE - 1;
+	int jx = x / BOX_SIZE - 1;
 	for (int i = iy; i < iy + 2; i++)
 	{
 		for (int j = jx; j < jx + 2; j++)
@@ -458,9 +458,13 @@ bool EnemyBase::CheckBomb()
 				mBombS.counter = 0;
 				return true;
 			}
-			else if (bms->box_8[tempi][tempj] == PLAYER_SIGN == CAMP_SIGN)
+			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
+				mBombS.counter = 0;
+				mBulletStruct.x = SHOOTABLE_X;
 				mIsShootCamp = true;
+				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
+				return true;
 			}
 
 			// 4*4 检测
@@ -500,9 +504,13 @@ bool EnemyBase::CheckBomb()
 				mBombS.counter = 0;
 				return true;
 			}
-			else if (bms->box_8[tempi][tempj] == PLAYER_SIGN == CAMP_SIGN)
+			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
+				mBombS.counter = 0;
+				mBulletStruct.x = SHOOTABLE_X;
 				mIsShootCamp = true;
+				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
+				return true;
 			}
 
 			// 4*4 检测

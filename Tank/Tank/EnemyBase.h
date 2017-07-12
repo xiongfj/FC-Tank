@@ -28,7 +28,7 @@ public:
 
 private:
 	void SignBox_4(int value);		// 标记或取消 4*4 大小的格子为坦克;
-	void SignBox_8(int value);
+	void SignBox_8(int, int, int value);
 	bool CheckBox_8();	// 检测某个 box_8 是否可以放置坦克, 参数是 16*16 格子的中心点, 与坦克坐标规则相同
 	bool CheckMoveable();			// 
 	void RejustDirPosition();		// 重新定位坦克方向, 调正坦克位置, 保持在格子上

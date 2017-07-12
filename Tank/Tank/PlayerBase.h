@@ -19,6 +19,7 @@ public:
 	void BulletMoving(const HDC&);							// 子弹移动, 在GameControl 内循环调用
 	void Bombing(const HDC&);							// 爆炸
 	void GetKillEnemy(int&, int&);						// GameControl 内调用, 通过参数将 mBulletStruct.mKillId 传递进去
+	bool IsShootCamp();						// 玩家是否击中大本营
 
 private:
 	void Move(int new_dir);					// 更改方向, 或移动. 同时调整坐标到格子整数处, 
@@ -26,7 +27,7 @@ private:
 	bool ShootBullet(int bullet_id);			// 发射 id 号子弹[0,1]
 	bool CheckBomb(int);						// 检测可否爆炸
 	void ClearWallOrStone(int, int,int);				// 擦除墙或者石头
-	void SignBox_8(int val);						// 标记坦克所在的 8*8 的格子
+	void SignBox_8(int x, int y, int val);						// 标记坦克所在的 8*8 的格子
 
 private:
 	byte player_id : 1;						// [0-1] 玩家
@@ -63,4 +64,6 @@ private:
 
 	BombStruct mBombS[2];					// 爆炸结构体
 	BlastStruct mBlast[2];				// 坦克爆炸结构, 可以两架坦克同时爆炸,所有要两个
+
+	bool mIsShootCamp;					// 是否击中大本营
 };

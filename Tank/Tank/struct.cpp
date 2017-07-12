@@ -21,8 +21,6 @@ IMAGE BombStruct::mBombImage[3];
 //----------------------------------
 
 IMAGE BlastStruct::image[5];
-
-
 BlastStruct::BlastStruct()
 {
 	blastx = -100;

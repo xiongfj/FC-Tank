@@ -36,6 +36,7 @@ void GameControl::Init()
 
 	mActiveEnemyTankNumber = 0;													// 已经出现在地图上的敌机数量,最多显示6架
 	mRemainEnemyTankNumber = 20;												// 剩余未出现的敌机数量
+	mCampDie = false;															// 标志大本营是否被击中
 }
 
 // 存储玩家进链表
@@ -69,9 +70,9 @@ void GameControl::LoadMap()
 	}
 
 	// 标记大本营
-	for (int i = 12; i < 14; i++)
+	for (int i = 24; i < 26; i++)
 	{
-		for (int j = 24; j < 26; j++)
+		for (int j = 12; j < 14; j++)
 		{
 			mBoxMarkStruct->box_8[i][j] = CAMP_SIGN;
 		}
@@ -240,6 +241,19 @@ void GameControl::RefreshCenterPanel()
 		PlayerItor->PlayerControl();
 		PlayerItor->BulletMoving(mCenter_hdc);
 		CheckKillEnemy(PlayerItor);
+
+		if (PlayerItor->IsShootCamp())
+		{
+			if (mBlast.canBlast == false)
+			{
+				int index[16] = { 0,0,0,1,1,1,2,2,2,3,3,4,4,4,4,4 };
+				TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
+					GetImageHDC(&BlastStruct::image[index[mBlast.counter % 16]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+				if (mBlast.counter++ == 16)
+					mBlast.canBlast = true;
+				mCampDie = true;
+			}
+		}
 	}
 
 	// 敌机
@@ -270,14 +284,22 @@ void GameControl::RefreshCenterPanel()
 		// 爆炸完毕, 移除敌机
 		if (EnemyItor->Blasting(mCenter_hdc))
 		{
-			printf("asdasd\n");
 			EnemyList.erase(EnemyItor);
 			break;
 		}
 
+		// 如果该敌机击中大本营
 		if (EnemyItor->IsShootCamp())
 		{
-
+			if (mBlast.canBlast == false)
+			{
+				int index[16] = { 0,0,0,1,1,1,2,2,2,3,3,4,4,4,4,4 };
+				TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
+					GetImageHDC(&BlastStruct::image[index[mBlast.counter % 16]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+				if (mBlast.counter++ == 16)
+					mBlast.canBlast = true;
+				mCampDie = true;
+			}
 		}
 	}
 
@@ -288,8 +310,16 @@ void GameControl::RefreshCenterPanel()
 	}
 
 	// 大本营
-	TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
-		GetImageHDC(&mCamp[0]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+	if (!mCampDie)		// 如果没爆炸
+	{
+		TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
+			GetImageHDC(&mCamp[0]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+	}
+	else if (mBlast.canBlast)	// 如果爆炸完毕, 显示被摧毁的camp
+	{
+		TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
+			GetImageHDC(&mCamp[1]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+	}
 }
 
 // 读取PlayerBase 内的数据, 消灭敌机
@@ -315,3 +345,15 @@ void GameControl::CheckKillEnemy(list<PlayerBase>::iterator pb)
 		}
 	}
 }
+
+/*
+void GameControl::SignBox_8(int iy, int jx, int val)
+{
+	for (int i = iy; i < iy + 2; i++)
+	{
+		for (int j = jx; j < jx + 2; j++)
+		{
+			mBoxMarkStruct->box_8[i][j] = CAMP_SIGN;
+		}
+	}
+}*/
