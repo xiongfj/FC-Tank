@@ -47,7 +47,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 不同级别坦克移动速度系数
-	int temp[4] = {2, 2, 3, 2};
+	int temp[4] = {2, 2, 3, 3};
 	for ( i = 0; i < 4; i++ )
 		mSpeed[i] = temp[i];
 
@@ -80,11 +80,10 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 	mMoving = false;
 
 	// 爆炸图片
-	TCHAR c[100];
 	for (i = 0; i < 3; i++)
 	{
-		_stprintf_s(c, _T("./res/big/bumb%d.gif"), i);
-		loadimage(&BombStruct::mBombImage[i], c);
+		_stprintf_s(buf, _T("./res/big/bumb%d.gif"), i);
+		loadimage(&BombStruct::mBombImage[i], buf);
 	}
 	for (i = 0; i < 2; i++)
 	{
@@ -103,6 +102,12 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 
 	// 是否击中大本营
 	mIsShootCamp = false;
+
+	for (int i = 0; i < 4; i++)
+	{
+		_stprintf_s(buf, _T("./res/big/star%d.gif"), i);
+		loadimage(&StarClass::mStarImage[i], buf);
+	}
 }
 
 PlayerBase::~PlayerBase()

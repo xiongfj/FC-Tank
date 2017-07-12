@@ -18,6 +18,9 @@ public:
 	*/
 	void DrawPlayerTankIco(const HDC& );
 
+	/* 玩家坦克闪烁出现*/
+	void ShowStar();
+
 	/*
 	* GameControl 内循环调用
 	* 纯绘制坦克操作
@@ -151,4 +154,6 @@ private:
 	BlastStruct mBlast;				// 坦克爆炸结构, 
 
 	bool mIsShootCamp;					// 是否击中大本营
+
+	StarClass mStar;				// 坦克出现前的四角星闪烁
 };

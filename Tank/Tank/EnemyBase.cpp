@@ -23,18 +23,6 @@ EnemyBase::EnemyBase( byte kind, int level, BoxMarkStruct* b)
 	mTankDir = DIR_DOWN;
 	mTankImageIndex = 0;
 
-	TCHAR buf[100];
-	for (int i = 0; i < 4; i++)
-	{
-		_stprintf_s(buf, _T("./res/big/star%d.gif"), i);
-		loadimage(&mStarImage[i], buf);
-	}
-	mStarIndexDev = -1;						// 控制索引下标的增加还是减少
-	mStarIndex = 3;							// star 图片索引下标
-	mStarCounter = 0;						// 多少次更换 star 图片
-	mTankOutAfterCounter = rand() % 100 + 10;
-	mIsOuted = false;						// 坦克是否已经出现
-
 	mStep = rand() % 200;					// 当前方向随机移动的步数
 
 	// 不同级别坦克移动速度系数
@@ -77,17 +65,17 @@ EnemyBase::~EnemyBase()
 bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 {
 	// 坦克已经出现,不用闪烁,直接返回
-	if (mIsOuted == true)
+	if (mStar.mIsOuted == true)
 		return STOP_SHOW_STAR;
 
 	// 一段时间后才显示四角星, 之前留空
-	if (mTankOutAfterCounter-- > 0)
+	if (mStar.mTankOutAfterCounter-- > 0)
 		return SHOWING_STAR;
 
 	// 如果坦克出现的位置被暂用了, 等待下一个随机循环在出现
 	if (CheckBox_8() == false)
 	{
-		mTankOutAfterCounter = rand() % 100 + 10;
+		mStar.mTankOutAfterCounter = rand() % 100 + 10;
 		return SHOWING_STAR;
 	}
 
@@ -103,25 +91,25 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 	}
 
 	// 开始闪烁四角星
-	if (mStarCounter++ % 2 == 0)
+	if (mStar.mStarCounter++ % 2 == 0)
 	{
-		if (mStarIndex + mStarIndexDev < 0)
+		if (mStar.mStarIndex + mStar.mStarIndexDev < 0)
 		{
-			mStarIndex = 1;
-			mStarIndexDev = 1;
+			mStar.mStarIndex = 1;
+			mStar.mStarIndexDev = 1;
 		}
-		else if (mStarIndex + mStarIndexDev > 3)
+		else if (mStar.mStarIndex + mStar.mStarIndexDev > 3)
 		{
-			mStarIndex = 2;
-			mStarIndexDev = -1;
+			mStar.mStarIndex = 2;
+			mStar.mStarIndexDev = -1;
 		}
 		else
 		{
-			mStarIndex += mStarIndexDev;
+			mStar.mStarIndex += mStar.mStarIndexDev;
 		}
-		if (mStarCounter == 35)
+		if (mStar.mStarCounter == 35)
 		{
-			mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
+			mStar.mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
 			mBulletT1 = timeGetTime();
 			SignBox_8(mTankX, mTankY, ENEMY_SIGN + mEnemyId);		// 坦克出现, 将四角星标记改为坦克标记
 			return STOP_SHOW_STAR;
@@ -129,14 +117,14 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 	}
 
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
-		GetImageHDC(&mStarImage[mStarIndex]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000 );
+		GetImageHDC(&StarClass::mStarImage[mStar.mStarIndex]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000 );
 
 	return SHOWING_STAR;
 }
 
 void EnemyBase::TankMoving(const HDC& center_hdc)
 {
-	if (!mIsOuted || mDied)
+	if (!mStar.mIsOuted || mDied)
 		return;
 
 	mBulletT2 = timeGetTime();
