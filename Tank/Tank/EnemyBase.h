@@ -5,6 +5,7 @@
 #define STOP_SHOW_STAR	false		// 四角星显示结束
 #define SHOWING_STAR	true		// 正在显示四角星
 
+
 /************** 敌机坦克 ************
 * 一个敌机实例化一个对象
 * 提供敌机类别(是否是道具坦克), 敌机级别[0-4]
@@ -21,6 +22,7 @@ public:
 	void BulletMoving(const HDC& );			// 子弹移动
 	void Bombing(const HDC&);
 	void BeKill();					// 敌机被消灭, 清除 SignBox 标记
+	bool Blasting(const HDC& );		// 显示坦克爆炸图, true 标识爆炸完,GameControl 获取返回值然后将该敌机删除
 
 	int GetId();				// 返回敌机 id
 
@@ -37,6 +39,7 @@ private:
 	int mEnemyId;				// 区别敌机与敌机
 	byte mEnemyTankKind;		// 敌机类别, 道具坦克和普通坦克两种, [0-1]
 	int mEnemyTankLevel;		// 敌机坦克4个级别 [0-3]
+	bool mDied;					// 是否被被消灭, 被击中后设置为 true, 敌机检测改值不能移动
 	TankInfo* mEnemyTank;		// 指向坦克详细信息
 	BoxMarkStruct* bms;			// 指向格子标记结构, 由 GameControl 传递进来
 
@@ -62,4 +65,5 @@ private:
 	DWORD mBulletT;
 
 	BombStruct mBombS;					// 爆炸结构体
+	BlastStruct mBlast;			// 坦克爆炸结构
 };

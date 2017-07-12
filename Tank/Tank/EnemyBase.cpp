@@ -12,6 +12,7 @@ EnemyBase::EnemyBase( byte kind, int level, BoxMarkStruct* b)
 {
 	mEnemyTankKind = kind;
 	mEnemyTankLevel = level;
+	mDied = false;
 	mEnemyTank = new TankInfo(mEnemyTankKind, mEnemyTankLevel, true);
 	bms = b;
 
@@ -60,6 +61,12 @@ EnemyBase::EnemyBase( byte kind, int level, BoxMarkStruct* b)
 	mBombS.mBombY = -100;
 	mBombS.canBomb = false;
 	mBombS.counter = 0;
+
+	// 坦克大爆炸图片
+	mBlast.blastx = -100;
+	mBlast.blasty = -100;
+	mBlast.canBlast = false;
+	mBlast.counter = 0;
 }
 
 EnemyBase::~EnemyBase()
@@ -131,7 +138,7 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 
 void EnemyBase::TankMoving(const HDC& center_hdc)
 {
-	if (!mIsOuted)
+	if (!mIsOuted || mDied)
 		return;
 
 	mBulletT2 = timeGetTime();
@@ -168,7 +175,7 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 //
 bool EnemyBase::ShootBullet()
 {
-	if (mBulletStruct.x != SHOOTABLE_X || mBulletT2 - mBulletT1 < mBulletT)
+	if (mBulletStruct.x != SHOOTABLE_X || mBulletT2 - mBulletT1 < mBulletT || mDied)
 		return false;
 
 	mBulletT1 = mBulletT2;
@@ -184,7 +191,7 @@ bool EnemyBase::ShootBullet()
 //
 void EnemyBase::BulletMoving(const HDC& center_hdc)
 {
-	if (mBulletStruct.x == SHOOTABLE_X)
+	if (mBulletStruct.x == SHOOTABLE_X || mDied)
 		return;
 
 	if (CheckBomb())
@@ -212,9 +219,33 @@ void EnemyBase::Bombing(const HDC & center_hdc)
 	}
 }
 
+// 有Gamecontrol内检测, 然后调用
 void EnemyBase::BeKill()
 {
+	mDied = true;
 	SignBox_8(_EMPTY);
+
+	// 设置爆炸坐标
+	mBlast.blastx = mTankX;
+	mBlast.blasty = mTankY;
+	mBlast.canBlast = true;
+}
+
+// 显示坦克爆炸效果, GameControl 内循环检测
+bool EnemyBase::Blasting(const HDC& center_hdc)
+{
+	int index[6] = {0,1,2,3,4,2};
+	if (mBlast.canBlast)
+	{
+		TransparentBlt(center_hdc, mBlast.blastx - BOX_SIZE * 2, mBlast.blasty - BOX_SIZE * 2, BOX_SIZE * 4, BOX_SIZE * 4,
+			GetImageHDC(&BlastStruct::image[index[mBlast.counter % 6]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+		if (mBlast.counter++ == 6)
+		{
+			mBlast.canBlast = false;
+			return true;
+		}
+	}
+	return false;
 }
 
 int EnemyBase::GetId()

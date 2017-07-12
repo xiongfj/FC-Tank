@@ -80,17 +80,31 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 
 	// 爆炸图片
 	TCHAR c[100];
-	for (int i = 0; i < 3; i++)
+	for (i = 0; i < 3; i++)
 	{
 		_stprintf_s(c, _T("./res/big/bumb%d.gif"), i);
 		loadimage(&BombStruct::mBombImage[i], c);
 	}
-	for (int i = 0; i < 2; i++)
+	for (i = 0; i < 2; i++)
 	{
 		mBombS[i].mBombX = -100;
 		mBombS[i].mBombY = -100;
 		mBombS[i].canBomb = false;
 		mBombS[i].counter = 0;
+	}
+
+	// 坦克爆炸图片结构
+	for (i = 0; i < 5; i++)
+	{
+		_stprintf_s(buf, _T("./res/big/blast/%d.gif"), i);
+		loadimage(&BlastStruct::image[i], buf);
+	}
+	for (i = 0; i < 2; i++)
+	{
+		mBlast[i].blastx = -100;
+		mBlast[i].blasty = -100;
+		mBlast[i].counter = 0;
+		mBlast[i].canBlast = false;
 	}
 }
 
@@ -255,11 +269,11 @@ void PlayerBase::Bombing(const HDC& center_hdc)
 }
 
 // GameControl 内调用, 通过参数将 mBulletStruct.mKillId 传递进去
-void PlayerBase::IsKillEnemy(int& bullet1, int& bullet2)
+void PlayerBase::GetKillEnemy(int& bullet1, int& bullet2)
 {
 	bullet1 = mBulletStruct[0].mKillId;
 	bullet2 = mBulletStruct[1].mKillId;
-
+	
 	// 重置标志
 	mBulletStruct[0].mKillId = 0;
 	mBulletStruct[1].mKillId = 0;
@@ -509,6 +523,7 @@ bool PlayerBase::CheckBomb(int i)
 			tempj = b8j + temp[n][1];
 			if (bms->box_8[tempi][tempj] >= ENEMY_SIGN && bms->box_8[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
 			{
+			//	printf("%d\n", bms->box_8[tempi][tempj]);
 				mBulletStruct[i].x = SHOOTABLE_X;
 				mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
 				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;

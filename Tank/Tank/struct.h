@@ -26,3 +26,11 @@ struct BombStruct
 	bool canBomb;							// 是否开始显示爆炸图片 flag
 	int counter;						// 取模计数器, 多少次循环更换一张图片
 };
+
+struct BlastStruct
+{
+	static IMAGE image[5];
+	int blastx, blasty;			// 中心坐标, 32*32
+	bool canBlast;
+	int counter;				// 计数多少次换一张图片
+};

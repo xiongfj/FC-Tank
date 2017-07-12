@@ -14,6 +14,11 @@ int BulletStruct::devto_head[4][2] = { { 0, 1 },{ 2, 0 },{ 4, 1 },{ 2, 4 } };
 
 int BulletStruct::bomb_center_dev[4][2] = { { 1, 0 },{ 0, 1 },{ 0, 0 },{ 0, 0 } };	// 爆炸中心相对于子弹头的偏移量
 
-																					//------------------------
+//------------------------
 
 IMAGE BombStruct::mBombImage[3];
+
+//----------------------------------
+
+IMAGE BlastStruct::image[5];
+

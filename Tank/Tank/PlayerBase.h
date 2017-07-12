@@ -18,7 +18,7 @@ public:
 	bool PlayerControl();				// 玩家控制坦克移动
 	void BulletMoving(const HDC&);							// 子弹移动, 在GameControl 内循环调用
 	void Bombing(const HDC&);							// 爆炸
-	void IsKillEnemy(int&, int&);						// GameControl 内调用, 通过参数将 mBulletStruct.mKillId 传递进去
+	void GetKillEnemy(int&, int&);						// GameControl 内调用, 通过参数将 mBulletStruct.mKillId 传递进去
 
 private:
 	void Move(int new_dir);					// 更改方向, 或移动. 同时调整坐标到格子整数处, 
@@ -62,4 +62,5 @@ private:
 	bool mMoving;							// 指示坦克是否移动, 传递到 GetTankImage() 获取移动的坦克
 
 	BombStruct mBombS[2];					// 爆炸结构体
+	BlastStruct mBlast[2];				// 坦克爆炸结构, 可以两架坦克同时爆炸,所有要两个
 };

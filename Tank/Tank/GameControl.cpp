@@ -166,7 +166,6 @@ void GameControl::RefreshCenterPanel()
 	// 四角星闪烁控制
 	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 	{
-		printf("4654564654\n");
 		// 一个四角星动画结束后再执行下一个
 		if (EnemyItor->ShowStar(mCenter_hdc, mRemainEnemyTankNumber) == SHOWING_STAR)
 		{
@@ -256,6 +255,13 @@ void GameControl::RefreshCenterPanel()
 	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 	{
 		EnemyItor->Bombing(mCenter_hdc);
+
+		// 爆炸完毕, 移除敌机
+		if (EnemyItor->Blasting(mCenter_hdc))
+		{
+			EnemyList.erase(EnemyItor);
+			break;
+		}
 	}
 
 	// 森林不能爆炸图
@@ -273,7 +279,7 @@ void GameControl::RefreshCenterPanel()
 void GameControl::CheckKillEnemy(list<PlayerBase>::iterator pb)
 {
 	int bullet[2] = {0, 0};
-	pb->IsKillEnemy(bullet[0], bullet[1]);		// 获取玩家击中的敌机id, 存储进 bullet[2] 内
+	pb->GetKillEnemy(bullet[0], bullet[1]);		// 获取玩家击中的敌机id, 存储进 bullet[2] 内
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -283,12 +289,9 @@ void GameControl::CheckKillEnemy(list<PlayerBase>::iterator pb)
 			{
 				if (EnemyItor->GetId() + ENEMY_SIGN == bullet[i])
 				{
-					//printf("jsdkfjsdl\n");
-					//delete (EnemyBase*)(&(*EnemyItor));
+					//delete (EnemyBase*)(&(*EnemyItor));  ????
 					EnemyItor->BeKill();
-					EnemyItor = EnemyList.erase(EnemyItor);
-
-					printf("%d\n", EnemyList.size());
+					//EnemyItor = EnemyList.erase(EnemyItor); //放到爆炸图显示完全之后再调用
 					break;
 				}
 			}
