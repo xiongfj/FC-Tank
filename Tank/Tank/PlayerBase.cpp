@@ -290,7 +290,7 @@ void PlayerBase::Move(int new_dir)
 			mTankY += mDevXY[mTankDir][1] * mSpeed[mPlayerTankLevel];
 		}
 	}
-	SignBox_8(PLAYER_SIGN);
+	SignBox_8(PLAYER_SIGN + player_id);
 }
 
 /* 判断当前方向可否移动
