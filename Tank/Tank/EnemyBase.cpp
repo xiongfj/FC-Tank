@@ -420,7 +420,7 @@ bool EnemyBase::CheckBomb()
 			// 4*4 检测
 			tempi = bi + temp[n][0];
 			tempj = bj + temp[n][1];
-			if (bms->box_4[tempi][tempj] > 2 && bms->box_4[tempi][tempj] < ENEMY_SIGN )
+			if (bms->box_4[tempi][tempj] == _WALL || bms->box_4[tempi][tempj] == _STONE )
 			{
 				// 设定爆炸参数, 修正爆炸中心所在的格子,左右或上下偏移一个格子之类的..
 				mBulletStruct.x = SHOOTABLE_X;
@@ -458,7 +458,7 @@ bool EnemyBase::CheckBomb()
 			// 4*4 检测
 			tempi = bi + temp[n][0];
 			tempj = bj + temp[n][1];
-			if (bms->box_4[tempi][tempj] > 2 && bms->box_4[tempi][tempj] < ENEMY_SIGN)
+			if (bms->box_4[tempi][tempj] == _WALL || bms->box_4[tempi][tempj] == _STONE)
 			{
 				// 设定爆炸参数, 修正爆炸中心所在的格子,左右或上下偏移一个格子之类的..
 				mBulletStruct.x = SHOOTABLE_X;
