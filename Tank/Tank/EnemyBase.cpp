@@ -135,6 +135,7 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 
 	mBulletT2 = timeGetTime();
 
+	// 移动前取消标记
 	SignBox_8(_EMPTY);
 
 	// 重定向
@@ -156,6 +157,7 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 		RejustDirPosition();
 	}
 
+	// 在新位置重新标记
 	SignBox_8(ENEMY_SIGN + mEnemyId);
 
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,

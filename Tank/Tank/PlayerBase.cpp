@@ -433,8 +433,14 @@ bool PlayerBase::CheckBomb(int i)
 	}
 
 	int tempi, tempj;
+
+	// 将坐标转换成 4*4 格子索引
 	int bi = bomby / SMALL_BOX_SIZE;
 	int bj = bombx / SMALL_BOX_SIZE;
+
+	// 坐标所在 8*8 格子的索引
+	int b8i = bomby / BOX_SIZE;
+	int b8j = bombx / BOX_SIZE;
 
 	switch (mBulletStruct[i].dir)
 	{
@@ -445,6 +451,20 @@ bool PlayerBase::CheckBomb(int i)
 		int temp[2][2] = { {0, 0}, {-1, 0} };
 		for (int n = 0; n < 2; n++)
 		{
+			// 8*8 格子, 判断是否击中敌机
+			tempi = b8i + temp[n][0];
+			tempj = b8j + temp[n][1];
+			if (bms->box_8[tempi][tempj] >= ENEMY_SIGN && bms->box_8[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
+			{
+				mBulletStruct[i].x = SHOOTABLE_X;
+				mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
+				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
+				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
+				mBombS[i].counter = 0;
+				return true;
+			}
+
+			// 检测 4*4 格子, 由此判断障碍物
 			tempi = bi + temp[n][0];
 			tempj = bj + temp[n][1];
 			if (bms->box_4[tempi][tempj] > 2)
@@ -469,6 +489,20 @@ bool PlayerBase::CheckBomb(int i)
 		int temp[2][2] = { { 0, 0 },{ 0, -1 } };
 		for (int n = 0; n < 2; n++)
 		{
+			// 8*8 格子, 判断是否击中敌机
+			tempi = b8i + temp[n][0];
+			tempj = b8j + temp[n][1];
+			if (bms->box_8[tempi][tempj] >= ENEMY_SIGN && bms->box_8[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
+			{
+				mBulletStruct[i].x = SHOOTABLE_X;
+				mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
+				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
+				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
+				mBombS[i].counter = 0;
+				return true;
+			}
+
+			// 检测 4*4 是否击中障碍
 			tempi = bi + temp[n][0];
 			tempj = bj + temp[n][1];
 			if (bms->box_4[tempi][tempj] > 2)

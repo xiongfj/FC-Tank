@@ -1,5 +1,7 @@
 #pragma once
 
+#define TOTAL_ENEMY_NUMBER	20
+
 struct BulletStruct
 {
 	int x, y;					// 子弹坐标, 根据不同方向指定不同的位置代表 x,y, 指定 x=SHOOTABLE_X 的时候可以发射子弹
