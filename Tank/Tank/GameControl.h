@@ -59,7 +59,7 @@ private:
 	IMAGE mIceImage;				// 冰块
 	IMAGE mRiverImage[2];			// 河流
 	IMAGE mWallImage;				// 泥墙
-	IMAGE mCamp;					// 大本营
+	IMAGE mCamp[2];					// 大本营
 
 	IMAGE mEnemyTankIcoImage;		// 敌机坦克图标
 	IMAGE mFlagImage;				// 旗子

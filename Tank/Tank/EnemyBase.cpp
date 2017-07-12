@@ -13,6 +13,7 @@ EnemyBase::EnemyBase( byte kind, int level, BoxMarkStruct* b)
 	mEnemyTankKind = kind;
 	mEnemyTankLevel = level;
 	mDied = false;
+	mIsShootCamp = false;
 	mEnemyTank = new TankInfo(mEnemyTankKind, mEnemyTankLevel, true);
 	bms = b;
 
@@ -61,12 +62,6 @@ EnemyBase::EnemyBase( byte kind, int level, BoxMarkStruct* b)
 	mBombS.mBombY = -100;
 	mBombS.canBomb = false;
 	mBombS.counter = 0;
-
-	// Ì¹¿Ë´ó±¬Õ¨Í¼Æ¬
-	mBlast.blastx = -100;
-	mBlast.blasty = -100;
-	mBlast.canBlast = false;
-	mBlast.counter = 0;
 }
 
 EnemyBase::~EnemyBase()
@@ -246,6 +241,11 @@ bool EnemyBase::Blasting(const HDC& center_hdc)
 		}
 	}
 	return false;
+}
+
+bool EnemyBase::IsShootCamp()
+{
+	return mIsShootCamp;
 }
 
 int EnemyBase::GetId()
@@ -458,6 +458,10 @@ bool EnemyBase::CheckBomb()
 				mBombS.counter = 0;
 				return true;
 			}
+			else if (bms->box_8[tempi][tempj] == PLAYER_SIGN == CAMP_SIGN)
+			{
+				mIsShootCamp = true;
+			}
 
 			// 4*4 ¼ì²â
 			tempi = bi + temp[n][0];
@@ -495,6 +499,10 @@ bool EnemyBase::CheckBomb()
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
 				return true;
+			}
+			else if (bms->box_8[tempi][tempj] == PLAYER_SIGN == CAMP_SIGN)
+			{
+				mIsShootCamp = true;
 			}
 
 			// 4*4 ¼ì²â

@@ -62,6 +62,7 @@ using namespace Gdiplus;
 #define DIR_DOWN	3
 
 #define PLAYER_SIGN	100
+#define CAMP_SIGN	200			// 大本营标记
 
 // 4*4 或 8*8 格子标记, 加上敌机自身 id再标记
 #define ENEMY_SIGN	1000

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "GameControl.h"
+#include "typeinfo.h"
 
 int GameControl::mCurrentStage = 1;	// [1-35]
 GameControl::GameControl( Graphics* grap, HDC des_hdc, HDC image_hdc, BoxMarkStruct* bms)
@@ -27,7 +28,8 @@ void GameControl::Init()
 	loadimage( &mRiverImage[0]		 , _T("./res/big/river-0.gif"		));		// 河流
 	loadimage( &mRiverImage[1]		 , _T("./res/big/river-1.gif"		));		//
 	loadimage( &mWallImage			 , _T("./res/big/wall.gif"			));		// 泥墙
-	loadimage( &mCamp				 , _T("./res/big/bird.gif"			));		// 大本营
+	loadimage( &mCamp[0]			 , _T("./res/big/camp0.gif"			));		// 大本营
+	loadimage( &mCamp[1]			 , _T("./res/big/camp1.gif"			));		// 
 	loadimage( &mEnemyTankIcoImage	 , _T("./res/big/enemytank-ico.gif"	));		// 敌机图标
 	loadimage( &mFlagImage			 , _T("./res/big/flag.gif"			));		// 旗子
 	loadimage( &mBlackNumberImage	 , _T("./res/big/black-number.gif"	));		// 0123456789 黑色数字
@@ -63,6 +65,15 @@ void GameControl::LoadMap()
 		for ( int j = 0; j < 26; j++ )
 		{
 			SignBoxMark( i, j, mMap.buf[i][j] - '0' );		// 标记 26*26 和 52*52 格子
+		}
+	}
+
+	// 标记大本营
+	for (int i = 12; i < 14; i++)
+	{
+		for (int j = 24; j < 26; j++)
+		{
+			mBoxMarkStruct->box_8[i][j] = CAMP_SIGN;
 		}
 	}
 
@@ -259,8 +270,14 @@ void GameControl::RefreshCenterPanel()
 		// 爆炸完毕, 移除敌机
 		if (EnemyItor->Blasting(mCenter_hdc))
 		{
+			printf("asdasd\n");
 			EnemyList.erase(EnemyItor);
 			break;
+		}
+
+		if (EnemyItor->IsShootCamp())
+		{
+
 		}
 	}
 
@@ -272,7 +289,7 @@ void GameControl::RefreshCenterPanel()
 
 	// 大本营
 	TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
-		GetImageHDC(&mCamp), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+		GetImageHDC(&mCamp[0]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }
 
 // 读取PlayerBase 内的数据, 消灭敌机

@@ -27,8 +27,12 @@ struct BombStruct
 	int counter;						// 取模计数器, 多少次循环更换一张图片
 };
 
-struct BlastStruct
+class BlastStruct
 {
+public:
+	BlastStruct();
+	~BlastStruct() {}
+
 	static IMAGE image[5];
 	int blastx, blasty;			// 中心坐标, 32*32
 	bool canBlast;

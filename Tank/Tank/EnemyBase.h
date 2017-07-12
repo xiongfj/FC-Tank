@@ -23,7 +23,7 @@ public:
 	void Bombing(const HDC&);
 	void BeKill();					// 敌机被消灭, 清除 SignBox 标记
 	bool Blasting(const HDC& );		// 显示坦克爆炸图, true 标识爆炸完,GameControl 获取返回值然后将该敌机删除
-
+	bool IsShootCamp();				// 是否击中大本营, GeamControl 内循环检测
 	int GetId();				// 返回敌机 id
 
 private:
@@ -40,6 +40,7 @@ private:
 	byte mEnemyTankKind;		// 敌机类别, 道具坦克和普通坦克两种, [0-1]
 	int mEnemyTankLevel;		// 敌机坦克4个级别 [0-3]
 	bool mDied;					// 是否被被消灭, 被击中后设置为 true, 敌机检测改值不能移动
+	bool mIsShootCamp;			// 是否击中大本营
 	TankInfo* mEnemyTank;		// 指向坦克详细信息
 	BoxMarkStruct* bms;			// 指向格子标记结构, 由 GameControl 传递进来
 

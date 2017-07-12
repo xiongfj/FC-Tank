@@ -22,3 +22,11 @@ IMAGE BombStruct::mBombImage[3];
 
 IMAGE BlastStruct::image[5];
 
+
+BlastStruct::BlastStruct()
+{
+	blastx = -100;
+	blasty = -100;
+	canBlast = false;
+	counter = 0;
+}
