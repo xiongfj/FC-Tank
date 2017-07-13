@@ -4,7 +4,7 @@
 //----------------- PlayerBase 类静态数据
 
 int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 依次左上右下
-PropClass* PlayerBase::mProp = new PropClass();
+PropClass PlayerBase::mProp;
 bool PlayerBase::mTimeProp = false;
 
 PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
@@ -382,14 +382,14 @@ bool PlayerBase::IsGetTimeProp()
 //
 void PlayerBase::ShowProp(const HDC& center_hdc)
 {
-	mProp->ShowProp(center_hdc);
+	mProp.ShowProp(center_hdc);
 }
 
 /////////////////////////////////////////////////////////////
 
 void PlayerBase::GetedProp(int prop_kind)
 {
-	mProp->StopShowProp();
+	mProp.StopShowProp();
 
 	switch (prop_kind)
 	{
@@ -637,7 +637,7 @@ bool PlayerBase::CheckBomb(int i)
 
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_8[tempi][tempj];
-				mProp->StartShowProp(100, 100);
+				mProp.StartShowProp(100, 100);
 				return true;
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
@@ -688,7 +688,7 @@ bool PlayerBase::CheckBomb(int i)
 
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_8[tempi][tempj];
-				mProp->StartShowProp(100, 100);
+				mProp.StartShowProp(100, 100);
 				return true;
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)

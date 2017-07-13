@@ -13,7 +13,7 @@ using namespace std;
 // GDI
 #include <wingdi.h>
 #pragma comment (lib, "msimg32.lib")
-
+/*
 // GDI+ 
 #ifndef ULONG_PTR
 #define ULONG_PTR unsigned long*
@@ -23,7 +23,7 @@ using namespace std;
 using namespace Gdiplus;
 #pragma comment ( lib, "./gdi+/Lib/GdiPlus.lib" )
 #endif
-
+*/
 #define WINDOW_WIDTH	512		// 窗口大小，可以由玩家修改，
 #define WINDOW_HEIGHT	448
 #define CANVAS_WIDTH	256		// 画布 image 大小，不会改变，左右绘图都在 image 上操作，然后一次性绘制到主窗口
@@ -60,7 +60,6 @@ using namespace Gdiplus;
 #define DIR_UP		1
 #define DIR_RIGHT	2
 #define DIR_DOWN	3
-
 
 #define GRAY_TANK	0		// 灰色坦克
 #define RED_TANK	1		// 红色坦克

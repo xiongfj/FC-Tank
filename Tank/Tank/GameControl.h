@@ -18,7 +18,7 @@ struct Map
 class GameControl
 {
 public:
-	GameControl(Graphics* grap, HDC des_hdc, HDC image_hdc, BoxMarkStruct* );
+	GameControl( HDC des_hdc, HDC image_hdc, BoxMarkStruct* );
 	~GameControl();
 	void Init();
 	void AddPlayer(int player_num);					// 加载玩家进该类控制
@@ -39,7 +39,7 @@ public:
 
 private:
 	// 窗口绘图接口
-	Graphics* mGraphics;
+	//Graphics* mGraphics;
 	IMAGE mCenterImage;				// 用于保持 mCenter_hdc 存在有效性.
 	HDC mDes_hdc,					// 主窗口hdc, main 传入
 		mImage_hdc,					// 256*224 的 hdc, main 传入

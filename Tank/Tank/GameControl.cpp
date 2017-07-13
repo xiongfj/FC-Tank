@@ -3,9 +3,9 @@
 #include "typeinfo.h"
 
 int GameControl::mCurrentStage = 1;	// [1-35]
-GameControl::GameControl( Graphics* grap, HDC des_hdc, HDC image_hdc, BoxMarkStruct* bms)
+GameControl::GameControl( HDC des_hdc, HDC image_hdc, BoxMarkStruct* bms)
 {
-	mGraphics = grap;
+	//mGraphics = grap;
 	mDes_hdc = des_hdc;
 	mImage_hdc = image_hdc;
 	mCenterImage.Resize( CENTER_WIDTH, CENTER_HEIGHT );

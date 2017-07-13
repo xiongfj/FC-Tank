@@ -32,17 +32,10 @@ IMAGE temp_img(600, 600);
 //
 void main()
 {
-	// gdi+ init
-	GdiplusStartupInput    m_Gdistart;
-	ULONG_PTR    m_GdiplusToken;
-	GdiplusStartup(&m_GdiplusToken, &m_Gdistart, NULL);
-	/////////////////////////////////////////////////////
 	srand((unsigned)time(0));
 
 	// 灰色背景
 	initgraph(WINDOW_WIDTH, WINDOW_HEIGHT, SHOWCONSOLE);
-	//setbkcolor(RGB(119,119,119));
-	//cleardevice();
 	BeginBatchDraw();
 
 	// 定义 image 画布
@@ -51,11 +44,10 @@ void main()
 	// 获取 graphics 绘图对象
 	HDC des_hdc = GetImageHDC();
 	HDC canvas_hdc = GetImageHDC(&canvas_img);
-	Graphics* graphics = Graphics::FromHDC(canvas_hdc);
 
-	SelectPanel* selecter = new SelectPanel(graphics, des_hdc, canvas_hdc);	// 显示玩家功能选择面板
+	SelectPanel* selecter = new SelectPanel(des_hdc, canvas_hdc);	// 显示玩家功能选择面板
 	EnumSelectResult result = selecter->ShowSelectPanel();					// 获取玩家选择结果
-	GameControl* control = new GameControl(graphics, des_hdc, canvas_hdc, &Q_boxmark);
+	GameControl* control = new GameControl(des_hdc, canvas_hdc, &Q_boxmark);
 	switch (result)
 	{
 	case OnePlayer:
@@ -71,9 +63,5 @@ void main()
 	}
 
 	control->LoadMap();
-	
-	
-	
-	GdiplusShutdown(m_GdiplusToken);		// 释放gdi+资源
 	closegraph();
 }
