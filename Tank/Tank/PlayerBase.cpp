@@ -377,6 +377,7 @@ void PlayerBase::GetedProp(int prop_kind)
 	switch (prop_kind)
 	{
 	case ADD_PROP:			// ¼Ó»ú
+		mPlayerLife = mPlayerLife + 1 > 5 ? 5 : mPlayerLife + 1;
 		break;
 	case STAR_PROP:			// Îå½ÇÐÇ
 		mPlayerTankLevel = mPlayerTankLevel + 1 > 3 ? 3 : mPlayerTankLevel + 1;
