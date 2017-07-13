@@ -4,11 +4,11 @@
 ////////////////////////////////////////////////////////
 
 // 敌机坦克信息
-TankInfo::TankInfo(byte enemy_kind, int enemy_level, bool notuse)
+TankInfo::TankInfo(byte tank_color, int enemy_level, bool notuse)
 {
 	//mTankDir = 1;
 	TCHAR c[100];
-	switch(enemy_kind)
+	switch(tank_color)
 	{
 	case GRAY_TANK:		// 灰色坦克
 		for ( int i = 0; i < 4; i++ )

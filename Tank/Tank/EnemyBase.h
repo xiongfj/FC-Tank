@@ -2,8 +2,7 @@
 #include "TankClass.h"
 #include "struct.h"
 
-#define PROP_TANK		0		// 道具坦克
-#define COMMON_TANK		1		// 普通坦克
+enum TANK_KIND {PROP, COMMON};
 
 /************** 敌机坦克 ************
 * 一个敌机实例化一个对象
@@ -13,7 +12,7 @@
 class EnemyBase
 {
 public:
-	EnemyBase(byte kind, byte level, BoxMarkStruct*);	// kind[0-1]; level [0-4]
+	EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct*);	// kind[0-1]; level [0-4]
 	virtual ~EnemyBase();
 	bool ShowStar(const HDC& center_hdc, int& total );		// 显示闪烁四角星, true-正在显示, false-显示完毕
 	void TankMoving(const HDC& center_hdc);		// 敌机移动
@@ -39,7 +38,7 @@ private:
 
 protected:
 	int mEnemyId;				// 区别敌机与敌机
-	byte mEnemyTankKind;		// 敌机类别, 道具坦克和普通坦克两种, [0-1]
+	TANK_KIND mEnemyTankKind;		// 敌机类别, 道具坦克和普通坦克两种, [0-1]
 	byte mEnemyTankLevel : 2;	// 敌机坦克4个级别 [0-3]
 	bool mDied;					// 是否被被消灭, 被击中后设置为 true, 敌机检测改值不能移动
 	bool mIsShootCamp;			// 是否击中大本营
@@ -88,7 +87,7 @@ public:
 class BigestTank : public EnemyBase
 {
 public:
-	BigestTank(byte kind, BoxMarkStruct* bm);
+	BigestTank(TANK_KIND kind, BoxMarkStruct* bm);
 	void DrawTank(const HDC&);	// 纯绘制坦克
 	TankInfo* mTank[4];			// 灰,红黄,绿
 };

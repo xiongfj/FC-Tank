@@ -8,7 +8,7 @@ int EnemyBase::mDevXY[4][2] = { { -1, 0 },{ 0, -1 },{ 1, 0 },{ 0, 1 } };	// 依次
 //bool EnemyBase::isOuting = false;
 
 // 生成某个类别级别的敌机
-EnemyBase::EnemyBase( byte kind, byte level, BoxMarkStruct* b)
+EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 {
 	mEnemyTankKind = kind;
 	mEnemyTankLevel = level;
@@ -629,7 +629,7 @@ void EnemyBase::ShootWhat(int bulletx, int bullety)
 
 
 CommonTank::CommonTank( byte level, BoxMarkStruct* bms) :
-	EnemyBase(COMMON_TANK, level, bms)
+	EnemyBase(TANK_KIND::COMMON, level, bms)
 {
 	mTank = new TankInfo(GRAY_TANK, level, true);
 }
@@ -647,7 +647,7 @@ void CommonTank::DrawTank(const HDC& center_hdc)
 
 
 PropTank::PropTank(byte level, BoxMarkStruct* bms) :
-	EnemyBase(PROP_TANK, level, bms)
+	EnemyBase(TANK_KIND::PROP, level, bms)
 {
 	mTank[0] = new TankInfo(GRAY_TANK, level, true);
 	mTank[1] = new TankInfo(RED_TANK, level, true);
@@ -664,7 +664,7 @@ void PropTank::DrawTank(const HDC& center_hdc)
 
 //////////////////////////////////////////////////////////////
 
-BigestTank::BigestTank(byte kind, BoxMarkStruct * bms):
+BigestTank::BigestTank(TANK_KIND kind, BoxMarkStruct * bms):
 	EnemyBase(kind, 3, bms)
 {
 	mTank[GRAY_TANK] = new TankInfo(GRAY_TANK, 3, true);
@@ -677,6 +677,14 @@ void BigestTank::DrawTank(const HDC & center_hdc)
 {
 	if (!mStar.mIsOuted || mDied)
 		return;
+
+	switch (mEnemyTankKind)
+	{
+	case TANK_KIND::PROP:
+		break;
+	case TANK_KIND::COMMON:
+		break;
+	}
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
 		GetImageHDC(&mTank[GREEN_TANK]->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }

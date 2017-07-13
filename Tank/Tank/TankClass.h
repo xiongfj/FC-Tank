@@ -7,7 +7,7 @@
 class TankInfo
 {
 public:
-	TankInfo(byte enemy_kind, int enemy_level, bool notuse );	// enemy_kind [0-1]; enemy_level [0-4], notuse->区别玩家坦克
+	TankInfo(byte tank_color, int enemy_level, bool notuse );	// tank_color [0-3]; enemy_level [0-4], notuse->区别玩家坦克
 	TankInfo(byte player, byte level);							// player [0-1]; level [0-3]
 	~TankInfo();
 
