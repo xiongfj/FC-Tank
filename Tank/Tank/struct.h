@@ -75,8 +75,12 @@ public:
 #define BOMB_PROP	3	// 地雷
 #define SHOVEL_PRO	4	// 铲子
 #define CAP_PROP	5	// 帽子
-/*
-// 道具类,
+
+/*** 道具类,
+* 在 PlayerBase 实例化成员指针
+* PlayerBase 构造函数内调用该类一个函数传递 BoxMarkStuct* 过来
+* 该类所有函数都在 PlayerBase 内调用
+***/
 class PropClass
 {
 	void SignPropBox(int val);			// 标记 prop_8 格子
@@ -86,10 +90,13 @@ public:
 	void ShowProp(const HDC&);			// GameControl 内循环检测该函数
 	void StartShowProp(int x, int y);	// 道具坦克被击中后调用该函数
 	void StopShowProp();			// 停止显示道具, 超时或者被玩家获得
+	void SetBoxMarkStruct(BoxMarkStruct*);
 
+private:
+	BoxMarkStruct* bms;
 	int leftx, topy;			// 道具中心点坐标
 	int index_counter = 0;			// 下标变换索引
-	static IMAGE image[6];
-	static int prop_kind;			// 是什么道具
+	/*static */IMAGE image[6];
+	/*static */int prop_kind;			// 道具类型
 	bool can_show;				// 是否可以显示道具	
-};*/
+};

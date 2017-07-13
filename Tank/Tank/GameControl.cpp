@@ -70,7 +70,7 @@ void GameControl::LoadMap()
 		for ( int j = 0; j < 26; j++ )
 		{
 			SignBoxMark( i, j, mMap.buf[i][j] - '0' );		// 标记 26*26 和 52*52 格子
-			BoxMarkStruct::prop_8[i][j] = 0;
+			mBoxMarkStruct->prop_8[i][j] = 0;
 		}
 	}
 

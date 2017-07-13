@@ -68,9 +68,10 @@ void RingClass::SetShowable()
 }
 
 /////////////////////////////////////////////////////
-/*
+
 PropClass::PropClass()
 {
+	//bms = _bms;
 	leftx = -100;
 	topy = -100;
 	index_counter = 0;
@@ -105,17 +106,24 @@ void PropClass::StartShowProp(int _x, int _y)
 	leftx = 12 * BOX_SIZE;// (rand() % 25 + 1) * BOX_SIZE;
 	topy = 12 * BOX_SIZE; //(rand() % 25 + 1) * BOX_SIZE;
 	can_show = true;
-	prop_kind = 2;// rand() % 6;		// 随机出现一个道具
+	prop_kind = 3;// rand() % 6;		// 随机出现一个道具
 	index_counter = 0;
 	SignPropBox(PROP_SIGN + prop_kind);
 }
 
+//
 void PropClass::StopShowProp()
 {
 	can_show = false;
 	SignPropBox(_EMPTY);
 }
 
+void PropClass::SetBoxMarkStruct(BoxMarkStruct * b)
+{
+	bms = b;
+}
+
+//
 void PropClass::SignPropBox(int val)
 {
 	int i = topy / BOX_SIZE;
@@ -125,11 +133,11 @@ void PropClass::SignPropBox(int val)
 	{
 		for (int jy = j; jy < j + 2; jy++)
 		{
-			BoxMarkStruct::prop_8[ix][jy] = val;
+			bms->prop_8[ix][jy] = val;
 		}
 	}
 }
-
+/*
 IMAGE PropClass::image[6];
 int PropClass::prop_kind = ADD_PROP;
 */

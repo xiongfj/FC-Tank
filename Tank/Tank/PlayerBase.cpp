@@ -4,7 +4,7 @@
 //----------------- PlayerBase 类静态数据
 
 int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 依次左上右下
-//.PropClass PlayerBase::mProp;
+PropClass* PlayerBase::mProp = new PropClass();
 bool PlayerBase::mTimeProp = false;
 
 PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
@@ -14,6 +14,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	player_id = player;
 	mPlayerTank = new PlayerTank(player_id);
 	bms = b;
+	mProp->SetBoxMarkStruct(b);
 	//mProp = pc;
 
 	// 不同玩家数据不同
@@ -382,14 +383,14 @@ bool PlayerBase::IsGetTimeProp()
 //
 void PlayerBase::ShowProp(const HDC& center_hdc)
 {
-	//.mProp.ShowProp(center_hdc);
+	mProp->ShowProp(center_hdc);
 }
 
 /////////////////////////////////////////////////////////////
 
 void PlayerBase::GetedProp(int prop_kind)
 {
-	//.mProp.StopShowProp();
+	mProp->StopShowProp();
 
 	switch (prop_kind)
 	{
@@ -498,8 +499,8 @@ bool PlayerBase::CheckMoveable()
 	int temp2 = bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]];
 
 	// 道具格子检测
-	int prop1 = BoxMarkStruct::prop_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]];
-	int prop2 = BoxMarkStruct::prop_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]];
+	int prop1 = bms->prop_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]];
+	int prop2 = bms->prop_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]];
 
 	if (prop1 >= PROP_SIGN && prop1 < PROP_SIGN + 6)
 		GetedProp(prop1 - PROP_SIGN);
@@ -637,7 +638,7 @@ bool PlayerBase::CheckBomb(int i)
 
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_8[tempi][tempj];
-				//.mProp.StartShowProp(100, 100);
+				mProp->StartShowProp(100, 100);
 				return true;
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
@@ -688,7 +689,7 @@ bool PlayerBase::CheckBomb(int i)
 
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_8[tempi][tempj];
-				//.mProp.StartShowProp(100, 100);
+				mProp->StartShowProp(100, 100);
 				return true;
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
