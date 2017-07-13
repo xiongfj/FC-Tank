@@ -178,7 +178,7 @@ void GameControl::RefreshCenterPanel()
 	BitBlt(mCenter_hdc, 0, 0, CENTER_WIDTH, CENTER_HEIGHT, GetImageHDC(&mBlackBackgroundImage), 0, 0, SRCCOPY);// 中心黑色背景游戏区
 																											  
 	// 四角星闪烁控制
-	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+	for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 	{
 		// 一个四角星动画结束后再执行下一个
 		if ((*EnemyItor)->ShowStar(mCenter_hdc, mRemainEnemyTankNumber) == SHOWING_STAR)
@@ -259,7 +259,7 @@ void GameControl::RefreshCenterPanel()
 	}
 
 	// 敌机
-	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+	for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 	{
 		(*EnemyItor)->TankMoving(mCenter_hdc);
 
@@ -283,15 +283,15 @@ void GameControl::RefreshCenterPanel()
 	}
 
 	// 敌机子弹爆炸图
-	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+	for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 	{
 		(*EnemyItor)->Bombing(mCenter_hdc);
 
 		// 爆炸完毕, 移除敌机
 		if ((*EnemyItor)->Blasting(mCenter_hdc))
 		{
-			EnemyList.erase(EnemyItor);
-			break;
+			EnemyItor = EnemyList.erase(EnemyItor);
+			//break;
 		}
 
 		// 如果该敌机击中大本营
@@ -345,7 +345,7 @@ void GameControl::CheckKillEnemy(list<PlayerBase*>::iterator pb)
 	{
 		if (bullet[i] >= ENEMY_SIGN && bullet[i] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
 		{
-			for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+			for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 			{
 				if ((*EnemyItor)->GetId() + ENEMY_SIGN == bullet[i])
 				{

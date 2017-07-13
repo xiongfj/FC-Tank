@@ -50,7 +50,7 @@ private:
 	list<PlayerBase*>::iterator PlayerItor;	// 用于遍历 PlayerList
 
 	list<EnemyBase*> EnemyList;				// 敌机列表
-	list<EnemyBase*>::iterator EnemyItor;	// 用于遍历 PlayerList
+	//list<EnemyBase*>::iterator EnemyItor;	// 用于遍历 PlayerList
 
 	IMAGE mGrayBackgroundImage;		// 游戏灰色背景图
 	IMAGE mBlackBackgroundImage;	// 黑色背景图
