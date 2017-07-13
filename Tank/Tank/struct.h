@@ -75,8 +75,8 @@ public:
 #define BOMB_PROP	3	// 地雷
 #define SHOVEL_PRO	4	// 铲子
 #define CAP_PROP	5	// 帽子
-
-// 道具类, 在GameControl 内实例化一个对象
+/*
+// 道具类,
 class PropClass
 {
 	void SignPropBox(int val);			// 标记 prop_8 格子
@@ -92,4 +92,4 @@ public:
 	static IMAGE image[6];
 	static int prop_kind;			// 是什么道具
 	bool can_show;				// 是否可以显示道具	
-};
+};*/

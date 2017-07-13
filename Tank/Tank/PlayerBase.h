@@ -161,7 +161,7 @@ private:
 	StarClass mStar;				// 坦克出现前的四角星闪烁
 	RingClass mRing;				// 保护圈类
 
-	static PropClass mProp;			// 道具类
+	//.static PropClass mProp;			// 道具类
 
 	/*GameControl 内循环检测该值, 然后在设置 EnemyBase 停止移动*/
 	static bool mTimeProp;			// 记录是否获得 时钟道具

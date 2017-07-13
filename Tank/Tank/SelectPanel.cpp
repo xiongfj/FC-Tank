@@ -24,7 +24,7 @@ void SelectPanel::Init()
 	//mSelectTankImage[0] = Image::FromFile( L"./res/big/0Player/m0-2-1.gif" );
 	//mSelectTankImage[1] = Image::FromFile( L"./res/big/0Player/m0-2-2.gif" );
 	loadimage(&mSelectTankImage[0], _T("./res/big/0Player/m0-2-1.gif"));
-	loadimage(&mSelectTankImage[1], _T("./res/big/0Player/m0-2-1.gif"));
+	loadimage(&mSelectTankImage[1], _T("./res/big/0Player/m0-2-2.gif"));
 
 	mSelectTankPoint[0].x = 60;
 	mSelectTankPoint[1].x = 60;
@@ -75,8 +75,7 @@ EnumSelectResult SelectPanel::ShowSelectPanel()
 		Sleep(40);
 		mCounter++;
 		//mGraphics->DrawImage(mSelect_player_image, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT );
-		TransparentBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT,
-			GetImageHDC(&mSelect_player_image), 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, 0x000000);
+		BitBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&mSelect_player_image), 0, 0, SRCCOPY);
 
 		//mGraphics->DrawImage(mSelectTankImage[mCounter], mSelectTankPoint[mSelectIndex].x, mSelectTankPoint[mSelectIndex].y , 16, 16 );
 		TransparentBlt(mImage_hdc, mSelectTankPoint[mSelectIndex].x, mSelectTankPoint[mSelectIndex].y, 16, 16,
@@ -124,10 +123,11 @@ void SelectPanel::ShowStage()
 {
 	// 灰色背景
 	//mGraphics->DrawImage(mGrayBackgroundImage, 0, 0, CANVAS_WIDTH + 10, CANVAS_HEIGHT + 10);	// +10 去掉由于拉伸的边缘变色
-	StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&mGrayBackgroundImage), 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
+	StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, 
+		GetImageHDC(&mGrayBackgroundImage), 0, 0, 66, 66, SRCCOPY);
 
 	//mGraphics->DrawImage(mCurrentStageImage, 97, 103, 39, 7);									// "STAGE" 字样
-	TransparentBlt(mImage_hdc, 97, 103, 39, 7, GetImageHDC(&mCurrentStageImage), 0, 0, 39, 7, 0x000000);
+	TransparentBlt(mImage_hdc, 97, 103, 39, 7, GetImageHDC(&mCurrentStageImage), 0, 0, 39, 7, 0xffffff);
 
 	// [1-9] 关卡，单个数字
 	if ( GameControl::mCurrentStage < 10 )

@@ -68,7 +68,7 @@ void RingClass::SetShowable()
 }
 
 /////////////////////////////////////////////////////
-
+/*
 PropClass::PropClass()
 {
 	leftx = -100;
@@ -132,3 +132,4 @@ void PropClass::SignPropBox(int val)
 
 IMAGE PropClass::image[6];
 int PropClass::prop_kind = ADD_PROP;
+*/
