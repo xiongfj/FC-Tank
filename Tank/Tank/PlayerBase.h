@@ -10,7 +10,7 @@
 class PlayerBase
 {
 public:
-	PlayerBase(byte player, BoxMarkStruct*, PropClass*);						// player [0-1]
+	PlayerBase(byte player, BoxMarkStruct* /*, PropClass**/);						// player [0-1]
 	~PlayerBase();
 
 	/*
@@ -77,7 +77,10 @@ public:
 	int GetID();
 
 	/*GameControl 内调用, 检测玩家是否获得时间道具*/
-	static bool IsGetTimeProp();			
+	static bool IsGetTimeProp();
+
+	/*在 gameControl 内循环调用 检测并显示闪烁道具*/
+	static void ShowProp(const HDC&);
 private:
 
 	/*获取到道具, 坦克移动内检测调用*/
@@ -146,13 +149,7 @@ private:
 	static int mDevXY[4][2];				// 四个方向的偏移量
 	int mSpeed[4];							// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样
 
-	//static IMAGE mBulletImage[4];			// 四个方向子弹, 
-	//static int mBulletSize[4][2];			// {{4,3},{3,4},{4,3},{3,4}} 尺寸: 上下-3*4 / 左右-4*3
-	//int mBulletX[2], mBulletY[2];			// 子弹坐标, 一个玩家两对; 3/4级别的坦克可以发射两颗子弹
-	//int mBulletDir[2];					// 子弹方向
-
 	BulletStruct mBulletStruct[2];			// 两颗子弹
-	//int mKillEnemyId[2];					// 记录每个子弹击中的敌机 id, #define _NONE 标识没击中
 	int mBullet_1_counter;					// 子弹 1 的计数, 子弹 1 发射多久后才能发射子弹 2
 	bool mMoving;							// 指示坦克是否移动, 传递到 GetTankImage() 获取移动的坦克
 
@@ -164,7 +161,7 @@ private:
 	StarClass mStar;				// 坦克出现前的四角星闪烁
 	RingClass mRing;				// 保护圈类
 
-	PropClass* mProp;				// 从 GameControl 内传递过来
+	static PropClass* mProp;			// 道具类
 
 	/*GameControl 内循环检测该值, 然后在设置 EnemyBase 停止移动*/
 	static bool mTimeProp;			// 记录是否获得 时钟道具

@@ -4,16 +4,17 @@
 //----------------- PlayerBase 类静态数据
 
 int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 依次左上右下
+PropClass* PlayerBase::mProp = new PropClass();
 bool PlayerBase::mTimeProp = false;
 
-PlayerBase::PlayerBase(byte player, BoxMarkStruct* b, PropClass* pc)
+PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 {
 	mDied = false;
 	int i = 0;
 	player_id = player;
 	mPlayerTank = new PlayerTank(player_id);
 	bms = b;
-	mProp = pc;
+	//mProp = pc;
 
 	// 不同玩家数据不同
 	if (player_id == 0)
@@ -378,6 +379,14 @@ bool PlayerBase::IsGetTimeProp()
 	return temp;
 }
 
+//
+void PlayerBase::ShowProp(const HDC& center_hdc)
+{
+	mProp->ShowProp(center_hdc);
+}
+
+/////////////////////////////////////////////////////////////
+
 void PlayerBase::GetedProp(int prop_kind)
 {
 	mProp->StopShowProp();
@@ -628,6 +637,7 @@ bool PlayerBase::CheckBomb(int i)
 
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_8[tempi][tempj];
+				mProp->StartShowProp(100, 100);
 				return true;
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
@@ -678,6 +688,7 @@ bool PlayerBase::CheckBomb(int i)
 
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_8[tempi][tempj];
+				mProp->StartShowProp(100, 100);
 				return true;
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
@@ -807,4 +818,5 @@ void PlayerBase::SignBox_8(int x, int y, int val)
 		}
 	}
 }
+
 

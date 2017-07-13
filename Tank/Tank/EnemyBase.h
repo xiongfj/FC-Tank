@@ -26,14 +26,6 @@ public:
 	int GetId();				// 返回敌机 id
 	TANK_KIND GetKind();		// 返回敌机类型, 是否是道具坦克
 
-	/*  GameControl 内循环检测 PlayerBase 类内的一个值
-	* 根据该值判断调用该函数
-	* 函数内设置 flag = true, 所有敌机停止移动
-	* 在 GameControl 内计数, 计数完成后设置为 false 敌机开始移动
-	*/
-	//static void SetPause(bool);			// 敌机暂停移动
-
-
 private:
 	void SignBox_4(int value);		// 标记或取消 4*4 大小的格子为坦克;
 	void SignBox_8(int, int, int value);

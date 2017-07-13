@@ -46,7 +46,7 @@ void GameControl::Init()
 void GameControl::AddPlayer(int player_num)
 {
 	for ( int i = 0; i < player_num; i++ )
-		PlayerList.push_back( new PlayerBase(i, mBoxMarkStruct, &mProp) );	// 后面插入数据
+		PlayerList.push_back( new PlayerBase(i, mBoxMarkStruct/*, &mProp*/) );	// 后面插入数据
 }
 
 /*
@@ -339,7 +339,8 @@ void GameControl::RefreshCenterPanel()
 		}
 	}
 
-	mProp.ShowProp(mCenter_hdc);
+	//mProp.ShowProp(mCenter_hdc);
+	PlayerBase::ShowProp(mCenter_hdc);
 
 	// 大本营
 	if (!mCampDie)		// 如果没爆炸
@@ -372,8 +373,8 @@ void GameControl::CheckKillEnemy(list<PlayerBase*>::iterator pb)
 					(*EnemyItor)->BeKill();
 
 					// 设置显示道具
-					if ((*EnemyItor)->GetKind() == TANK_KIND::PROP)
-						mProp.StartShowProp(100, 100);
+					//if ((*EnemyItor)->GetKind() == TANK_KIND::PROP)
+						//mProp.StartShowProp(100, 100);
 					//EnemyItor = EnemyList.erase(EnemyItor); //放到爆炸图显示完全之后再调用
 					break;
 				}
