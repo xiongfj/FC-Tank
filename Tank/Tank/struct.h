@@ -78,13 +78,15 @@ public:
 // 道具类, 在GameControl 内实例化一个对象
 class PropClass
 {
+	void SignPropBox(int val);			// 标记 prop_8 格子
+
 public:
 	PropClass();
 	void ShowProp(const HDC&);			// GameControl 内循环检测该函数
 	void StartShowProp(int x, int y);	// 道具坦克被击中后调用该函数
 	void StopShowProp();			// 停止显示道具, 超时或者被玩家获得
 
-	int x, y;
+	int leftx, topy;			// 道具中心点坐标
 	int index_counter = 0;			// 下标变换索引
 	static IMAGE image[6];
 	static int prop_kind;			// 是什么道具

@@ -43,7 +43,7 @@ void GameControl::Init()
 void GameControl::AddPlayer(int player_num)
 {
 	for ( int i = 0; i < player_num; i++ )
-		PlayerList.push_back( new PlayerBase(i, mBoxMarkStruct) );	// 后面插入数据
+		PlayerList.push_back( new PlayerBase(i, mBoxMarkStruct, &mProp) );	// 后面插入数据
 }
 
 /*
@@ -60,12 +60,14 @@ void GameControl::LoadMap()
 	fread(&mMap, sizeof(Map), 1, fp);
 	fclose(fp);
 
+	// 初始化标记各种格子
 	int x = 0, y = 0;
 	for ( int i = 0; i < 26; i++ )
 	{
 		for ( int j = 0; j < 26; j++ )
 		{
 			SignBoxMark( i, j, mMap.buf[i][j] - '0' );		// 标记 26*26 和 52*52 格子
+			BoxMarkStruct::prop_8[i][j] = 0;
 		}
 	}
 

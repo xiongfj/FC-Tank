@@ -4,5 +4,7 @@
 
 #include "stdafx.h"
 
+int BoxMarkStruct::prop_8[26][26];
+
 // TODO: reference any additional headers you need in STDAFX.H
 // and not in this file

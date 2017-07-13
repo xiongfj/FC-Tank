@@ -10,7 +10,7 @@
 class PlayerBase
 {
 public:
-	PlayerBase(byte player, BoxMarkStruct*);						// player [0-1]
+	PlayerBase(byte player, BoxMarkStruct*, PropClass*);						// player [0-1]
 	~PlayerBase();
 
 	/*
@@ -76,6 +76,9 @@ public:
 
 	int GetID();
 private:
+
+	/*获取到道具, 坦克移动内检测调用*/
+	void GetedProp(int prop_kind);
 	/*
 	* PlayerControl() 内调用
 	* 判断并更改方向或者移动
@@ -157,4 +160,6 @@ private:
 
 	StarClass mStar;				// 坦克出现前的四角星闪烁
 	RingClass mRing;				// 保护圈类
+
+	PropClass* mProp;				// 从 GameControl 内传递过来
 };

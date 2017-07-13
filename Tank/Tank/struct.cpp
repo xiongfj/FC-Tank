@@ -64,8 +64,8 @@ void RingClass::ShowRing(const HDC &canvas_hdc, int mTankX, int mTankY)
 
 PropClass::PropClass()
 {
-	x = -100;
-	y = -100;
+	leftx = -100;
+	topy = -100;
 	index_counter = 0;
 	can_show = false;
 
@@ -84,7 +84,7 @@ void PropClass::ShowProp(const HDC &canvas_hdc)
 		return;
 
 	if ( (++index_counter / 4) % 2 == 0 )
-		TransparentBlt(canvas_hdc, x - BOX_SIZE, y - BOX_SIZE, BOX_SIZE * 2,
+		TransparentBlt(canvas_hdc, leftx, topy, BOX_SIZE * 2,
 			BOX_SIZE * 2, GetImageHDC(&image[prop_kind]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 
 	// 超过时间 消失
@@ -95,16 +95,33 @@ void PropClass::ShowProp(const HDC &canvas_hdc)
 // 道具敌机被消灭调用该函数
 void PropClass::StartShowProp(int _x, int _y)
 {
-	x = _x;
-	y = _y;
+	leftx = 12 * BOX_SIZE;// (rand() % 25 + 1) * BOX_SIZE;
+	topy = 12 * BOX_SIZE; //(rand() % 25 + 1) * BOX_SIZE;
 	can_show = true;
-	prop_kind = rand() % 6;		// 随机出现一个道具
+	prop_kind = 1;// rand() % 6;		// 随机出现一个道具
 	index_counter = 0;
+	SignPropBox(PROP_SIGN + prop_kind);
 }
 
 void PropClass::StopShowProp()
 {
 	can_show = false;
+	SignPropBox(_EMPTY);
+}
+
+void PropClass::SignPropBox(int val)
+{
+	int i = topy / BOX_SIZE;
+	int j = leftx / BOX_SIZE;
+
+	for (int ix = i; ix < i + 2; ix++)
+	{
+		for (int jy = j; jy < j + 2; jy++)
+		{
+			printf("%d - %d\n", ix, jy);
+			BoxMarkStruct::prop_8[ix][jy] = val;
+		}
+	}
 }
 
 IMAGE PropClass::image[6];

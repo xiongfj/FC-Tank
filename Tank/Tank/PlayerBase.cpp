@@ -5,13 +5,14 @@
 
 int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 依次左上右下
 
-PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
+PlayerBase::PlayerBase(byte player, BoxMarkStruct* b, PropClass* pc)
 {
 	mDied = false;
 	int i = 0;
 	player_id = player;
 	mPlayerTank = new PlayerTank(player_id);
 	bms = b;
+	mProp = pc;
 
 	// 不同玩家数据不同
 	if (player_id == 0)
@@ -43,7 +44,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 	loadimage(&mPlayerTankIcoImage, _T("./res/big/playertank-ico.gif"	));	// 玩家坦克图标
 	loadimage(&mBlackNumberImage,	_T("./res/big/black-number.gif"		));	// 黑色数字
 	mPlayerLife = 2;		// 玩家 HP
-	mPlayerTankLevel = 3;													// 坦克级别 [0-3]
+	mPlayerTankLevel = 0;													// 坦克级别 [0-3]
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 不同级别坦克移动速度系数
@@ -369,6 +370,30 @@ int PlayerBase::GetID()
 	return player_id;
 }
 
+void PlayerBase::GetedProp(int prop_kind)
+{
+	mProp->StopShowProp();
+
+	switch (prop_kind)
+	{
+	case ADD_PROP:			// 加机
+		break;
+	case STAR_PROP:			// 五角星
+		mPlayerTankLevel = mPlayerTankLevel + 1 > 3 ? 3 : mPlayerTankLevel + 1;
+		break;
+	case TIME_PROP:			// 时钟
+		break;
+	case  BOMB_PROP:		// 地雷
+		break;
+	case SHOVEL_PRO:		// 铲子
+		break;
+	case  CAP_PROP:			// 帽子
+		break;
+	default:
+		break;
+	}
+}
+
 //---------------------------------------------------------------- private function ---------
 
 // 变向的同时调整坦克所在格子. 必须保证坦克中心在格子线上
@@ -448,8 +473,20 @@ bool PlayerBase::CheckMoveable()
 
 	int dev[4][2][2] = { {{-1,-1},{0,-1}},  {{-1,-1},{-1,0}},  {{-1,1},{0,1}}, { {1,-1},{1,0}} };
 
-	if (bms->box_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] > 2 ||
-		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] > 2 )
+	// 障碍物格子检测
+	int temp1 = bms->box_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]];
+	int temp2 = bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]];
+
+	// 道具格子检测
+	int prop1 = BoxMarkStruct::prop_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]];
+	int prop2 = BoxMarkStruct::prop_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]];
+
+	if (prop1 >= PROP_SIGN && prop1 < PROP_SIGN + 6)
+		GetedProp(prop1 - PROP_SIGN);
+	else if (prop2 >= PROP_SIGN && prop2 < PROP_SIGN + 6)
+		GetedProp(prop2 - PROP_SIGN);
+
+	if (temp1 > 2 || temp2 > 2 )
 	{
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
 		switch (mTankDir)

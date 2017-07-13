@@ -74,6 +74,8 @@ using namespace Gdiplus;
 #define ENEMY_SIGN	1000
 #define STAR_SIGN	2000		// 敌机出现四角星标记, 此时敌机不能进来
 
+#define PROP_SIGN	0x100		// 道具在 prop_8 的标记
+
 
 #define SHOOTABLE_X		-100	// 规定子弹坐标 x = -100 子弹可以发射
 
@@ -97,4 +99,5 @@ struct BoxMarkStruct
 {
 	int box_8[26][26];			// 8*8 格子的标记, 坦克移动,击中用该格子检测
 	int box_4[52][52];			// 4*4 格子的标记, 墙被击中用该标记检测
+	static int prop_8[26][26];			// 道具的格子标记
 };
