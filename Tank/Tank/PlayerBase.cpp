@@ -6,6 +6,7 @@
 int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 依次左上右下
 PropClass* PlayerBase::mProp = new PropClass();
 bool PlayerBase::mTimeProp = false;
+bool PlayerBase::mBombProp = false;
 
 PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 {
@@ -373,10 +374,19 @@ int PlayerBase::GetID()
 	return player_id;
 }
 
+/*GameControl 内循环调用*/
 bool PlayerBase::IsGetTimeProp()
 {
 	bool temp = mTimeProp;
 	mTimeProp = false;
+	return temp;
+}
+
+/*GameControl 内循环调用*/
+bool PlayerBase::IsGetBombProp()
+{
+	bool temp = mBombProp;
+	mBombProp = false;
 	return temp;
 }
 
@@ -388,7 +398,7 @@ void PlayerBase::ShowProp(const HDC& center_hdc)
 
 /////////////////////////////////////////////////////////////
 
-void PlayerBase::GetedProp(int prop_kind)
+void PlayerBase::DispatchProp(int prop_kind)
 {
 	mProp->StopShowProp();
 
@@ -404,6 +414,7 @@ void PlayerBase::GetedProp(int prop_kind)
 		mTimeProp = true;
 		break;
 	case  BOMB_PROP:		// 地雷
+		mBombProp = true;
 		break;
 	case SHOVEL_PRO:		// 铲子
 		break;
@@ -503,9 +514,9 @@ bool PlayerBase::CheckMoveable()
 	int prop2 = bms->prop_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]];
 
 	if (prop1 >= PROP_SIGN && prop1 < PROP_SIGN + 6)
-		GetedProp(prop1 - PROP_SIGN);
+		DispatchProp(prop1 - PROP_SIGN);
 	else if (prop2 >= PROP_SIGN && prop2 < PROP_SIGN + 6)
-		GetedProp(prop2 - PROP_SIGN);
+		DispatchProp(prop2 - PROP_SIGN);
 
 	if (temp1 > 2 || temp2 > 2 )
 	{

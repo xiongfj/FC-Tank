@@ -96,7 +96,7 @@ void PropClass::ShowProp(const HDC &canvas_hdc)
 			BOX_SIZE * 2, GetImageHDC(&image[prop_kind]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 
 	// 超过时间 消失
-	if (index_counter > 100)
+	if (index_counter > 300)
 		StopShowProp();
 }
 

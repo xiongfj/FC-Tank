@@ -83,9 +83,9 @@ void GameControl::LoadMap()
 		}
 	}
 
-	AddEnemy();
 	while (StartGame())
 	{
+	AddEnemy();
 		Sleep(34);
 	}
 }
@@ -115,10 +115,14 @@ bool GameControl::StartGame()
 // 待修改, 添加的敌机种类需要修改
 void GameControl::AddEnemy()
 {
-	for (int i = 0; i < TOTAL_ENEMY_NUMBER; i++)
+	//for (int i = 0; i < TOTAL_ENEMY_NUMBER; i++)
+	if (EnemyList.size() < 6 && mRemainEnemyTankNumber > 0)
+	{
 		//EnemyList.push_back((new BigestTank(TANK_KIND::PROP, mBoxMarkStruct)));
 		EnemyList.push_back((new PropTank(2, mBoxMarkStruct)));
+		//mRemainEnemyTankNumber--;
 		//EnemyList.push_back((new CommonTank(2, mBoxMarkStruct)));
+	}
 }
 
 // 标记 26*26 和 52*52 的格子
@@ -242,6 +246,14 @@ void GameControl::RefreshCenterPanel()
 		mEnemyPause = true;
 		mEnemyPauseCounter = 0;
 	}
+
+	//
+	if (PlayerBase::IsGetBombProp())
+	{
+		for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+			(*EnemyItor)->BeKill();
+	}
+
 	// 玩家
 	for (list<PlayerBase*>::iterator PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
