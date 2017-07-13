@@ -43,7 +43,7 @@ void GameControl::Init()
 void GameControl::AddPlayer(int player_num)
 {
 	for ( int i = 0; i < player_num; i++ )
-		PlayerList.push_back( *(new PlayerBase(i, mBoxMarkStruct)) );	// 后面插入数据
+		PlayerList.push_back( new PlayerBase(i, mBoxMarkStruct) );	// 后面插入数据
 }
 
 /*
@@ -151,7 +151,7 @@ void GameControl::RefreshRightPanel()
 	// 玩家1P\2P\坦克图标\生命数
 	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
-		PlayerItor->DrawPlayerTankIco(mImage_hdc);		// 坦克图标
+		(*PlayerItor)->DrawPlayerTankIco(mImage_hdc);		// 坦克图标
 	}
 
 	// 旗子
@@ -238,13 +238,13 @@ void GameControl::RefreshCenterPanel()
 	// 玩家
 	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
-		PlayerItor->ShowStar(mCenter_hdc);
-		PlayerItor->DrawPlayerTank(mCenter_hdc);		// 坦克
-		PlayerItor->PlayerControl();
-		PlayerItor->BulletMoving(mCenter_hdc);
+		(*PlayerItor)->ShowStar(mCenter_hdc);
+		(*PlayerItor)->DrawPlayerTank(mCenter_hdc);		// 坦克
+		(*PlayerItor)->PlayerControl();
+		(*PlayerItor)->BulletMoving(mCenter_hdc);
 		CheckKillEnemy(PlayerItor);
 
-		if (PlayerItor->IsShootCamp())
+		if ((*PlayerItor)->IsShootCamp())
 		{
 			if (mBlast.canBlast == false)
 			{
@@ -312,10 +312,10 @@ void GameControl::RefreshCenterPanel()
 	// 玩家子弹爆炸
 	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
-		PlayerItor->Bombing(mCenter_hdc);
+		(*PlayerItor)->Bombing(mCenter_hdc);
 
 		// 爆炸完成后
-		if (PlayerItor->Blasting(mCenter_hdc))
+		if ((*PlayerItor)->Blasting(mCenter_hdc))
 		{
 			PlayerList.erase(PlayerItor);
 			break;
@@ -336,10 +336,10 @@ void GameControl::RefreshCenterPanel()
 }
 
 // 读取PlayerBase 内的数据, 消灭敌机
-void GameControl::CheckKillEnemy(list<PlayerBase>::iterator pb)
+void GameControl::CheckKillEnemy(list<PlayerBase*>::iterator pb)
 {
 	int bullet[2] = {0, 0};
-	pb->GetKillEnemy(bullet[0], bullet[1]);		// 获取玩家击中的敌机id, 存储进 bullet[2] 内
+	(*pb)->GetKillEnemy(bullet[0], bullet[1]);		// 获取玩家击中的敌机id, 存储进 bullet[2] 内
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -365,11 +365,11 @@ void GameControl::CheckKillPlayer(list<EnemyBase*>::iterator enemyItor)
 	if (id == 0)
 		return;
 
-	for (list<PlayerBase>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+	for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 	{
-		if (itor->GetID() + PLAYER_SIGN == id)
+		if ((*itor)->GetID() + PLAYER_SIGN == id)
 		{
-			itor->BeKill();
+			(*itor)->BeKill();
 			break;
 		}
 	}
