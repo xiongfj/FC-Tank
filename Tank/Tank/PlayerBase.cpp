@@ -389,6 +389,7 @@ void PlayerBase::GetedProp(int prop_kind)
 	case SHOVEL_PRO:		// ²ù×Ó
 		break;
 	case  CAP_PROP:			// Ã±×Ó
+		mRing.SetShowable();
 		break;
 	default:
 		break;

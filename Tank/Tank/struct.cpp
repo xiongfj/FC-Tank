@@ -51,13 +51,20 @@ RingClass::RingClass()
 
 void RingClass::ShowRing(const HDC &canvas_hdc, int mTankX, int mTankY)
 {
-	if (index_counter > 190)
+	if (index_counter > 290)
 	{
 		canshow = false;
+		index_counter = 0;
 		return;
 	}
 	TransparentBlt(canvas_hdc, (int)(mTankX - BOX_SIZE), (int)(mTankY - BOX_SIZE), BOX_SIZE * 2, 
 			BOX_SIZE * 2, GetImageHDC(&image[index_counter++ % 2]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+}
+
+void RingClass::SetShowable()
+{
+	canshow = true;
+	index_counter = 0;
 }
 
 /////////////////////////////////////////////////////
@@ -98,7 +105,7 @@ void PropClass::StartShowProp(int _x, int _y)
 	leftx = 12 * BOX_SIZE;// (rand() % 25 + 1) * BOX_SIZE;
 	topy = 12 * BOX_SIZE; //(rand() % 25 + 1) * BOX_SIZE;
 	can_show = true;
-	prop_kind = 0;// rand() % 6;		// 随机出现一个道具
+	prop_kind = 5;// rand() % 6;		// 随机出现一个道具
 	index_counter = 0;
 	SignPropBox(PROP_SIGN + prop_kind);
 }
