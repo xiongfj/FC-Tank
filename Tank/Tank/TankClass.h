@@ -24,6 +24,7 @@ public:
 	PlayerTank(byte player);		// player [0-1]
 	~PlayerTank();
 	IMAGE GetTankImage( byte level, byte dir, bool moving = false );	// 
+
 private:
 	TankInfo* mTankInfo[4];			// 4 个级别坦克
 	byte mMoveIndex : 1;		// 两张坦克图片组成一个动作的 下标索引

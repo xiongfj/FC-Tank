@@ -153,10 +153,16 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 
 	// 在新位置重新标记
 	SignBox_8(mTankX, mTankY, ENEMY_SIGN + mEnemyId);
-
+}
+/*
+void EnemyBase::DrawTank(const HDC& center_hdc)
+{
+	if (!mStar.mIsOuted || mDied)
+		return;
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
 			GetImageHDC(&mEnemyTank->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
-}
+	
+}*/
 
 //
 bool EnemyBase::ShootBullet()
@@ -619,3 +625,21 @@ void EnemyBase::ShootWhat(int bulletx, int bullety)
 	}
 }
 
+
+
+
+CommonTank::CommonTank(byte kind, int level, BoxMarkStruct* bms) :
+	EnemyBase(kind, level, bms)
+{
+	mTank = new TankInfo(kind, level, true);
+}
+
+// 
+void CommonTank::DrawTank(const HDC& center_hdc)
+{
+	printf("adsasd\n");
+	if (!mStar.mIsOuted || mDied)
+		return;
+	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
+		GetImageHDC(&mTank->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+}

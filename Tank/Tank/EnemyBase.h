@@ -12,9 +12,10 @@ class EnemyBase
 {
 public:
 	EnemyBase(byte kind, int level, BoxMarkStruct*);	// kind[0-1]; level [0-4]
-	~EnemyBase();
+	virtual ~EnemyBase();
 	bool ShowStar(const HDC& center_hdc, int& total );		// 显示闪烁四角星, true-正在显示, false-显示完毕
 	void TankMoving(const HDC& center_hdc);		// 敌机移动
+	virtual void DrawTank(const HDC&) {}			// 纯绘制坦克
 	bool ShootBullet();			// 发射子弹
 	void BulletMoving(const HDC& );			// 子弹移动
 	void Bombing(const HDC&);
@@ -34,7 +35,7 @@ private:
 	bool CheckBomb();
 	void ShootWhat(int, int);		// 检测射中何物
 
-private:
+protected:
 	int mEnemyId;				// 区别敌机与敌机
 	byte mEnemyTankKind;		// 敌机类别, 道具坦克和普通坦克两种, [0-1]
 	int mEnemyTankLevel;		// 敌机坦克4个级别 [0-3]
@@ -69,4 +70,27 @@ private:
 
 	int mShootedPlayerID;		// 被击中玩家的id
 	StarClass mStar;			// 四角星闪烁类
+};
+
+// 普通坦克
+class CommonTank : public EnemyBase
+{
+public:
+	CommonTank(byte kind, int level, BoxMarkStruct* bm);
+	void DrawTank(const HDC&);				// 纯绘制坦克
+	TankInfo* mTank;			// 灰色坦克
+};
+
+// 道具坦克
+class PropTank : public EnemyBase
+{
+public:
+	PropTank(byte kind, int level, BoxMarkStruct* bm);
+	TankInfo* mTank[2];			// 存储灰色和红色的坦克
+};
+
+// 第4级最大坦克
+class BigestTank : public EnemyBase
+{
+	TankInfo* mTank[3];			// 黄色的坦克
 };

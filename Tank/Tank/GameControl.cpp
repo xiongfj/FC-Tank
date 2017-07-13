@@ -115,7 +115,7 @@ bool GameControl::StartGame()
 void GameControl::AddEnemy()
 {
 	for (int i = 0; i < TOTAL_ENEMY_NUMBER; i++)
-		EnemyList.push_back(*(new EnemyBase(1, 0, mBoxMarkStruct)));
+		EnemyList.push_back((new CommonTank(1, 3, mBoxMarkStruct)));
 }
 
 // 标记 26*26 和 52*52 的格子
@@ -179,7 +179,7 @@ void GameControl::RefreshCenterPanel()
 	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 	{
 		// 一个四角星动画结束后再执行下一个
-		if (EnemyItor->ShowStar(mCenter_hdc, mRemainEnemyTankNumber) == SHOWING_STAR)
+		if ((*EnemyItor)->ShowStar(mCenter_hdc, mRemainEnemyTankNumber) == SHOWING_STAR)
 		{
 			break;
 		}
@@ -259,9 +259,12 @@ void GameControl::RefreshCenterPanel()
 	// 敌机
 	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 	{
-		EnemyItor->TankMoving(mCenter_hdc);
-		EnemyItor->ShootBullet();
-		EnemyItor->BulletMoving(mCenter_hdc);
+		(*EnemyItor)->TankMoving(mCenter_hdc);
+
+		(*EnemyItor)->DrawTank(mCenter_hdc);
+
+		(*EnemyItor)->ShootBullet();
+		(*EnemyItor)->BulletMoving(mCenter_hdc);
 		CheckKillPlayer(EnemyItor);
 	}
 
@@ -280,17 +283,17 @@ void GameControl::RefreshCenterPanel()
 	// 敌机子弹爆炸图
 	for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 	{
-		EnemyItor->Bombing(mCenter_hdc);
+		(*EnemyItor)->Bombing(mCenter_hdc);
 
 		// 爆炸完毕, 移除敌机
-		if (EnemyItor->Blasting(mCenter_hdc))
+		if ((*EnemyItor)->Blasting(mCenter_hdc))
 		{
 			EnemyList.erase(EnemyItor);
 			break;
 		}
 
 		// 如果该敌机击中大本营
-		if (EnemyItor->IsShootCamp())
+		if ((*EnemyItor)->IsShootCamp())
 		{
 			if (mBlast.canBlast == false)
 			{
@@ -342,10 +345,10 @@ void GameControl::CheckKillEnemy(list<PlayerBase>::iterator pb)
 		{
 			for (EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 			{
-				if (EnemyItor->GetId() + ENEMY_SIGN == bullet[i])
+				if ((*EnemyItor)->GetId() + ENEMY_SIGN == bullet[i])
 				{
 					//delete (EnemyBase*)(&(*EnemyItor));  ????
-					EnemyItor->BeKill();
+					(*EnemyItor)->BeKill();
 					//EnemyItor = EnemyList.erase(EnemyItor); //放到爆炸图显示完全之后再调用
 					break;
 				}
@@ -354,9 +357,9 @@ void GameControl::CheckKillEnemy(list<PlayerBase>::iterator pb)
 	}
 }
 
-void GameControl::CheckKillPlayer(list<EnemyBase>::iterator enemyItor)
+void GameControl::CheckKillPlayer(list<EnemyBase*>::iterator enemyItor)
 {
-	int id = enemyItor->IsShootToPlayer();
+	int id = (*enemyItor)->IsShootToPlayer();
 	if (id == 0)
 		return;
 
