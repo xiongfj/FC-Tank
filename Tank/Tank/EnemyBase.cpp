@@ -14,7 +14,6 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 	mEnemyTankLevel = level;
 	mDied = false;
 	mIsShootCamp = false;
-	//mEnemyTank = new TankInfo(mEnemyTankKind, mEnemyTankLevel, true);
 	bms = b;
 
 	int tempx[3] = {BOX_SIZE, 13 * BOX_SIZE, 25 * BOX_SIZE};	// 坦克随机出现的三个位置 x 坐标
@@ -659,7 +658,7 @@ void PropTank::DrawTank(const HDC& center_hdc)
 	if (!mStar.mIsOuted || mDied)
 		return;
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
-		GetImageHDC(&mTank[1]->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+		GetImageHDC(&mTank[ index_counter++ % 2 ]->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }
 
 //////////////////////////////////////////////////////////////
@@ -669,8 +668,8 @@ BigestTank::BigestTank(TANK_KIND kind, BoxMarkStruct * bms):
 {
 	mTank[GRAY_TANK] = new TankInfo(GRAY_TANK, 3, true);
 	mTank[YELLOW_TANK] = new TankInfo(YELLOW_TANK, 3, true);
-	mTank[GREEN_TANK] = new TankInfo(GREEN_TANK, 3, true);
 	mTank[RED_TANK] = new TankInfo(RED_TANK, 3, true);
+	mTank[GREEN_TANK] = new TankInfo(GREEN_TANK, 3, true);
 }
 
 void BigestTank::DrawTank(const HDC & center_hdc)
@@ -678,13 +677,29 @@ void BigestTank::DrawTank(const HDC & center_hdc)
 	if (!mStar.mIsOuted || mDied)
 		return;
 
+	// 道具坦克和普通坦克变色区别
+	TankInfo* temp = NULL;
 	switch (mEnemyTankKind)
 	{
 	case TANK_KIND::PROP:
+		if (index_counter++ % 3)
+			temp = mTank[RED_TANK];
+		else
+			temp = mTank[GRAY_TANK];
 		break;
 	case TANK_KIND::COMMON:
+		if (index_counter++ % 3)
+			temp = mTank[GREEN_TANK];
+		else
+			temp = mTank[GRAY_TANK];
 		break;
 	}
+
+	if (temp == NULL)
+	{
+		printf("错误!. EnemyBase.cpp");
+		return;
+	}
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
-		GetImageHDC(&mTank[GREEN_TANK]->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+		GetImageHDC(&temp->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }

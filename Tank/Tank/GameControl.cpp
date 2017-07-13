@@ -115,7 +115,9 @@ bool GameControl::StartGame()
 void GameControl::AddEnemy()
 {
 	for (int i = 0; i < TOTAL_ENEMY_NUMBER; i++)
-		EnemyList.push_back((new BigestTank(TANK_KIND::COMMON, mBoxMarkStruct)));
+		//EnemyList.push_back((new BigestTank(TANK_KIND::PROP, mBoxMarkStruct)));
+		EnemyList.push_back((new PropTank(2, mBoxMarkStruct)));
+		//EnemyList.push_back((new CommonTank(2, mBoxMarkStruct)));
 }
 
 // 标记 26*26 和 52*52 的格子

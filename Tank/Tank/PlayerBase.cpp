@@ -189,7 +189,7 @@ void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 //
 bool PlayerBase::PlayerControl()
 {
-	if (mDied)
+	if (mDied || !mStar.mIsOuted)
 		return true;
 
 	switch (player_id)

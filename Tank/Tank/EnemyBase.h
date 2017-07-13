@@ -81,6 +81,7 @@ public:
 	PropTank(byte level, BoxMarkStruct* bm);
 	void DrawTank(const HDC&);		// 纯绘制坦克
 	TankInfo* mTank[2];				// 存储灰色和红色的坦克
+	byte index_counter : 6;		// 下标索引变色
 };
 
 // 第四种最大坦克 (道具是红黄灰, 普通是绿黄灰)
@@ -90,4 +91,5 @@ public:
 	BigestTank(TANK_KIND kind, BoxMarkStruct* bm);
 	void DrawTank(const HDC&);	// 纯绘制坦克
 	TankInfo* mTank[4];			// 灰,红黄,绿
+	byte index_counter : 6;		// 下标索引变色
 };
