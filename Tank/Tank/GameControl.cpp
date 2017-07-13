@@ -290,8 +290,9 @@ void GameControl::RefreshCenterPanel()
 		// 爆炸完毕, 移除敌机
 		if ((*EnemyItor)->Blasting(mCenter_hdc))
 		{
-			EnemyItor = EnemyList.erase(EnemyItor);
-			//break;
+			//EnemyItor = EnemyList.erase(EnemyItor);		// 删除最后一架敌机的时候会异常!!
+			EnemyList.erase(EnemyItor);
+			break;
 		}
 
 		// 如果该敌机击中大本营
@@ -317,8 +318,8 @@ void GameControl::RefreshCenterPanel()
 		// 爆炸完成后
 		if ((*PlayerItor)->Blasting(mCenter_hdc))
 		{
-			PlayerList.erase(PlayerItor);
-			break;
+			//PlayerItor = PlayerList.erase(PlayerItor);	// 不能赋值??! 删除最后一个数据的时候 bug 异常!!
+			//break;
 		}
 	}
 

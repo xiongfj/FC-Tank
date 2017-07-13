@@ -43,7 +43,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b)
 	loadimage(&mPlayerTankIcoImage, _T("./res/big/playertank-ico.gif"	));	// 玩家坦克图标
 	loadimage(&mBlackNumberImage,	_T("./res/big/black-number.gif"		));	// 黑色数字
 	mPlayerLife = 2;		// 玩家 HP
-	mPlayerTankLevel = 0;													// 坦克级别 [0-3]
+	mPlayerTankLevel = 3;													// 坦克级别 [0-3]
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 不同级别坦克移动速度系数
