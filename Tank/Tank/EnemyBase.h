@@ -26,13 +26,21 @@ public:
 	int GetId();				// 返回敌机 id
 	TANK_KIND GetKind();		// 返回敌机类型, 是否是道具坦克
 
+	/*  GameControl 内循环检测 PlayerBase 类内的一个值
+	* 根据该值判断调用该函数
+	* 函数内设置 flag = true, 所有敌机停止移动
+	* 在 GameControl 内计数, 计数完成后设置为 false 敌机开始移动
+	*/
+	//static void SetPause(bool);			// 敌机暂停移动
+
+
 private:
 	void SignBox_4(int value);		// 标记或取消 4*4 大小的格子为坦克;
 	void SignBox_8(int, int, int value);
 	bool CheckBox_8();	// 检测某个 box_8 是否可以放置坦克, 参数是 16*16 格子的中心点, 与坦克坐标规则相同
 	bool CheckMoveable();			// 
 	void RejustDirPosition();		// 重新定位坦克方向, 调正坦克位置, 保持在格子上
-	bool CheckBomb();
+	bool CheckBomb();				// 移动子弹
 	void ShootWhat(int, int);		// 检测射中何物
 
 protected:
@@ -62,6 +70,8 @@ protected:
 
 	int mShootedPlayerID;		// 被击中玩家的id
 	StarClass mStar;			// 四角星闪烁类
+	//static bool mIsPause;				// 玩家获取时钟道具, 通过 GameControl 传递设置该值
+	//static int mPauseCounter;			// 暂停多久
 };
 
 // 前三种普通坦克

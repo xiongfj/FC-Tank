@@ -4,6 +4,7 @@
 //----------------- PlayerBase 类静态数据
 
 int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 依次左上右下
+bool PlayerBase::mTimeProp = false;
 
 PlayerBase::PlayerBase(byte player, BoxMarkStruct* b, PropClass* pc)
 {
@@ -370,6 +371,13 @@ int PlayerBase::GetID()
 	return player_id;
 }
 
+bool PlayerBase::IsGetTimeProp()
+{
+	bool temp = mTimeProp;
+	mTimeProp = false;
+	return temp;
+}
+
 void PlayerBase::GetedProp(int prop_kind)
 {
 	mProp->StopShowProp();
@@ -383,6 +391,7 @@ void PlayerBase::GetedProp(int prop_kind)
 		mPlayerTankLevel = mPlayerTankLevel + 1 > 3 ? 3 : mPlayerTankLevel + 1;
 		break;
 	case TIME_PROP:			// 时钟
+		mTimeProp = true;
 		break;
 	case  BOMB_PROP:		// 地雷
 		break;

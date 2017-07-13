@@ -75,6 +75,9 @@ public:
 	bool Blasting(const HDC&);
 
 	int GetID();
+
+	/*GameControl 内调用, 检测玩家是否获得时间道具*/
+	static bool IsGetTimeProp();			
 private:
 
 	/*获取到道具, 坦克移动内检测调用*/
@@ -156,10 +159,13 @@ private:
 	BombStruct mBombS[2];					// 爆炸结构体
 	BlastStruct mBlast;				// 坦克爆炸结构, 
 
-	bool mIsShootCamp;					// 是否击中大本营
+	bool mIsShootCamp;				// 是否击中大本营
 
 	StarClass mStar;				// 坦克出现前的四角星闪烁
 	RingClass mRing;				// 保护圈类
 
 	PropClass* mProp;				// 从 GameControl 内传递过来
+
+	/*GameControl 内循环检测该值, 然后在设置 EnemyBase 停止移动*/
+	static bool mTimeProp;			// 记录是否获得 时钟道具
 };

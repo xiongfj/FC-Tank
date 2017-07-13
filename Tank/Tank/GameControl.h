@@ -75,4 +75,7 @@ private:
 	bool mCampDie;					// 大本营被击中, 不再 Camp 贴图 
 
 	PropClass mProp;			// 道具类		
+
+	bool mEnemyPause;			// 是否可以移动敌机
+	int mEnemyPauseCounter;		// 敌机暂停计数
 };

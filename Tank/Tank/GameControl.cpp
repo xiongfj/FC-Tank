@@ -37,6 +37,9 @@ void GameControl::Init()
 	mActiveEnemyTankNumber = 0;													// 已经出现在地图上的敌机数量,最多显示6架
 	mRemainEnemyTankNumber = 20;												// 剩余未出现的敌机数量
 	mCampDie = false;															// 标志大本营是否被击中
+
+	mEnemyPause = false;			// 敌机暂停与否
+	mEnemyPauseCounter = 0;			// 敌机暂停多久
 }
 
 // 存储玩家进链表
@@ -233,6 +236,12 @@ void GameControl::RefreshCenterPanel()
 		}
 	}
 
+	// 检测玩家是否获得 '时钟' 静止道具
+	if (PlayerBase::IsGetTimeProp())
+	{
+		mEnemyPause = true;
+		mEnemyPauseCounter = 0;
+	}
 	// 玩家
 	for (list<PlayerBase*>::iterator PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
@@ -259,12 +268,21 @@ void GameControl::RefreshCenterPanel()
 	// 敌机
 	for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 	{
-		(*EnemyItor)->TankMoving(mCenter_hdc);
-
 		(*EnemyItor)->DrawTank(mCenter_hdc);
-
 		(*EnemyItor)->ShootBullet();
-		(*EnemyItor)->BulletMoving(mCenter_hdc);
+
+		// 如果敌机暂停
+		if (mEnemyPause == false)
+		{
+			(*EnemyItor)->TankMoving(mCenter_hdc);
+			(*EnemyItor)->BulletMoving(mCenter_hdc);
+		}
+		else if ( mEnemyPauseCounter++ > 4300 )
+		{
+			mEnemyPause = false;
+			mEnemyPauseCounter = 0;;
+		}
+
 		CheckKillPlayer(EnemyItor);
 	}
 

@@ -105,7 +105,7 @@ void PropClass::StartShowProp(int _x, int _y)
 	leftx = 12 * BOX_SIZE;// (rand() % 25 + 1) * BOX_SIZE;
 	topy = 12 * BOX_SIZE; //(rand() % 25 + 1) * BOX_SIZE;
 	can_show = true;
-	prop_kind = 5;// rand() % 6;		// 随机出现一个道具
+	prop_kind = 2;// rand() % 6;		// 随机出现一个道具
 	index_counter = 0;
 	SignPropBox(PROP_SIGN + prop_kind);
 }
@@ -125,7 +125,6 @@ void PropClass::SignPropBox(int val)
 	{
 		for (int jy = j; jy < j + 2; jy++)
 		{
-			printf("%d - %d\n", ix, jy);
 			BoxMarkStruct::prop_8[ix][jy] = val;
 		}
 	}

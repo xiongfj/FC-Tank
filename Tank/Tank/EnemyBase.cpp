@@ -6,6 +6,8 @@
 
 int EnemyBase::mDevXY[4][2] = { { -1, 0 },{ 0, -1 },{ 1, 0 },{ 0, 1 } };	// 依次左上右下
 //bool EnemyBase::isOuting = false;
+//bool EnemyBase::mIsPause = false;
+//int EnemyBase::mPauseCounter = 0;
 
 // 生成某个类别级别的敌机
 EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
@@ -123,8 +125,11 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 
 void EnemyBase::TankMoving(const HDC& center_hdc)
 {
-	if (!mStar.mIsOuted || mDied)
+	if (!mStar.mIsOuted || mDied )
 		return;
+	
+	//if (CheckPause())
+	//	return;
 
 	mBulletT2 = timeGetTime();
 
@@ -182,9 +187,15 @@ bool EnemyBase::ShootBullet()
 //
 void EnemyBase::BulletMoving(const HDC& center_hdc)
 {
+	// 如果子弹没有移动或者敌机死亡
 	if (mBulletStruct.x == SHOOTABLE_X || mDied)
 		return;
+	
+	// 如果玩家吃到暂停道具
+	//if (CheckPause())
+	//	return;
 
+	// 如果子弹在爆炸
 	if (CheckBomb())
 		return;
 
@@ -263,6 +274,11 @@ TANK_KIND EnemyBase::GetKind()
 }
 
 //----------------- 私有函数 ------------------------
+/*
+void EnemyBase::SetPause(bool val)
+{
+	mIsPause = val;
+}*/
 
 // 标记或取消坦克所在的 4*4 = 16 个格子
 void EnemyBase::SignBox_4(int value)
