@@ -224,6 +224,10 @@ void EnemyBase::Bombing(const HDC & center_hdc)
 // 有Gamecontrol内检测, 然后调用
 void EnemyBase::BeKill()
 {
+	// 如果敌机还没有出现
+	if (mStar.mIsOuted == false)
+		return;
+
 	mDied = true;
 	SignBox_8(mTankX, mTankY, _EMPTY);
 

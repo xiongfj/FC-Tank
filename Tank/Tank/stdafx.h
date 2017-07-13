@@ -79,24 +79,3 @@ using namespace Gdiplus;
 #define SHOOTABLE_X		-100	// 规定子弹坐标 x = -100 子弹可以发射
 
 
-/* 对应数值
-* 	#defien _EMPTY		0
-#define _WALL		3
-#define _FOREST		1
-#define _ICE		2
-#define _RIVER		4
-#define _STONE		5
--------------------------------
-* 对应坐标关系
-box[0][0-25] : 第一行( y=0; x=[0-25] )
-box[1][0-25] : 第二行( y=1; x=[0-25] )
-...
-box[y/BOX_SIZE][x/BOX_SIZE]
--------------------------------
-*/
-struct BoxMarkStruct
-{
-	int box_8[26][26];			// 8*8 格子的标记, 坦克移动,击中用该格子检测
-	int box_4[52][52];			// 4*4 格子的标记, 墙被击中用该标记检测
-	int prop_8[26][26];			// 道具的格子标记
-};
