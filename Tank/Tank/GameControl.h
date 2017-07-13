@@ -18,7 +18,7 @@ struct Map
 class GameControl
 {
 public:
-	GameControl( HDC des_hdc, HDC image_hdc, BoxMarkStruct* );
+	GameControl( HDC des_hdc, HDC image_hdc/*, BoxMarkStruct* */);
 	~GameControl();
 	void Init();
 	void AddPlayer(int player_num);					// 加载玩家进该类控制

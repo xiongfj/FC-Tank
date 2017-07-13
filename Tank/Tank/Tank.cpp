@@ -25,7 +25,7 @@
 - 定义 Gamecontrol 对象, 传入玩家选择结果
 ***/
 
-BoxMarkStruct Q_boxmark;		// 全局变量 Q_ 开头
+//BoxMarkStruct Q_boxmark;		// 全局变量 Q_ 开头
 
 IMAGE temp_img(600, 600);
 
@@ -47,7 +47,7 @@ void main()
 
 	SelectPanel* selecter = new SelectPanel(des_hdc, canvas_hdc);	// 显示玩家功能选择面板
 	EnumSelectResult result = selecter->ShowSelectPanel();					// 获取玩家选择结果
-	GameControl* control = new GameControl(des_hdc, canvas_hdc, &Q_boxmark);
+	GameControl* control = new GameControl(des_hdc, canvas_hdc/*, &Q_boxmark*/);
 	switch (result)
 	{
 	case OnePlayer:

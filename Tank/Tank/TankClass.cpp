@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "TankClass.h" 
+#include "struct.h"
 
 ////////////////////////////////////////////////////////
 
