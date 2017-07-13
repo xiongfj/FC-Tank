@@ -7,30 +7,42 @@
 TankInfo::TankInfo(byte enemy_kind, int enemy_level, bool notuse)
 {
 	//mTankDir = 1;
-	TCHAR c[50];
+	TCHAR c[100];
 	switch(enemy_kind)
 	{
-	case 0:		// 道具坦克
+	case GRAY_TANK:		// 灰色坦克
 		for ( int i = 0; i < 4; i++ )
 		{
-			_stprintf_s(c, L"./res/big/prop-tank/%d-%d-1.gif", enemy_level + 1, i + 1 );
-			//mTankImage[i][0] = Image::FromFile(c);
+			_stprintf_s(c, L"./res/big/gray-tank/%d-%d-1.gif", enemy_level + 1, i + 1 );
 			loadimage(&mTankImage[i][0], c);
-			_stprintf_s(c, L"./res/big/prop-tank/%d-%d-2.gif", enemy_level + 1, i + 1 );
-			//mTankImage[i][1] = Image::FromFile(c);
+			_stprintf_s(c, L"./res/big/gray-tank/%d-%d-2.gif", enemy_level + 1, i + 1 );
 			loadimage(&mTankImage[i][1], c);
 		}
 		break;
-	case 1:		// 普通坦克
+	case RED_TANK:		// 红色坦克
 		for ( int i = 0; i < 4; i++ )
 		{
-			_stprintf_s(c, L"./res/big/common-tank/%d-%d-1.gif", enemy_level + 1, i + 1);
-
-			//mTankImage[i][0] = Image::FromFile(c);
+			_stprintf_s(c, L"./res/big/red-tank/%d-%d-1.gif", enemy_level + 1, i + 1);
 			loadimage(&mTankImage[i][0], c);
-			_stprintf_s(c, L"./res/big/common-tank/%d-%d-2.gif", enemy_level + 1, i + 1);
-
-			//mTankImage[i][1] = Image::FromFile(c);
+			_stprintf_s(c, L"./res/big/red-tank/%d-%d-2.gif", enemy_level + 1, i + 1);
+			loadimage(&mTankImage[i][1], c);
+		}
+		break;
+	case GREEN_TANK:
+		for (int i = 0; i < 4; i++)
+		{
+			_stprintf_s(c, L"./res/big/other-tank/g%d-%d-1.gif", enemy_level + 1, i + 1);
+			loadimage(&mTankImage[i][0], c);
+			_stprintf_s(c, L"./res/big/other-tank/g%d-%d-2.gif", enemy_level + 1, i + 1);
+			loadimage(&mTankImage[i][1], c);
+		}
+		break;
+	case YELLOW_TANK:
+		for (int i = 0; i < 4; i++)
+		{
+			_stprintf_s(c, L"./res/big/other-tank/y%d-%d-1.gif", enemy_level + 1, i + 1);
+			loadimage(&mTankImage[i][0], c);
+			_stprintf_s(c, L"./res/big/other-tank/y%d-%d-2.gif", enemy_level + 1, i + 1);
 			loadimage(&mTankImage[i][1], c);
 		}
 		break;

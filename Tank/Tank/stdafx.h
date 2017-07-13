@@ -61,6 +61,12 @@ using namespace Gdiplus;
 #define DIR_RIGHT	2
 #define DIR_DOWN	3
 
+
+#define GRAY_TANK	0		// 灰色坦克
+#define RED_TANK	1		// 红色坦克
+#define YELLOW_TANK	2		// 
+#define GREEN_TANK	3
+
 #define PLAYER_SIGN	100
 #define CAMP_SIGN	200			// 大本营标记
 

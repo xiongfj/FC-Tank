@@ -2,6 +2,8 @@
 #include "TankClass.h"
 #include "struct.h"
 
+#define PROP_TANK		0		// 道具坦克
+#define COMMON_TANK		1		// 普通坦克
 
 /************** 敌机坦克 ************
 * 一个敌机实例化一个对象
@@ -11,7 +13,7 @@
 class EnemyBase
 {
 public:
-	EnemyBase(byte kind, int level, BoxMarkStruct*);	// kind[0-1]; level [0-4]
+	EnemyBase(byte kind, byte level, BoxMarkStruct*);	// kind[0-1]; level [0-4]
 	virtual ~EnemyBase();
 	bool ShowStar(const HDC& center_hdc, int& total );		// 显示闪烁四角星, true-正在显示, false-显示完毕
 	void TankMoving(const HDC& center_hdc);		// 敌机移动
@@ -38,23 +40,15 @@ private:
 protected:
 	int mEnemyId;				// 区别敌机与敌机
 	byte mEnemyTankKind;		// 敌机类别, 道具坦克和普通坦克两种, [0-1]
-	int mEnemyTankLevel;		// 敌机坦克4个级别 [0-3]
+	byte mEnemyTankLevel : 2;	// 敌机坦克4个级别 [0-3]
 	bool mDied;					// 是否被被消灭, 被击中后设置为 true, 敌机检测改值不能移动
 	bool mIsShootCamp;			// 是否击中大本营
-	TankInfo* mEnemyTank;		// 指向坦克详细信息
+	//TankInfo* mEnemyTank;		// 指向坦克详细信息
 	BoxMarkStruct* bms;			// 指向格子标记结构, 由 GameControl 传递进来
 
 	int mTankX, mTankY;			// 坦克坐标, 坦克的中心点
 	byte mTankDir : 2;			// 坦克方向
 	byte mTankImageIndex : 1;	// 坦克移动切换图片
-	/*
-	IMAGE mStarImage[4];		// 四角星图片
-	int mStarIndexDev ;			// 索引的变化量, -1, 1  -1是star由小变大, 1 是star由大变小
-	byte mStarIndex : 2;		// 四角星下标索引变化规律 0-1-2-3-2-1-0-1-2-3-...
-	int mStarCounter;			// 计数,多少次变更一次图像
-	int mTankOutAfterCounter;	// 一个随机计数之后, 四角星开始闪烁,坦克出现
-	bool mIsOuted;				// 四角星小时候坦克出现, 停止播放四角星闪烁图
-	*/
 	int mStep;					// 当前方向移动的步数, 一定步数后或者遇到障碍物变换方向并重新计算;
 	static int mDevXY[4][2];	// 四个方向的偏移量
 	int mSpeed[4];					// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样
@@ -72,25 +66,29 @@ protected:
 	StarClass mStar;			// 四角星闪烁类
 };
 
-// 普通坦克
+// 前三种普通坦克
 class CommonTank : public EnemyBase
 {
 public:
-	CommonTank(byte kind, int level, BoxMarkStruct* bm);
+	CommonTank(byte level, BoxMarkStruct* bm);
 	void DrawTank(const HDC&);				// 纯绘制坦克
 	TankInfo* mTank;			// 灰色坦克
 };
 
-// 道具坦克
+// 前三种道具坦克
 class PropTank : public EnemyBase
 {
 public:
-	PropTank(byte kind, int level, BoxMarkStruct* bm);
-	TankInfo* mTank[2];			// 存储灰色和红色的坦克
+	PropTank(byte level, BoxMarkStruct* bm);
+	void DrawTank(const HDC&);		// 纯绘制坦克
+	TankInfo* mTank[2];				// 存储灰色和红色的坦克
 };
 
-// 第4级最大坦克
+// 第四种最大坦克 (道具是红黄灰, 普通是绿黄灰)
 class BigestTank : public EnemyBase
 {
-	TankInfo* mTank[3];			// 黄色的坦克
+public:
+	BigestTank(byte kind, BoxMarkStruct* bm);
+	void DrawTank(const HDC&);	// 纯绘制坦克
+	TankInfo* mTank[4];			// 灰,红黄,绿
 };
