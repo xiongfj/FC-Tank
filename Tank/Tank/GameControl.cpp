@@ -149,7 +149,7 @@ void GameControl::RefreshRightPanel()
 	}
 	
 	// 玩家1P\2P\坦克图标\生命数
-	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
+	for (list<PlayerBase*>::iterator PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
 		(*PlayerItor)->DrawPlayerTankIco(mImage_hdc);		// 坦克图标
 	}
@@ -236,7 +236,7 @@ void GameControl::RefreshCenterPanel()
 	}
 
 	// 玩家
-	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
+	for (list<PlayerBase*>::iterator PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
 		(*PlayerItor)->ShowStar(mCenter_hdc);
 		(*PlayerItor)->DrawPlayerTank(mCenter_hdc);		// 坦克
@@ -310,7 +310,7 @@ void GameControl::RefreshCenterPanel()
 	}
 
 	// 玩家子弹爆炸
-	for (PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
+	for (list<PlayerBase*>::iterator PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
 		(*PlayerItor)->Bombing(mCenter_hdc);
 

@@ -47,7 +47,7 @@ private:
 
 	BoxMarkStruct* mBoxMarkStruct;			// 存储格子标记
 	list<PlayerBase*> PlayerList;			// 存储玩家列表
-	list<PlayerBase*>::iterator PlayerItor;	// 用于遍历 PlayerList
+	//list<PlayerBase*>::iterator PlayerItor;	// 用于遍历 PlayerList
 
 	list<EnemyBase*> EnemyList;				// 敌机列表
 	//list<EnemyBase*>::iterator EnemyItor;	// 用于遍历 PlayerList
