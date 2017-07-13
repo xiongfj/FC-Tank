@@ -176,12 +176,13 @@ bool PlayerBase::ShowStar(const HDC& center_hdc)
 //
 void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 {
-	if (!mStar.mIsOuted)
+	if (!mStar.mIsOuted || mDied)
 		return;
 
 	IMAGE tank = mPlayerTank->GetTankImage(mPlayerTankLevel, mTankDir, mMoving);
 	TransparentBlt(canvas_hdc, (int)(mTankX - BOX_SIZE), (int)(mTankY - BOX_SIZE), BOX_SIZE * 2, BOX_SIZE * 2, GetImageHDC(&tank), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 
+	// // 显示保护环
 	if (mRing.canshow)
 		mRing.ShowRing(canvas_hdc, mTankX, mTankY);
 }

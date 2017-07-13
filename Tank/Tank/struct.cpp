@@ -59,3 +59,53 @@ void RingClass::ShowRing(const HDC &canvas_hdc, int mTankX, int mTankY)
 	TransparentBlt(canvas_hdc, (int)(mTankX - BOX_SIZE), (int)(mTankY - BOX_SIZE), BOX_SIZE * 2, 
 			BOX_SIZE * 2, GetImageHDC(&image[index_counter++ % 2]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }
+
+/////////////////////////////////////////////////////
+
+PropClass::PropClass()
+{
+	x = -100;
+	y = -100;
+	index_counter = 0;
+	can_show = false;
+
+	TCHAR buf[100];
+	for (int i = 0; i < 6; i++)
+	{
+		_stprintf_s(buf, _T("./res/big/prop/p%d.gif"), i);
+		loadimage(&image[i], buf);
+	}
+}
+
+// GameControl 内循环检测该函数
+void PropClass::ShowProp(const HDC &canvas_hdc)
+{
+	if (!can_show)
+		return;
+
+	if ( (++index_counter / 4) % 2 == 0 )
+		TransparentBlt(canvas_hdc, x - BOX_SIZE, y - BOX_SIZE, BOX_SIZE * 2,
+			BOX_SIZE * 2, GetImageHDC(&image[prop_kind]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+
+	// 超过时间 消失
+	if (index_counter > 100)
+		StopShowProp();
+}
+
+// 道具敌机被消灭调用该函数
+void PropClass::StartShowProp(int _x, int _y)
+{
+	x = _x;
+	y = _y;
+	can_show = true;
+	prop_kind = rand() % 6;		// 随机出现一个道具
+	index_counter = 0;
+}
+
+void PropClass::StopShowProp()
+{
+	can_show = false;
+}
+
+IMAGE PropClass::image[6];
+int PropClass::prop_kind = ADD_PROP;

@@ -87,10 +87,6 @@ void GameControl::LoadMap()
 
 bool GameControl::StartGame()
 {
-	// 推送 6 架敌机到游戏区域
-	//if (EnemyList.size() < 19 && mRemainEnemyTankNumber > 0)
-		//EnemyList.push_back(*(new EnemyBase( 1, 0, mBoxMarkStruct)));
-
 	// 更新右边面板的数据, 待判断, 因为不需要经常更新 mImage_hdc
 	RefreshRightPanel();
 
@@ -323,6 +319,8 @@ void GameControl::RefreshCenterPanel()
 		}
 	}
 
+	mProp.ShowProp(mCenter_hdc);
+
 	// 大本营
 	if (!mCampDie)		// 如果没爆炸
 	{
@@ -352,6 +350,10 @@ void GameControl::CheckKillEnemy(list<PlayerBase*>::iterator pb)
 				{
 					//delete (EnemyBase*)(&(*EnemyItor));  ????
 					(*EnemyItor)->BeKill();
+
+					// 设置显示道具
+					if ((*EnemyItor)->GetKind() == TANK_KIND::PROP)
+						mProp.StartShowProp(100, 100);
 					//EnemyItor = EnemyList.erase(EnemyItor); //放到爆炸图显示完全之后再调用
 					break;
 				}

@@ -3,6 +3,7 @@
 #define TOTAL_ENEMY_NUMBER	20
 #define SHOWING_STAR	true		// 正在显示四角星
 #define STOP_SHOW_STAR	false		// 四角星显示结束
+enum TANK_KIND { PROP, COMMON };
 
 struct BulletStruct
 {
@@ -64,4 +65,28 @@ public:
 	static IMAGE image[2];
 	bool canshow;			// 是否可以显示环状
 	int index_counter;		// 变化下标索引
+};
+
+// 道具类型
+#define ADD_PROP	0	// 加机
+#define STAR_PROP	1	// 五角星
+#define TIME_PROP	2	// 时钟
+#define BOMB_PROP	3	// 地雷
+#define SHOVEL_PRO	4	// 铲子
+#define CAP_PROP	5	// 帽子
+
+// 道具类, 在GameControl 内实例化一个对象
+class PropClass
+{
+public:
+	PropClass();
+	void ShowProp(const HDC&);			// GameControl 内循环检测该函数
+	void StartShowProp(int x, int y);	// 道具坦克被击中后调用该函数
+	void StopShowProp();			// 停止显示道具, 超时或者被玩家获得
+
+	int x, y;
+	int index_counter = 0;			// 下标变换索引
+	static IMAGE image[6];
+	static int prop_kind;			// 是什么道具
+	bool can_show;				// 是否可以显示道具	
 };

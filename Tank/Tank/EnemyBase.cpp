@@ -257,6 +257,11 @@ int EnemyBase::GetId()
 	return mEnemyId;
 }
 
+TANK_KIND EnemyBase::GetKind()
+{
+	return mEnemyTankKind;
+}
+
 //----------------- 私有函数 ------------------------
 
 // 标记或取消坦克所在的 4*4 = 16 个格子

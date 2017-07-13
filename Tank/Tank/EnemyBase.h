@@ -2,8 +2,6 @@
 #include "TankClass.h"
 #include "struct.h"
 
-enum TANK_KIND {PROP, COMMON};
-
 /************** 敌机坦克 ************
 * 一个敌机实例化一个对象
 * 提供敌机类别(是否是道具坦克), 敌机级别[0-4]
@@ -26,6 +24,7 @@ public:
 	int  IsShootToPlayer();			// 获取被击中的玩家 id
 
 	int GetId();				// 返回敌机 id
+	TANK_KIND GetKind();		// 返回敌机类型, 是否是道具坦克
 
 private:
 	void SignBox_4(int value);		// 标记或取消 4*4 大小的格子为坦克;
