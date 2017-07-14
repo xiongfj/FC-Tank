@@ -58,6 +58,9 @@
 // 敌机子弹击中的障碍物的类型, 用在 EnemyBase::CheckBomb 返回值
 enum EnemyBulletShootKind {None, Player_1 = PLAYER_SIGN, Player_2 = PLAYER_SIGN + 1, Other};
 
+// 玩家子弹击中结果
+enum PlayerBulletShootKind {};
+
 /* 对应数值
 * 	#defien _EMPTY		0
 #define _WALL		3

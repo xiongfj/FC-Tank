@@ -4,6 +4,7 @@
 /////////////////////////////////////////////////////////
 // 敌机坦克控制
 
+bool EnemyBase::mPause = false;
 int EnemyBase::mDevXY[4][2] = { { -1, 0 },{ 0, -1 },{ 1, 0 },{ 0, 1 } };	// 依次左上右下
 //bool EnemyBase::isOuting = false;
 //bool EnemyBase::mIsPause = false;
@@ -196,7 +197,7 @@ void EnemyBase::DrawBullet(const HDC& center_hdc)
 //
 bool EnemyBase::ShootBullet()
 {
-	if (mBulletStruct.x != SHOOTABLE_X || !mShootTimer.IsTimeOut() || mDied || mStar.mIsOuted == false )
+	if ( mPause || mBulletStruct.x != SHOOTABLE_X || !mShootTimer.IsTimeOut() || mDied || mStar.mIsOuted == false )
 		return false;
 
 	// 子弹发射点坐标
@@ -303,6 +304,12 @@ bool EnemyBase::Blasting(const HDC& center_hdc)
 bool EnemyBase::IsShootCamp()
 {
 	return mIsShootCamp;
+}
+
+//
+void EnemyBase::SetPause(bool val)
+{
+	mPause = val;
 }
 /*.
 // 返回被击中玩家 id 或者 0 没有击中
@@ -548,9 +555,6 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
-				//会检测多次..
-				printf("                  ---%d, %d\n", tempi, tempj);
-				//.mShootedPlayerID = bms->tank_8[tempi][tempj];
 				return (EnemyBulletShootKind)bms->tank_8[tempi][tempj];
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
@@ -597,9 +601,6 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
-
-				printf("                   --%d, %d\n", tempi, tempj);
-				//.mShootedPlayerID = bms->tank_8[tempi][tempj];
 				return EnemyBulletShootKind(bms->tank_8[tempi][tempj]);
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)

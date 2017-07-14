@@ -23,7 +23,10 @@ public:
 	void BeKill();					// 敌机被消灭, 清除 SignBox 标记
 	bool Blasting(const HDC& );		// 显示坦克爆炸图, true 标识爆炸完,GameControl 获取返回值然后将该敌机删除
 	bool IsShootCamp();				// 是否击中大本营, GeamControl 内循环检测
-	int  IsShootToPlayer();			// 获取被击中的玩家 id
+	//int  IsShootToPlayer();			// 获取被击中的玩家 id
+
+	/*由 GameControl 内设置, 设置 mPause, 然后 ShootBullet() 检测停止发射子弹*/
+	static void SetPause(bool);
 
 	int GetId();				// 返回敌机 id
 	TANK_KIND GetKind();		// 返回敌机类型, 是否是道具坦克
@@ -37,6 +40,7 @@ private:
 	void RejustDirPosition();		// 重新定位坦克方向, 调正坦克位置, 保持在格子上
 	EnemyBulletShootKind CheckBomb();				// 移动子弹
 	void ShootWhat(int, int);		// 检测射中何物
+
 
 protected:
 	int mEnemyId;				// 区别敌机与敌机
@@ -54,24 +58,17 @@ protected:
 	static int mDevXY[4][2];	// 四个方向的偏移量
 	int mSpeed[4];					// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样
 
+	static bool mPause;				// 由 GameControl 控制, 然后在发射的时候检测这个值, 如果敌机被暂停则停止发射子弹
 	bool mTankNumberReduce;		// 当四角星开始, true-坦克总数减一,然后设该值=false, 只减一次
 
 	BulletStruct mBulletStruct;
-	//DWORD mBulletT1, mBulletT2;	// 计数器, 多久发射一次子弹
-	//DWORD mBulletT;
-
 	BombStruct mBombS;			// 爆炸结构体
 	BlastStruct mBlast;			// 坦克爆炸结构
-
-	//int mShootedPlayerID;		// 被击中玩家的id, -1,0,1
 	StarClass mStar;			// 四角星闪烁类
-	//static bool mIsPause;				// 玩家获取时钟道具, 通过 GameControl 传递设置该值
-	//static int mPauseCounter;			// 暂停多久
 
 	TimeClock mTankTimer;		// 敌机移动速度
 	TimeClock mBulletTimer;		// 子弹移动速度
 	TimeClock mShootTimer;		// 发射子弹频率
-
 	TimeClock mBombTimer;		// 子弹爆炸速度
 	TimeClock mBlastTimer;		// 坦克爆炸速度
 };

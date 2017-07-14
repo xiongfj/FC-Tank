@@ -158,6 +158,7 @@ void GameControl::RefreshData()
 	{
 		mEnemyPause = true;
 		mEnemyPauseCounter = 0;
+		EnemyBase::SetPause(true);
 	}
 
 	// 玩家获得地雷道具
@@ -207,6 +208,7 @@ void GameControl::RefreshData()
 		{
 			mEnemyPause = false;
 			mEnemyPauseCounter = 0;;
+			(*EnemyItor)->SetPause(false);
 		}
 
 		//.CheckKillPlayer(EnemyItor);
