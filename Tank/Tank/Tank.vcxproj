@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClInclude Include="EnemyBase.h" />
     <ClInclude Include="GameControl.h" />
+    <ClInclude Include="List.h" />
     <ClInclude Include="PlayerBase.h" />
     <ClInclude Include="SelectPanel.h" />
     <ClInclude Include="stdafx.h" />
@@ -157,6 +158,7 @@
   <ItemGroup>
     <ClCompile Include="EnemyBase.cpp" />
     <ClCompile Include="GameControl.cpp" />
+    <ClCompile Include="List.cpp" />
     <ClCompile Include="PlayerBase.cpp" />
     <ClCompile Include="SelectPanel.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -37,7 +37,7 @@ StarClass::StarClass()
 	mStarIndexDev = -1;						// 控制索引下标的增加还是减少
 	mStarIndex = 3;							// star 图片索引下标
 	mStarCounter = 0;						// 多少次更换 star 图片
-	mTankOutAfterCounter = rand() % 60 + 10;
+	mTankOutAfterCounter = rand() % 10 + 10;
 	mIsOuted = false;						// 坦克是否已经出现
 }
 

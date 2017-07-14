@@ -128,9 +128,6 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 	if (!mStar.mIsOuted || mDied )
 		return;
 	
-	//if (CheckPause())
-	//	return;
-
 	mBulletT2 = timeGetTime();
 
 	// 移动前取消标记

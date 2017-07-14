@@ -48,11 +48,11 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	loadimage(&mPlayerTankIcoImage, _T("./res/big/playertank-ico.gif"	));	// 玩家坦克图标
 	loadimage(&mBlackNumberImage,	_T("./res/big/black-number.gif"		));	// 黑色数字
 	mPlayerLife = 2;		// 玩家 HP
-	mPlayerTankLevel = 0;													// 坦克级别 [0-3]
+	mPlayerTankLevel = 3;													// 坦克级别 [0-3]
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 不同级别坦克移动速度系数
-	int temp[4] = {2, 2, 3, 3};
+	int temp[4] = {1, 1, 2, 2};
 	for ( i = 0; i < 4; i++ )
 		mSpeed[i] = temp[i];
 
@@ -68,7 +68,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	}
 
 	// 子弹结构数据
-	int temp_speed[4] = {3, 3, 4, 4};			// 根据坦克级别分配子弹速度系数
+	int temp_speed[4] = {3, 3, 4, 4};			// 不能超过 4 !! 会跳跃格子判断.根据坦克级别分配子弹速度系数
 	for (i = 0; i < 2; i++)
 	{
 		mBulletStruct[i].x = SHOOTABLE_X;		// x 坐标用于判断是否可以发射

@@ -40,13 +40,16 @@ void GameControl::Init()
 
 	mEnemyPause = false;			// 敌机暂停与否
 	mEnemyPauseCounter = 0;			// 敌机暂停多久
+
+	//PlayerList = new ListTable<PlayerBase*>();
 }
 
 // 存储玩家进链表
 void GameControl::AddPlayer(int player_num)
 {
-	for ( int i = 0; i < player_num; i++ )
-		PlayerList.push_back( new PlayerBase(i, mBoxMarkStruct/*, &mProp*/) );	// 后面插入数据
+	for (int i = 0; i < player_num; i++)
+		//PlayerList.push_back( new PlayerBase(i, mBoxMarkStruct/*, &mProp*/) );	// 后面插入数据
+		PlayerList.Add(new PlayerBase(i, mBoxMarkStruct/*, &mProp*/) );
 }
 
 /*
@@ -86,7 +89,7 @@ void GameControl::LoadMap()
 	while (StartGame())
 	{
 	AddEnemy();
-		Sleep(34);
+		Sleep(24);
 	}
 }
 
@@ -118,6 +121,7 @@ void GameControl::AddEnemy()
 	//for (int i = 0; i < TOTAL_ENEMY_NUMBER; i++)
 	if (EnemyList.size() < 6 && mRemainEnemyTankNumber > 0)
 	{
+		//printf("%d - %d\n", EnemyList.size(), mRemainEnemyTankNumber);
 		//EnemyList.push_back((new BigestTank(TANK_KIND::PROP, mBoxMarkStruct)));
 		EnemyList.push_back((new PropTank(2, mBoxMarkStruct)));
 		//mRemainEnemyTankNumber--;
@@ -154,9 +158,13 @@ void GameControl::RefreshRightPanel()
 	}
 	
 	// 玩家1P\2P\坦克图标\生命数
-	for (list<PlayerBase*>::iterator PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
+	/*for (list<PlayerBase*>::iterator PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
 		(*PlayerItor)->DrawPlayerTankIco(mImage_hdc);		// 坦克图标
+	}*/
+	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+	{
+		p->data->DrawPlayerTankIco(mImage_hdc);
 	}
 
 	// 旗子
@@ -247,15 +255,19 @@ void GameControl::RefreshCenterPanel()
 		mEnemyPauseCounter = 0;
 	}
 
-	//
+	// 玩家获得地雷道具
 	if (PlayerBase::IsGetBombProp())
 	{
 		for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+		{
 			(*EnemyItor)->BeKill();
+			//mRemainEnemyTankNumber--;
+			mActiveEnemyTankNumber--;
+		}
 	}
 
 	// 玩家
-	for (list<PlayerBase*>::iterator PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
+	/*for (list<PlayerBase*>::iterator PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
 		(*PlayerItor)->ShowStar(mCenter_hdc);
 		(*PlayerItor)->DrawPlayerTank(mCenter_hdc);		// 坦克
@@ -264,6 +276,27 @@ void GameControl::RefreshCenterPanel()
 		CheckKillEnemy(PlayerItor);
 
 		if ((*PlayerItor)->IsShootCamp())
+		{
+			if (mBlast.canBlast == false)
+			{
+				int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
+				TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
+					GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+				if (mBlast.counter++ == 17)
+					mBlast.canBlast = true;
+				mCampDie = true;
+			}
+		}
+	}*/
+	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+	{
+		p->data->ShowStar(mCenter_hdc);
+		p->data->DrawPlayerTank(mCenter_hdc);		// 坦克
+		p->data->PlayerControl();
+		p->data->BulletMoving(mCenter_hdc);
+		CheckKillEnemy(p->data);
+
+		if (p->data->IsShootCamp())
 		{
 			if (mBlast.canBlast == false)
 			{
@@ -310,7 +343,7 @@ void GameControl::RefreshCenterPanel()
 		}
 	}
 
-	// 敌机子弹爆炸图
+	// 敌机子弹\坦克爆炸图
 	for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 	{
 		(*EnemyItor)->Bombing(mCenter_hdc);
@@ -339,12 +372,23 @@ void GameControl::RefreshCenterPanel()
 	}
 
 	// 玩家子弹爆炸
-	for (list<PlayerBase*>::iterator PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
+	/*for (list<PlayerBase*>::iterator PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
 	{
 		(*PlayerItor)->Bombing(mCenter_hdc);
 
 		// 爆炸完成后
 		if ((*PlayerItor)->Blasting(mCenter_hdc))
+		{
+			//PlayerItor = PlayerList.erase(PlayerItor);	// 不能赋值??! 删除最后一个数据的时候 bug 异常!!
+			//break;
+		}
+	}*/
+	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+	{
+		p->data->Bombing(mCenter_hdc);
+
+		// 爆炸完成后
+		if (p->data->Blasting(mCenter_hdc))
 		{
 			//PlayerItor = PlayerList.erase(PlayerItor);	// 不能赋值??! 删除最后一个数据的时候 bug 异常!!
 			//break;
@@ -368,10 +412,11 @@ void GameControl::RefreshCenterPanel()
 }
 
 // 读取PlayerBase 内的数据, 消灭敌机
-void GameControl::CheckKillEnemy(list<PlayerBase*>::iterator pb)
+void GameControl::CheckKillEnemy(PlayerBase* pb)
 {
 	int bullet[2] = {0, 0};
-	(*pb)->GetKillEnemy(bullet[0], bullet[1]);		// 获取玩家击中的敌机id, 存储进 bullet[2] 内
+	//(*pb)->GetKillEnemy(bullet[0], bullet[1]);		// 获取玩家击中的敌机id, 存储进 bullet[2] 内
+	pb->GetKillEnemy(bullet[0], bullet[1]);		// 获取玩家击中的敌机id, 存储进 bullet[2] 内
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -383,6 +428,7 @@ void GameControl::CheckKillEnemy(list<PlayerBase*>::iterator pb)
 				{
 					//delete (EnemyBase*)(&(*EnemyItor));  ????
 					(*EnemyItor)->BeKill();
+					mActiveEnemyTankNumber--;
 
 					// 设置显示道具
 					//if ((*EnemyItor)->GetKind() == TANK_KIND::PROP)
@@ -401,11 +447,19 @@ void GameControl::CheckKillPlayer(list<EnemyBase*>::iterator enemyItor)
 	if (id == 0)
 		return;
 
-	for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+	/*for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 	{
 		if ((*itor)->GetID() + PLAYER_SIGN == id)
 		{
 			(*itor)->BeKill();
+			break;
+		}
+	}*/
+	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+	{
+		if (p->data->GetID() + PLAYER_SIGN == id)
+		{
+			p->data->BeKill();
 			break;
 		}
 	}
