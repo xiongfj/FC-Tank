@@ -62,8 +62,13 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 	mBulletTimer.SetDrtTime(40);
 
 	// 发射子弹频率
-	//mShootTimer.Init();
 	mShootTimer.SetDrtTime(30);
+
+	// 子弹爆炸速度
+	mBombTimer.SetDrtTime(37);
+
+	// 坦克爆炸速率
+	mBlastTimer.SetDrtTime(37);
 }
 
 EnemyBase::~EnemyBase()
@@ -235,8 +240,11 @@ void EnemyBase::Bombing(const HDC & center_hdc)
 	{
 		TransparentBlt(center_hdc, mBombS.mBombX - BOX_SIZE, mBombS.mBombY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
 			GetImageHDC(&BombStruct::mBombImage[index[mBombS.counter % 3]]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
-		if (mBombS.counter++ == 3)
-			mBombS.canBomb = false;
+		if (mBombTimer.IsTimeOut())
+		{
+			if ( mBombS.counter++ == 3 )
+				mBombS.canBomb = false;
+		}
 	}
 }
 
@@ -264,10 +272,13 @@ bool EnemyBase::Blasting(const HDC& center_hdc)
 	{
 		TransparentBlt(center_hdc, mBlast.blastx - BOX_SIZE * 2, mBlast.blasty - BOX_SIZE * 2, BOX_SIZE * 4, BOX_SIZE * 4,
 			GetImageHDC(&BlastStruct::image[index[mBlast.counter % 6]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
-		if (mBlast.counter++ == 6)
+		if (mBlastTimer.IsTimeOut())
 		{
-			mBlast.canBlast = false;
-			return true;
+			if (mBlast.counter++ == 6)
+			{
+				mBlast.canBlast = false;
+				return true;
+			}
 		}
 	}
 	return false;

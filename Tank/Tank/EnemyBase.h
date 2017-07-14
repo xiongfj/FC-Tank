@@ -71,6 +71,9 @@ protected:
 	TimeClock mTankTimer;		// 敌机移动速度
 	TimeClock mBulletTimer;		// 子弹移动速度
 	TimeClock mShootTimer;		// 发射子弹频率
+
+	TimeClock mBombTimer;		// 子弹爆炸速度
+	TimeClock mBlastTimer;		// 坦克爆炸速度
 };
 
 // 前三种普通坦克
