@@ -42,6 +42,7 @@ void GameControl::Init()
 	mEnemyPauseCounter = 0;			// 敌机暂停多久
 
 	//PlayerList = new ListTable<PlayerBase*>();
+	mTimer.SetDrtTime(10);
 }
 
 // 存储玩家进链表
@@ -287,29 +288,34 @@ void GameControl::RefreshCenterPanel()
 			}
 		}
 	}*/
-	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+
+	if (mTimer.IsTimeOut())
 	{
-		p->data->ShowStar(mCenter_hdc);
-		p->data->DrawPlayerTank(mCenter_hdc);		// 坦克
-		p->data->DrawBullet(mCenter_hdc);
-		p->data->PlayerControl();
-
-		p->data->BulletMoving(mCenter_hdc);
-		CheckKillEnemy(p->data);
-
-		if (p->data->IsShootCamp())
+		for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 		{
-			if (mBlast.canBlast == false)
+			p->data->ShowStar(mCenter_hdc);
+			p->data->DrawPlayerTank(mCenter_hdc);		// 坦克
+			p->data->DrawBullet(mCenter_hdc);
+
+			p->data->BulletMoving(mCenter_hdc);
+			CheckKillEnemy(p->data);
+
+			if (p->data->IsShootCamp())
 			{
-				int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
-				TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
-					GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
-				if (mBlast.counter++ == 17)
-					mBlast.canBlast = true;
-				mCampDie = true;
+				if (mBlast.canBlast == false)
+				{
+					int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
+					TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
+						GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+					if (mBlast.counter++ == 17)
+						mBlast.canBlast = true;
+					mCampDie = true;
+				}
 			}
 		}
 	}
+	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+		p->data->PlayerControl();
 
 	// 敌机
 	for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)

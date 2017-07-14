@@ -2,6 +2,7 @@
 #include "PlayerBase.h"
 #include "EnemyBase.h"
 #include "List.h"
+#include "TimeClock.h"
 
 struct Map
 {
@@ -80,4 +81,6 @@ private:
 
 	bool mEnemyPause;			// 是否可以移动敌机
 	int mEnemyPauseCounter;		// 敌机暂停计数
+
+	TimeClock mTimer;			// 控制绘图频率
 };
