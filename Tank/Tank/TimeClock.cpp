@@ -21,14 +21,11 @@ void TimeClock::Timer1()
 	QPart1 = litmp.QuadPart;
 }
 
-void TimeClock::Timer2()
+bool TimeClock::IsTimeOut()
 {
 	QueryPerformanceCounter(&litmp);
 	QPart2 = litmp.QuadPart;
-}
 
-bool TimeClock::IsTimeOut()
-{
 	if (((double)(QPart2 - QPart1) * 1000) / dfFreq > drtTime)
 	{
 		QPart1 = QPart2;

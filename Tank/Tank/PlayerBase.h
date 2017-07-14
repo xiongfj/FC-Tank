@@ -1,6 +1,7 @@
 #pragma once
 #include "TankClass.h"
 #include "struct.h"
+#include "TimeClock.h"
 
 /************* 玩家控制 *************
 * 一个玩家实例化一个对象
@@ -26,6 +27,9 @@ public:
 	* 纯绘制坦克操作
 	*/
 	void DrawPlayerTank( const HDC& );
+
+	/*绘制子弹,需要与移动分开, 不然主循环内会失帧, 因为不一定每次绘图都会移动*/
+	void DrawBullet(const HDC&);
 
 	/*
 	* GameControl 内循环调用
@@ -148,7 +152,7 @@ private:
 	byte mPlayerTankLevel : 2;				// [0-3] 坦克级别,获得道具后升级坦克
 	byte mTankDir : 2;						// 当前坦克方向0-左,1-上,2右,3-下
 	static int mDevXY[4][2];				// 四个方向的偏移量
-	//int mSpeed[4];							// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样
+	int mSpeed[4];							// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样
 
 	BulletStruct mBulletStruct[2];			// 两颗子弹
 	int mBullet_1_counter;					// 子弹 1 的计数, 子弹 1 发射多久后才能发射子弹 2
@@ -167,4 +171,7 @@ private:
 	/*GameControl 内循环检测该值, 然后在设置 EnemyBase 停止移动*/
 	static bool mTimeProp;			// 记录是否获得 时钟道具
 	static bool mBombProp;			// 地雷道具, 逻辑与 mTimeProp 相同
+
+	TimeClock mTankTimer;			// 坦克移动计时器
+	TimeClock mBulletTimer;			// 子弹移动速度
 };

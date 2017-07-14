@@ -1,6 +1,12 @@
 #pragma once
 
 
+/*
+* Timer1()  开始调用一次
+* Timer2() 循环调用
+* IsTimeOut() 循环调用检测时间差是否大于设置的值
+*/
+
 class TimeClock
 {
 public:
@@ -11,7 +17,6 @@ public:
 	void SetDrtTime(double);
 
 	void Timer1();
-	void Timer2();
 
 	/*比较两个计时时间差, 返回 true false 并重置时间差*/
 	bool IsTimeOut();		// 时间差到

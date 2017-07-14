@@ -89,7 +89,7 @@ void GameControl::LoadMap()
 	while (StartGame())
 	{
 		AddEnemy();
-		Sleep(24);
+		Sleep(1);
 	}
 }
 
@@ -291,7 +291,9 @@ void GameControl::RefreshCenterPanel()
 	{
 		p->data->ShowStar(mCenter_hdc);
 		p->data->DrawPlayerTank(mCenter_hdc);		// Ì¹¿Ë
+		p->data->DrawBullet(mCenter_hdc);
 		p->data->PlayerControl();
+
 		p->data->BulletMoving(mCenter_hdc);
 		CheckKillEnemy(p->data);
 

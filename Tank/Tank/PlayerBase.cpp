@@ -30,6 +30,9 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		mPlayerLife_y = 137;
 		mTankX = 4 * 16 + BOX_SIZE;							// 坦克首次出现时候的中心坐标
 		mTankY = 12 * 16 + BOX_SIZE;
+
+		mTankTimer.SetDrtTime(23);
+		mBulletTimer.SetDrtTime(13);
 	}
 	else
 	{
@@ -42,6 +45,9 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		mPlayerLife_y = 161;
 		mTankX = 8 * 16 + BOX_SIZE;
 		mTankY = 12 * 16 + BOX_SIZE;
+
+		mTankTimer.SetDrtTime(43);
+		mBulletTimer.SetDrtTime(33);
 	}
 
 	// 共同的数据
@@ -55,6 +61,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	int temp[4] = {1, 1, 2, 2};
 	for ( i = 0; i < 4; i++ )
 		mSpeed[i] = temp[i];
+		
 
 	/*********************************
 	* BulletStruct 数据初始化
@@ -192,10 +199,29 @@ void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 		mRing.ShowRing(canvas_hdc, mTankX, mTankY);
 }
 
+void PlayerBase::DrawBullet(const HDC & center_hdc)
+{
+	if (mDied)
+		return;
+
+	for (int i = 0; i < 2; i++)
+	{
+		// 子弹在移动
+		if (mBulletStruct[i].x != SHOOTABLE_X)
+		{
+			int dir = mBulletStruct[i].dir;
+
+			TransparentBlt(center_hdc, mBulletStruct[i].x, mBulletStruct[i].y, BulletStruct::mBulletSize[dir][0],
+				BulletStruct::mBulletSize[dir][1], GetImageHDC(&BulletStruct::mBulletImage[dir]),
+				0, 0, BulletStruct::mBulletSize[dir][0], BulletStruct::mBulletSize[dir][1], 0x000000);
+		}
+	}
+}
+
 //
 bool PlayerBase::PlayerControl()
 {
-	if (mDied || !mStar.mIsOuted)
+	if (mDied || !mStar.mIsOuted || !mTankTimer.IsTimeOut())
 		return true;
 
 	switch (player_id)
@@ -275,7 +301,7 @@ bool PlayerBase::PlayerControl()
 //
 void PlayerBase::BulletMoving(const HDC& center_hdc)
 {
-	if (mDied)
+	if (mDied || mBulletTimer.IsTimeOut() == false)
 		return;
 
 	for (int i = 0; i < 2; i++)
@@ -290,10 +316,6 @@ void PlayerBase::BulletMoving(const HDC& center_hdc)
 			int dir = mBulletStruct[i].dir;
 			mBulletStruct[i].x += mDevXY[dir][0] * mBulletStruct[i].speed[mPlayerTankLevel];
 			mBulletStruct[i].y += mDevXY[dir][1] * mBulletStruct[i].speed[mPlayerTankLevel];
-
-			TransparentBlt(center_hdc, mBulletStruct[i].x, mBulletStruct[i].y, BulletStruct::mBulletSize[dir][0],
-				BulletStruct::mBulletSize[dir][1], GetImageHDC(&BulletStruct::mBulletImage[dir]),
-				0, 0, BulletStruct::mBulletSize[dir][0], BulletStruct::mBulletSize[dir][1], 0x000000);
 
 			// 记录子弹 1 的步数, 决定可否发射子弹 2
 			if ( i == 0 )
