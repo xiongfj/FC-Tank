@@ -128,6 +128,9 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		_stprintf_s(buf, _T("./res/big/ring%d.gif"), i);
 		loadimage(&RingClass::image[i], buf);
 	}
+
+	mBombTimer.SetDrtTime(40);
+	mBlastTimer.SetDrtTime(30);
 }
 
 PlayerBase::~PlayerBase()
@@ -340,8 +343,11 @@ void PlayerBase::Bombing(const HDC& center_hdc)
 		{
 			TransparentBlt(center_hdc, mBombS[i].mBombX - BOX_SIZE, mBombS[i].mBombY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
 				GetImageHDC(&BombStruct::mBombImage[index[mBombS[i].counter % 3]]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
-			if (mBombS[i].counter++ == 3)
-				mBombS[i].canBomb = false;
+			if (mBombTimer.IsTimeOut())
+			{
+				if (mBombS[i].counter++ == 3)
+					mBombS[i].canBomb = false;
+			}
 		}
 	}
 }
@@ -381,10 +387,13 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 	{
 		TransparentBlt(center_hdc, mBlast.blastx - BOX_SIZE * 2, mBlast.blasty - BOX_SIZE * 2, BOX_SIZE * 4, BOX_SIZE * 4,
 			GetImageHDC(&BlastStruct::image[index[mBlast.counter % 6]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
-		if (mBlast.counter++ == 6)
+		if (mBlastTimer.IsTimeOut())
 		{
-			mBlast.canBlast = false;
-			return true;
+			if (mBlast.counter++ == 6)
+			{
+				mBlast.canBlast = false;
+				return true;
+			}
 		}
 	}
 	return false;
