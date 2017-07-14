@@ -55,7 +55,11 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 	// 存储子弹击中玩家,玩家的id
 	mShootedPlayerID = 0;
 
+	// 敌机移动时间间隔
 	mTankTimer.SetDrtTime(50);
+
+	// 子弹移动时间间隔
+	mBulletTimer.SetDrtTime(40);
 }
 
 EnemyBase::~EnemyBase()
@@ -200,7 +204,7 @@ bool EnemyBase::ShootBullet()
 void EnemyBase::BulletMoving(const HDC& center_hdc)
 {
 	// 如果子弹没有移动或者敌机死亡
-	if (mBulletStruct.x == SHOOTABLE_X || mDied)
+	if (mBulletStruct.x == SHOOTABLE_X || mDied || !mBulletTimer.IsTimeOut() )
 		return;
 	
 	// 如果玩家吃到暂停道具

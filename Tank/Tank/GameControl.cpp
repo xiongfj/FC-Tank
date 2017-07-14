@@ -2,7 +2,7 @@
 #include "GameControl.h"
 #include "typeinfo.h"
 
-int GameControl::mCurrentStage = 1;	// [1-35]
+int GameControl::mCurrentStage = 3;	// [1-35]
 GameControl::GameControl( HDC des_hdc, HDC image_hdc/*, BoxMarkStruct* bms*/)
 {
 	//mGraphics = grap;
@@ -290,6 +290,7 @@ void GameControl::RefreshCenterPanel()
 	// 绘图操作时间
 	if (mTimer.IsTimeOut())
 	{
+		// 玩家
 		for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 		{
 			p->data->ShowStar(mCenter_hdc);
@@ -312,17 +313,90 @@ void GameControl::RefreshCenterPanel()
 				}
 			}
 		}
+
+		// 敌机
+		for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+		{
+			(*EnemyItor)->DrawTank(mCenter_hdc);
+			(*EnemyItor)->DrawBullet(mCenter_hdc);
+		}
+
+		// 森林
+		for (int i = 0; i < 26; i++)
+		{
+			for (int j = 0; j < 26; j++)
+			{
+				x = j * BOX_SIZE;// +CENTER_X;
+				y = i * BOX_SIZE;// +CENTER_Y;
+				if (mBoxMarkStruct->box_8[i][j] == _FOREST)
+					BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, SRCCOPY);
+			}
+		}
+
+		// 敌机子弹\坦克爆炸图, 不能重合
+		for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+		{
+			(*EnemyItor)->Bombing(mCenter_hdc);
+
+			// 爆炸完毕, 移除敌机
+			if ((*EnemyItor)->Blasting(mCenter_hdc))
+			{
+				EnemyList.erase(EnemyItor);
+				break;
+			}
+
+			// 如果该敌机击中大本营
+			if ((*EnemyItor)->IsShootCamp())
+			{
+				if (mBlast.canBlast == false)
+				{
+					int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
+					TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
+						GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+					if (mBlast.counter++ == 17)
+						mBlast.canBlast = true;
+					mCampDie = true;
+				}
+			}
+		}
+
+		// 玩家子弹
+		for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+		{
+			p->data->Bombing(mCenter_hdc);
+
+			// 爆炸完成后
+			if (p->data->Blasting(mCenter_hdc))
+			{
+				//PlayerItor = PlayerList.erase(PlayerItor);	// 不能赋值??! 删除最后一个数据的时候 bug 异常!!
+				//break;
+			}
+		}
+
+		// 道具闪烁
+		PlayerBase::ShowProp(mCenter_hdc);
+
+		// 大本营
+		if (!mCampDie)		// 如果没爆炸
+		{
+			TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
+				GetImageHDC(&mCamp[0]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+		}
+		else if (mBlast.canBlast)	// 如果爆炸完毕, 显示被摧毁的camp
+		{
+			TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
+				GetImageHDC(&mCamp[1]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+		}
 	}
-	// 操作,不包括绘图, 必须放在第一层循环中,内含计时器
+
+	// 玩家, 不能包含绘图操作! 内含计时器
 	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 		p->data->PlayerControl();
 
-	// 敌机
+	// 敌机, 此处不能包含计绘图操作, 内含计时器, 不然那会导致计时器与主计时器不一致,导致失帧
 	for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 	{
-		(*EnemyItor)->DrawTank(mCenter_hdc);
 		(*EnemyItor)->ShootBullet();
-		(*EnemyItor)->DrawBullet(mCenter_hdc);
 
 		// 如果敌机暂停
 		if (mEnemyPause == false)
@@ -330,81 +404,13 @@ void GameControl::RefreshCenterPanel()
 			(*EnemyItor)->TankMoving(mCenter_hdc);
 			(*EnemyItor)->BulletMoving(mCenter_hdc);
 		}
-		else if ( mEnemyPauseCounter++ > 4300 )
+		else if (mEnemyPauseCounter++ > 4300)
 		{
 			mEnemyPause = false;
 			mEnemyPauseCounter = 0;;
 		}
 
 		CheckKillPlayer(EnemyItor);
-	}
-
-
-	// 敌机子弹\坦克爆炸图
-	for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
-	{
-		(*EnemyItor)->Bombing(mCenter_hdc);
-
-		// 爆炸完毕, 移除敌机
-		if ((*EnemyItor)->Blasting(mCenter_hdc))
-		{
-			//EnemyItor = EnemyList.erase(EnemyItor);		// 删除最后一架敌机的时候会异常!!
-			EnemyList.erase(EnemyItor);
-			break;
-		}
-
-		// 如果该敌机击中大本营
-		if ((*EnemyItor)->IsShootCamp())
-		{
-			if (mBlast.canBlast == false)
-			{
-				int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
-				TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
-					GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
-				if (mBlast.counter++ == 17)
-					mBlast.canBlast = true;
-				mCampDie = true;
-			}
-		}
-	}
-
-	// 玩家子弹爆炸
-	/*for (list<PlayerBase*>::iterator PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
-	{
-		(*PlayerItor)->Bombing(mCenter_hdc);
-
-		// 爆炸完成后
-		if ((*PlayerItor)->Blasting(mCenter_hdc))
-		{
-			//PlayerItor = PlayerList.erase(PlayerItor);	// 不能赋值??! 删除最后一个数据的时候 bug 异常!!
-			//break;
-		}
-	}*/
-	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
-	{
-		p->data->Bombing(mCenter_hdc);
-
-		// 爆炸完成后
-		if (p->data->Blasting(mCenter_hdc))
-		{
-			//PlayerItor = PlayerList.erase(PlayerItor);	// 不能赋值??! 删除最后一个数据的时候 bug 异常!!
-			//break;
-		}
-	}
-
-	//mProp.ShowProp(mCenter_hdc);
-	PlayerBase::ShowProp(mCenter_hdc);
-
-	// 大本营
-	if (!mCampDie)		// 如果没爆炸
-	{
-		TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
-			GetImageHDC(&mCamp[0]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
-	}
-	else if (mBlast.canBlast)	// 如果爆炸完毕, 显示被摧毁的camp
-	{
-		TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
-			GetImageHDC(&mCamp[1]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 	}
 }
 

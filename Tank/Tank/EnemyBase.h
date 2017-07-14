@@ -68,6 +68,7 @@ protected:
 	//static int mPauseCounter;			// 暂停多久
 
 	TimeClock mTankTimer;		// 敌机移动速度
+	TimeClock mBulletTimer;		// 子弹移动速度
 };
 
 // 前三种普通坦克
