@@ -167,6 +167,19 @@ void EnemyBase::DrawTank(const HDC& center_hdc)
 	
 }*/
 
+// 
+void EnemyBase::DrawBullet(const HDC& center_hdc)
+{
+	// 如果子弹没有移动或者敌机死亡
+	if (mBulletStruct.x == SHOOTABLE_X || mDied)
+		return;
+	int dir = mBulletStruct.dir;
+
+	TransparentBlt(center_hdc, mBulletStruct.x, mBulletStruct.y, BulletStruct::mBulletSize[dir][0],
+		BulletStruct::mBulletSize[dir][1], GetImageHDC(&BulletStruct::mBulletImage[dir]),
+		0, 0, BulletStruct::mBulletSize[dir][0], BulletStruct::mBulletSize[dir][1], 0x000000);
+}
+
 //
 bool EnemyBase::ShootBullet()
 {
@@ -201,10 +214,11 @@ void EnemyBase::BulletMoving(const HDC& center_hdc)
 	int dir = mBulletStruct.dir;
 	mBulletStruct.x += mDevXY[dir][0] * mBulletStruct.speed[mEnemyTankLevel];
 	mBulletStruct.y += mDevXY[dir][1] * mBulletStruct.speed[mEnemyTankLevel];
-
+	/*
 	TransparentBlt(center_hdc, mBulletStruct.x, mBulletStruct.y, BulletStruct::mBulletSize[dir][0],
 		BulletStruct::mBulletSize[dir][1], GetImageHDC(&BulletStruct::mBulletImage[dir]),
 		0, 0, BulletStruct::mBulletSize[dir][0], BulletStruct::mBulletSize[dir][1], 0x000000);
+		*/
 }
 
 //

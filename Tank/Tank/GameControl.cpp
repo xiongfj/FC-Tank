@@ -261,8 +261,6 @@ void GameControl::RefreshCenterPanel()
 		for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 		{
 			(*EnemyItor)->BeKill();
-			//mRemainEnemyTankNumber--;
-			//mActiveEnemyTankNumber--;
 		}
 	}
 
@@ -324,6 +322,7 @@ void GameControl::RefreshCenterPanel()
 	{
 		(*EnemyItor)->DrawTank(mCenter_hdc);
 		(*EnemyItor)->ShootBullet();
+		(*EnemyItor)->DrawBullet(mCenter_hdc);
 
 		// 如果敌机暂停
 		if (mEnemyPause == false)
@@ -340,17 +339,6 @@ void GameControl::RefreshCenterPanel()
 		CheckKillPlayer(EnemyItor);
 	}
 
-	// 森林
-	for (int i = 0; i < 26; i++)
-	{
-		for (int j = 0; j < 26; j++)
-		{
-			x = j * BOX_SIZE;// +CENTER_X;
-			y = i * BOX_SIZE;// +CENTER_Y;
-			if (mBoxMarkStruct->box_8[i][j] == _FOREST)
-				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, SRCCOPY);
-		}
-	}
 
 	// 敌机子弹\坦克爆炸图
 	for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)

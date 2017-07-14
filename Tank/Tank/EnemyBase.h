@@ -16,6 +16,7 @@ public:
 	bool ShowStar(const HDC& center_hdc, int& total );		// 显示闪烁四角星, true-正在显示, false-显示完毕
 	void TankMoving(const HDC& center_hdc);		// 敌机移动
 	virtual void DrawTank(const HDC&) {}			// 纯绘制坦克, 子类覆绘制
+	void DrawBullet(const HDC&);			// 绘制子弹, 需要与子弹移动分开,
 	bool ShootBullet();			// 发射子弹
 	void BulletMoving(const HDC& );			// 子弹移动
 	void Bombing(const HDC&);
