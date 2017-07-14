@@ -42,7 +42,7 @@ void GameControl::Init()
 	mEnemyPauseCounter = 0;			// 敌机暂停多久
 
 	//PlayerList = new ListTable<PlayerBase*>();
-	mTimer.SetDrtTime(10);
+	mTimer.SetDrtTime(14);
 }
 
 // 存储玩家进链表
@@ -74,7 +74,8 @@ void GameControl::LoadMap()
 		for ( int j = 0; j < 26; j++ )
 		{
 			SignBoxMark( i, j, mMap.buf[i][j] - '0' );		// 标记 26*26 和 52*52 格子
-			mBoxMarkStruct->prop_8[i][j] = 0;
+			mBoxMarkStruct->prop_8[i][j] = _EMPTY;
+			mBoxMarkStruct->tank_8[i][j] = _EMPTY;
 		}
 	}
 
@@ -89,25 +90,34 @@ void GameControl::LoadMap()
 
 	while (StartGame())
 	{
-		AddEnemy();
 		Sleep(1);
 	}
 }
 
 bool GameControl::StartGame()
 {
-	// 更新右边面板的数据, 待判断, 因为不需要经常更新 mImage_hdc
-	RefreshRightPanel();
+	// 主绘图操作时间
+	if (mTimer.IsTimeOut())
+	{
+		AddEnemy();
 
-	// 更新中心游戏区域: mCenter_hdc
-	RefreshCenterPanel();
+		// 更新右边面板的数据, 待判断, 因为不需要经常更新 mImage_hdc
+		RefreshRightPanel();
 
-	// 将中心画布印到主画布 mImage_hdc 上
-	BitBlt( mImage_hdc, CENTER_X, CENTER_Y, CENTER_WIDTH, CENTER_HEIGHT, mCenter_hdc, 0, 0, SRCCOPY );
+		// 更新中心游戏区域: mCenter_hdc
+		RefreshCenterPanel();
+
+		// 将中心画布印到主画布 mImage_hdc 上
+		BitBlt( mImage_hdc, CENTER_X, CENTER_Y, CENTER_WIDTH, CENTER_HEIGHT, mCenter_hdc, 0, 0, SRCCOPY );
 	
-	// 整张画布缩放显示 image 到主窗口
-	StretchBlt( mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY );
-	FlushBatchDraw();
+		// 整张画布缩放显示 image 到主窗口
+		StretchBlt( mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY );
+		FlushBatchDraw();
+
+	}
+
+	// 数据变化, 不能涉及绘图操作
+	RefreshData();
 
 	return true;
 }
@@ -138,6 +148,50 @@ void GameControl::SignBoxMark(int i, int j, int sign_val)
 
 	for ( int i = 0; i < 4; i++ )
 		mBoxMarkStruct->box_4[ temp_i[i] ][ temp_j[i] ] = sign_val;
+}
+
+// 数据更新, 不涉及绘图操作!!
+void GameControl::RefreshData()
+{
+	// 检测玩家是否获得 '时钟' 静止道具
+	if (PlayerBase::IsGetTimeProp())
+	{
+		mEnemyPause = true;
+		mEnemyPauseCounter = 0;
+	}
+
+	// 玩家获得地雷道具
+	if (PlayerBase::IsGetBombProp())
+	{
+		for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+		{
+			(*EnemyItor)->BeKill();
+		}
+	}
+
+	// 玩家, 不能包含绘图操作! 内含计时器
+	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+		p->data->PlayerControl();
+
+	// 敌机, 此处不能包含计绘图操作, 内含计时器, 不然那会导致计时器与主计时器不一致,导致失帧
+	for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+	{
+		(*EnemyItor)->ShootBullet();
+
+		// 如果敌机暂停
+		if (mEnemyPause == false)
+		{
+			(*EnemyItor)->TankMoving(mCenter_hdc);
+			(*EnemyItor)->BulletMoving(mCenter_hdc);
+		}
+		else if (mEnemyPauseCounter++ > 4300)
+		{
+			mEnemyPause = false;
+			mEnemyPauseCounter = 0;;
+		}
+
+		CheckKillPlayer(EnemyItor);
+	}
 }
 
 void GameControl::RefreshRightPanel()
@@ -187,109 +241,66 @@ void GameControl::RefreshRightPanel()
 // 更新中间游戏区域
 void GameControl::RefreshCenterPanel()
 {
+		BitBlt(mCenter_hdc, 0, 0, CENTER_WIDTH, CENTER_HEIGHT, GetImageHDC(&mBlackBackgroundImage), 0, 0, SRCCOPY);// 中心黑色背景游戏区
 
-	BitBlt(mCenter_hdc, 0, 0, CENTER_WIDTH, CENTER_HEIGHT, GetImageHDC(&mBlackBackgroundImage), 0, 0, SRCCOPY);// 中心黑色背景游戏区
-																											  
-	// 四角星闪烁控制
-	for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
-	{
-		// 一个四角星动画结束后再执行下一个
-		if ((*EnemyItor)->ShowStar(mCenter_hdc, mRemainEnemyTankNumber) == SHOWING_STAR)
-		{
-			break;
-		}
-	}
-
-	/* 开始根据数据文件绘制地图
-	* 划分为 BOX_SIZE x BOX_SIZE 的格子
-	* x坐标： j*BOX_SIZE
-	* y坐标： i*BOX_SIZE
-	*/
-	int x = 0, y = 0;
-	for (int i = 0; i < 26; i++)
-	{
-		for (int j = 0; j < 26; j++)
-		{
-			x = j * BOX_SIZE;// +CENTER_X;
-			y = i * BOX_SIZE;// +CENTER_Y;
-			switch (mBoxMarkStruct->box_8[i][j])
-			{
-			case _WALL:
-				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mWallImage), 0, 0, SRCCOPY);
-				break;
-			//case _FOREST:
-			//	BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, SRCCOPY);
-				//break;
-			case _ICE:
-				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mIceImage), 0, 0, SRCCOPY);
-				break;
-			case _RIVER:
-				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mRiverImage[0]), 0, 0, SRCCOPY);
-				break;
-			case _STONE:
-				BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mStoneImage), 0, 0, SRCCOPY);
-				break;
-			default:
-				break;
-			}
-		}
-	}
-
-	// 检测被销毁的障碍物, 绘制黑色图片擦除
-	for (int i = 0; i < 52; i++)
-	{
-		for (int j = 0; j < 52; j++)
-		{
-			if (mBoxMarkStruct->box_4[i][j] == _CLEAR)
-			{
-				BitBlt(mCenter_hdc, j * SMALL_BOX_SIZE, i * SMALL_BOX_SIZE, SMALL_BOX_SIZE, SMALL_BOX_SIZE,
-					GetImageHDC(&mBlackBackgroundImage), 0, 0, SRCCOPY);
-			}
-		}
-	}
-
-	// 检测玩家是否获得 '时钟' 静止道具
-	if (PlayerBase::IsGetTimeProp())
-	{
-		mEnemyPause = true;
-		mEnemyPauseCounter = 0;
-	}
-
-	// 玩家获得地雷道具
-	if (PlayerBase::IsGetBombProp())
-	{
+																												   // 四角星闪烁控制
 		for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 		{
-			(*EnemyItor)->BeKill();
-		}
-	}
-
-	// 玩家
-	/*for (list<PlayerBase*>::iterator PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
-	{
-		(*PlayerItor)->ShowStar(mCenter_hdc);
-		(*PlayerItor)->DrawPlayerTank(mCenter_hdc);		// 坦克
-		(*PlayerItor)->PlayerControl();
-		(*PlayerItor)->BulletMoving(mCenter_hdc);
-		CheckKillEnemy(PlayerItor);
-
-		if ((*PlayerItor)->IsShootCamp())
-		{
-			if (mBlast.canBlast == false)
+			// 一个四角星动画结束后再执行下一个
+			if ((*EnemyItor)->ShowStar(mCenter_hdc, mRemainEnemyTankNumber) == SHOWING_STAR)
 			{
-				int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
-				TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
-					GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
-				if (mBlast.counter++ == 17)
-					mBlast.canBlast = true;
-				mCampDie = true;
+				break;
 			}
 		}
-	}*/
 
-	// 绘图操作时间
-	if (mTimer.IsTimeOut())
-	{
+		/* 开始根据数据文件绘制地图
+		* 划分为 BOX_SIZE x BOX_SIZE 的格子
+		* x坐标： j*BOX_SIZE
+		* y坐标： i*BOX_SIZE
+		*/
+		int x = 0, y = 0;
+		for (int i = 0; i < 26; i++)
+		{
+			for (int j = 0; j < 26; j++)
+			{
+				x = j * BOX_SIZE;// +CENTER_X;
+				y = i * BOX_SIZE;// +CENTER_Y;
+				switch (mBoxMarkStruct->box_8[i][j])
+				{
+				case _WALL:
+					BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mWallImage), 0, 0, SRCCOPY);
+					break;
+					//case _FOREST:
+					//	BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, SRCCOPY);
+					//break;
+				case _ICE:
+					BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mIceImage), 0, 0, SRCCOPY);
+					break;
+				case _RIVER:
+					BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mRiverImage[0]), 0, 0, SRCCOPY);
+					break;
+				case _STONE:
+					BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mStoneImage), 0, 0, SRCCOPY);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+
+		// 检测被销毁的障碍物, 绘制黑色图片擦除
+		for (int i = 0; i < 52; i++)
+		{
+			for (int j = 0; j < 52; j++)
+			{
+				if (mBoxMarkStruct->box_4[i][j] == _CLEAR)
+				{
+					BitBlt(mCenter_hdc, j * SMALL_BOX_SIZE, i * SMALL_BOX_SIZE, SMALL_BOX_SIZE, SMALL_BOX_SIZE,
+						GetImageHDC(&mBlackBackgroundImage), 0, 0, SRCCOPY);
+				}
+			}
+		}
+
 		// 玩家
 		for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 		{
@@ -373,7 +384,7 @@ void GameControl::RefreshCenterPanel()
 			}
 		}
 
-		// 道具闪烁
+		// 道具闪烁, 内部自定义时钟
 		PlayerBase::ShowProp(mCenter_hdc);
 
 		// 大本营
@@ -387,31 +398,6 @@ void GameControl::RefreshCenterPanel()
 			TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
 				GetImageHDC(&mCamp[1]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 		}
-	}
-
-	// 玩家, 不能包含绘图操作! 内含计时器
-	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
-		p->data->PlayerControl();
-
-	// 敌机, 此处不能包含计绘图操作, 内含计时器, 不然那会导致计时器与主计时器不一致,导致失帧
-	for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
-	{
-		(*EnemyItor)->ShootBullet();
-
-		// 如果敌机暂停
-		if (mEnemyPause == false)
-		{
-			(*EnemyItor)->TankMoving(mCenter_hdc);
-			(*EnemyItor)->BulletMoving(mCenter_hdc);
-		}
-		else if (mEnemyPauseCounter++ > 4300)
-		{
-			mEnemyPause = false;
-			mEnemyPauseCounter = 0;;
-		}
-
-		CheckKillPlayer(EnemyItor);
-	}
 }
 
 // 读取PlayerBase 内的数据, 消灭敌机

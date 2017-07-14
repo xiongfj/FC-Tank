@@ -17,6 +17,7 @@ public:
 	void SetDrtTime(double);
 
 	void Timer1();
+	void Init();		// 重置 t1 = t2
 
 	/*比较两个计时时间差, 返回 true false 并重置时间差*/
 	bool IsTimeOut();		// 时间差到

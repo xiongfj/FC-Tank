@@ -1,4 +1,5 @@
 #pragma once
+#include "TimeClock.h"
 
 #define WINDOW_WIDTH	512		// 窗口大小，可以由玩家修改，
 #define WINDOW_HEIGHT	448
@@ -74,6 +75,7 @@ struct BoxMarkStruct
 	int box_8[26][26];			// 8*8 格子的标记, 坦克移动,击中用该格子检测
 	int box_4[52][52];			// 4*4 格子的标记, 墙被击中用该标记检测
 	int prop_8[26][26];			// 道具的格子标记
+	int tank_8[26][26];			// 坦克标记, 坦克会与森林重合, 需要与 box_8 分开
 };
 
 
@@ -175,5 +177,6 @@ private:
 	int index_counter = 0;			// 下标变换索引
 	/*static */IMAGE image[6];
 	/*static */int prop_kind;			// 道具类型
-	bool can_show;				// 是否可以显示道具	
+	bool can_show;				// 是否可以显示道具
+	//TimeClock mTimer;
 };

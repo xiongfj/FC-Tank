@@ -32,7 +32,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		mTankY = 12 * 16 + BOX_SIZE;
 
 		mTankTimer.SetDrtTime(23);
-		mBulletTimer.SetDrtTime(13);
+		mBulletTimer.SetDrtTime(23);
 	}
 	else
 	{
@@ -174,7 +174,7 @@ bool PlayerBase::ShowStar(const HDC& center_hdc)
 		if (mStar.mStarCounter == 25)
 		{
 			mStar.mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
-			SignBox_8(mTankX, mTankY, PLAYER_SIGN + player_id);		// 坦克出现, 将四角星标记改为坦克标记
+			SignTank_8(mTankX, mTankY, PLAYER_SIGN + player_id);		// 坦克出现, 将四角星标记改为坦克标记
 			return STOP_SHOW_STAR;
 		}
 	}
@@ -365,7 +365,7 @@ bool PlayerBase::IsShootCamp()
 void PlayerBase::BeKill()
 {
 	mDied = true;
-	SignBox_8(mTankX, mTankY, _EMPTY);
+	SignTank_8(mTankX, mTankY, _EMPTY);
 
 	// 设置爆炸坐标
 	mBlast.blastx = mTankX;
@@ -453,7 +453,7 @@ void PlayerBase::DispatchProp(int prop_kind)
 // 变向的同时调整坦克所在格子. 必须保证坦克中心在格子线上
 void PlayerBase::Move(int new_dir)
 {
-	SignBox_8(mTankX, mTankY, _EMPTY);
+	SignTank_8(mTankX, mTankY, _EMPTY);
 
 	if (mTankDir != new_dir)
 	{
@@ -485,7 +485,7 @@ void PlayerBase::Move(int new_dir)
 			mTankY += mDevXY[mTankDir][1] * mSpeed[mPlayerTankLevel];
 		}
 	}
-	SignBox_8(mTankX, mTankY, PLAYER_SIGN + player_id);
+	SignTank_8(mTankX, mTankY, PLAYER_SIGN + player_id);
 }
 
 /* 判断当前方向可否移动
@@ -540,7 +540,11 @@ bool PlayerBase::CheckMoveable()
 	else if (prop2 >= PROP_SIGN && prop2 < PROP_SIGN + 6)
 		DispatchProp(prop2 - PROP_SIGN);
 
-	if (temp1 > 2 || temp2 > 2 )
+	// 2 号玩家格子
+	int tank1 = bms->tank_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]];
+	int tank2 = bms->tank_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]];
+
+	if (temp1 > 2 || temp2 > 2 || tank1 != _EMPTY || tank2 != _EMPTY )
 	{
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
 		switch (mTankDir)
@@ -661,7 +665,7 @@ bool PlayerBase::CheckBomb(int i)
 			// 8*8 格子, 判断是否击中敌机
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
-			if (bms->box_8[tempi][tempj] >= ENEMY_SIGN && bms->box_8[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
+			if (bms->tank_8[tempi][tempj] >= ENEMY_SIGN && bms->tank_8[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
 			{
 				mBulletStruct[i].x = SHOOTABLE_X;
 				mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
@@ -670,7 +674,7 @@ bool PlayerBase::CheckBomb(int i)
 				mBombS[i].counter = 0;
 
 				// 标记击中了敌机的 id
-				mBulletStruct[i].mKillId = bms->box_8[tempi][tempj];
+				mBulletStruct[i].mKillId = bms->tank_8[tempi][tempj];
 				mProp->StartShowProp(100, 100);
 				return true;
 			}
@@ -711,7 +715,7 @@ bool PlayerBase::CheckBomb(int i)
 			// 8*8 格子, 判断是否击中敌机
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
-			if (bms->box_8[tempi][tempj] >= ENEMY_SIGN && bms->box_8[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
+			if (bms->tank_8[tempi][tempj] >= ENEMY_SIGN && bms->tank_8[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
 			{
 			//	printf("%d\n", bms->box_8[tempi][tempj]);
 				mBulletStruct[i].x = SHOOTABLE_X;
@@ -721,7 +725,7 @@ bool PlayerBase::CheckBomb(int i)
 				mBombS[i].counter = 0;
 
 				// 标记击中了敌机的 id
-				mBulletStruct[i].mKillId = bms->box_8[tempi][tempj];
+				mBulletStruct[i].mKillId = bms->tank_8[tempi][tempj];
 				mProp->StartShowProp(100, 100);
 				return true;
 			}
@@ -849,6 +853,20 @@ void PlayerBase::SignBox_8(int x, int y, int val)
 		for (int j = jx; j < jx + 2; j++)
 		{
 			bms->box_8[i][j] = val;
+		}
+	}
+}
+
+void PlayerBase::SignTank_8(int x, int y, int val)
+{
+	// 右坦克中心索引转到左上角那个的 格子索引
+	int iy = y / BOX_SIZE - 1;
+	int jx = x / BOX_SIZE - 1;
+	for (int i = iy; i < iy + 2; i++)
+	{
+		for (int j = jx; j < jx + 2; j++)
+		{
+			bms->tank_8[i][j] = val;
 		}
 	}
 }

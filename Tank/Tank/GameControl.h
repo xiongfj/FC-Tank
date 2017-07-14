@@ -30,6 +30,7 @@ public:
 private:
 	void AddEnemy();						// 游戏开始前 添加20 架敌机
 	void SignBoxMark(int i, int j, int sign_val);	// 标记格子, LoadMap() 内调用
+	void RefreshData();
 	void RefreshRightPanel();						// 刷新右边信息面板数据, 根据数据变化才调用更新
 	void RefreshCenterPanel();						// 刷新中间游戏区域 208 * 208
 	void CheckKillEnemy(PlayerBase*);		// 检测玩家是否击中敌机, 击中则删除该敌机

@@ -51,14 +51,14 @@ RingClass::RingClass()
 
 void RingClass::ShowRing(const HDC &canvas_hdc, int mTankX, int mTankY)
 {
-	if (index_counter > 290)
+	if (index_counter > 790)
 	{
 		canshow = false;
 		index_counter = 0;
 		return;
 	}
 	TransparentBlt(canvas_hdc, (int)(mTankX - BOX_SIZE), (int)(mTankY - BOX_SIZE), BOX_SIZE * 2, 
-			BOX_SIZE * 2, GetImageHDC(&image[index_counter++ % 2]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+			BOX_SIZE * 2, GetImageHDC(&image[index_counter++ / 4 % 2]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }
 
 void RingClass::SetShowable()
@@ -83,6 +83,8 @@ PropClass::PropClass()
 		_stprintf_s(buf, _T("./res/big/prop/p%d.gif"), i);
 		loadimage(&image[i], buf);
 	}
+
+	//mTimer.SetDrtTime(10);
 }
 
 // GameControl 内循环检测该函数
@@ -91,7 +93,7 @@ void PropClass::ShowProp(const HDC &canvas_hdc)
 	if (!can_show)
 		return;
 
-	if ( (++index_counter / 4) % 2 == 0 )
+	if ( (++index_counter / 17) % 2 == 0 )
 		TransparentBlt(canvas_hdc, leftx, topy, BOX_SIZE * 2,
 			BOX_SIZE * 2, GetImageHDC(&image[prop_kind]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 

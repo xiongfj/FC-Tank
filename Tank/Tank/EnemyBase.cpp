@@ -42,9 +42,9 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 		mBulletStruct.speed[i] = 3;		// 不能超过 4
 	mBulletStruct.mKillId = 0;			// 记录击中玩家坦克的id
 	
-	mBulletT1 = timeGetTime();
-	mBulletT2 = timeGetTime();
-	mBulletT = rand() % 111 + 320;		// 发射子弹的间隔时间 4000 
+	//mBulletT1 = timeGetTime();
+	//mBulletT2 = timeGetTime();
+	//mBulletT = rand() % 111 + 320;		// 发射子弹的间隔时间 4000 
 
 	// 爆炸图片
 	mBombS.mBombX = -100;
@@ -60,6 +60,10 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 
 	// 子弹移动时间间隔
 	mBulletTimer.SetDrtTime(40);
+
+	// 发射子弹频率
+	//mShootTimer.Init();
+	mShootTimer.SetDrtTime(30);
 }
 
 EnemyBase::~EnemyBase()
@@ -94,7 +98,7 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 		mTankNumberReduce = false;
 
 		// 标记为 STAR_SIGN = 2000, 2000 属于坦克不能穿行的标志
-		SignBox_8(mTankX, mTankY, STAR_SIGN);
+		SignTank_8(mTankX, mTankY, STAR_SIGN);
 	}
 
 	// 开始闪烁四角星
@@ -117,8 +121,8 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 		if (mStar.mStarCounter == 35)
 		{
 			mStar.mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
-			mBulletT1 = timeGetTime();
-			SignBox_8(mTankX, mTankY, ENEMY_SIGN + mEnemyId);		// 坦克出现, 将四角星标记改为坦克标记
+			//mShootTimer.Timer1();	//注释后坦克一出现一般都会立刻发射子弹??
+			SignTank_8(mTankX, mTankY, ENEMY_SIGN + mEnemyId);		// 坦克出现, 将四角星标记改为坦克标记
 			return STOP_SHOW_STAR;
 		}
 	}
@@ -134,10 +138,10 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 	if (!mStar.mIsOuted || mDied || mTankTimer.IsTimeOut() == false )
 		return;
 	
-	mBulletT2 = timeGetTime();
+	//mBulletT2 = timeGetTime();
 
 	// 移动前取消标记
-	SignBox_8(mTankX, mTankY, _EMPTY);
+	SignTank_8(mTankX, mTankY, _EMPTY);
 
 	// 重定向
 	if (mStep-- < 0)
@@ -159,7 +163,7 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 	}
 
 	// 在新位置重新标记
-	SignBox_8(mTankX, mTankY, ENEMY_SIGN + mEnemyId);
+	SignTank_8(mTankX, mTankY, ENEMY_SIGN + mEnemyId);
 }
 /*
 void EnemyBase::DrawTank(const HDC& center_hdc)
@@ -187,10 +191,8 @@ void EnemyBase::DrawBullet(const HDC& center_hdc)
 //
 bool EnemyBase::ShootBullet()
 {
-	if (mBulletStruct.x != SHOOTABLE_X || mBulletT2 - mBulletT1 < mBulletT || mDied)
+	if (mBulletStruct.x != SHOOTABLE_X || !mShootTimer.IsTimeOut() || mDied || mStar.mIsOuted == false )
 		return false;
-
-	mBulletT1 = mBulletT2;
 
 	// 子弹发射点坐标
 	mBulletStruct.x = mTankX + BulletStruct::devto_tank[mTankDir][0];
@@ -246,7 +248,7 @@ void EnemyBase::BeKill()
 		return;
 
 	mDied = true;
-	SignBox_8(mTankX, mTankY, _EMPTY);
+	SignTank_8(mTankX, mTankY, _EMPTY);
 
 	// 设置爆炸坐标
 	mBlast.blastx = mTankX;
@@ -331,6 +333,20 @@ void EnemyBase::SignBox_8(int x, int y, int value)
 	}
 }
 
+void EnemyBase::SignTank_8(int x, int y, int val)
+{
+	// 右坦克中心索引转到左上角那个的 格子索引
+	int iy = y / BOX_SIZE - 1;
+	int jx = x / BOX_SIZE - 1;
+	for (int i = iy; i < iy + 2; i++)
+	{
+		for (int j = jx; j < jx + 2; j++)
+		{
+			bms->tank_8[i][j] = val;
+		}
+	}
+}
+
 // 检测某个16*16位置可以放坦克吗, x,y 16*16的中心点
 bool EnemyBase::CheckBox_8()
 {
@@ -340,7 +356,8 @@ bool EnemyBase::CheckBox_8()
 	{
 		for (int j = jx; j < jx + 2; j++)
 		{
-			if (bms->box_8[i][j] != STAR_SIGN && bms->box_8[i][j] != _EMPTY)
+			if (bms->box_8[i][j] != STAR_SIGN && bms->box_8[i][j] != _EMPTY ||  
+				bms->tank_8[i][j] >= PLAYER_SIGN && bms->tank_8[i][j] <= ENEMY_SIGN + TOTAL_ENEMY_NUMBER )
 				return false;
 		}
 	}
@@ -376,10 +393,12 @@ bool EnemyBase::CheckMoveable()
 	int dev[4][2][2] = { { { -1,-1 },{ 0,-1 } },{ { -1,-1 },{ -1,0 } },{ { -1,1 },{ 0,1 } },{ { 1,-1 },{ 1,0 } } };
 
 	// 如果遇到障碍物或其它敌机,或者其它标志..
-	if (bms->box_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] > 2 &&
-		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][0][1]] != ENEMY_SIGN + mEnemyId ||
-		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] > 2 &&
-		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] != ENEMY_SIGN + mEnemyId)
+	if (bms->box_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] > 2 ||
+		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][0][1]] != ENEMY_SIGN + mEnemyId &&
+		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][0][1]] >= ENEMY_SIGN ||
+		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] > 2 ||
+		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] != ENEMY_SIGN + mEnemyId &&
+		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] >= ENEMY_SIGN)
 	{
 		//SignBox_8(_EMPTY);
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
@@ -495,7 +514,7 @@ bool EnemyBase::CheckBomb()
 			// 8*8 格子, 判断是否击中玩家
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
-			if (bms->box_8[tempi][tempj] == PLAYER_SIGN || bms->box_8[tempi][tempj] == PLAYER_SIGN + 1)
+			if (bms->tank_8[tempi][tempj] == PLAYER_SIGN || bms->tank_8[tempi][tempj] == PLAYER_SIGN + 1)
 			{
 				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
@@ -503,7 +522,7 @@ bool EnemyBase::CheckBomb()
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
 
-				mShootedPlayerID = bms->box_8[tempi][tempj];
+				mShootedPlayerID = bms->tank_8[tempi][tempj];
 				return true;
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
@@ -543,7 +562,7 @@ bool EnemyBase::CheckBomb()
 			// 8*8 格子, 判断是否击中
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
-			if (bms->box_8[tempi][tempj] == PLAYER_SIGN || bms->box_8[tempi][tempj] == PLAYER_SIGN + 1)
+			if (bms->tank_8[tempi][tempj] == PLAYER_SIGN || bms->tank_8[tempi][tempj] == PLAYER_SIGN + 1)
 			{
 				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
@@ -551,7 +570,7 @@ bool EnemyBase::CheckBomb()
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
 
-				mShootedPlayerID = bms->box_8[tempi][tempj];
+				mShootedPlayerID = bms->tank_8[tempi][tempj];
 				return true;
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)

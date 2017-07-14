@@ -31,6 +31,7 @@ public:
 private:
 	void SignBox_4(int value);		// 标记或取消 4*4 大小的格子为坦克;
 	void SignBox_8(int, int, int value);
+	void SignTank_8(int, int, int);
 	bool CheckBox_8();	// 检测某个 box_8 是否可以放置坦克, 参数是 16*16 格子的中心点, 与坦克坐标规则相同
 	bool CheckMoveable();			// 
 	void RejustDirPosition();		// 重新定位坦克方向, 调正坦克位置, 保持在格子上
@@ -56,8 +57,8 @@ protected:
 	bool mTankNumberReduce;		// 当四角星开始, true-坦克总数减一,然后设该值=false, 只减一次
 
 	BulletStruct mBulletStruct;
-	DWORD mBulletT1, mBulletT2;	// 计数器, 多久发射一次子弹
-	DWORD mBulletT;
+	//DWORD mBulletT1, mBulletT2;	// 计数器, 多久发射一次子弹
+	//DWORD mBulletT;
 
 	BombStruct mBombS;			// 爆炸结构体
 	BlastStruct mBlast;			// 坦克爆炸结构
@@ -69,6 +70,7 @@ protected:
 
 	TimeClock mTankTimer;		// 敌机移动速度
 	TimeClock mBulletTimer;		// 子弹移动速度
+	TimeClock mShootTimer;		// 发射子弹频率
 };
 
 // 前三种普通坦克

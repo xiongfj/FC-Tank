@@ -21,6 +21,13 @@ void TimeClock::Timer1()
 	QPart1 = litmp.QuadPart;
 }
 
+void TimeClock::Init()
+{
+	QueryPerformanceCounter(&litmp);
+	QPart1 = litmp.QuadPart;
+	QPart2 = litmp.QuadPart;
+}
+
 bool TimeClock::IsTimeOut()
 {
 	QueryPerformanceCounter(&litmp);

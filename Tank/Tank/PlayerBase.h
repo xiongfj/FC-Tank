@@ -129,6 +129,7 @@ private:
 	* val : 需要标记的值
 	*/
 	void SignBox_8(int x, int y, int val);
+	void SignTank_8(int, int, int);
 
 private:
 	bool mDied;								// 生命是否用完,死亡
