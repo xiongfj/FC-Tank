@@ -548,7 +548,8 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
-				//会检测多次..printf("%d, %d\n", tempi, tempj);
+				//会检测多次..
+				printf("                  ---%d, %d\n", tempi, tempj);
 				//.mShootedPlayerID = bms->tank_8[tempi][tempj];
 				return (EnemyBulletShootKind)bms->tank_8[tempi][tempj];
 			}
@@ -597,7 +598,7 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
 
-				//printf("%d, %d\n", tempi, tempj);
+				printf("                   --%d, %d\n", tempi, tempj);
 				//.mShootedPlayerID = bms->tank_8[tempi][tempj];
 				return EnemyBulletShootKind(bms->tank_8[tempi][tempj]);
 			}

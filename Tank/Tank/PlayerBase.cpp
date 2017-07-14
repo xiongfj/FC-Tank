@@ -366,6 +366,7 @@ void PlayerBase::GetKillEnemy(int& bullet1, int& bullet2)
 	mBulletStruct[1].mKillId = 0;
 }
 
+//
 bool PlayerBase::IsShootCamp()
 {
 	return mIsShootCamp;
@@ -374,6 +375,21 @@ bool PlayerBase::IsShootCamp()
 void PlayerBase::BeKill()
 {
 	SignTank_8(mTankX, mTankY, _EMPTY);
+
+/*
+	// 右坦克中心索引转到左上角那个的 格子索引
+	int iy = mTankY / BOX_SIZE - 1;
+	int jx = mTankX / BOX_SIZE - 1;
+	for (int i = iy; i < iy + 2; i++)
+	{
+		for (int j = jx; j < jx + 2; j++)
+		{
+			printf("%d, %d--  \n", i, j);
+			bms->tank_8[i][j] = _EMPTY;
+		}
+	}
+	*/
+	mDied = true;
 
 	// 设置爆炸坐标
 	mBlast.blastx = mTankX;
@@ -399,10 +415,7 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 
 				// 检测是否可以重生
 				if (mPlayerLife-- == 0)
-				{
-					mDied = true;
 					mPlayerLife = 0;
-				}
 				else
 					Reborn();
 				return true;
@@ -498,7 +511,7 @@ void PlayerBase::DispatchProp(int prop_kind)
 // 变向的同时调整坦克所在格子. 必须保证坦克中心在格子线上
 void PlayerBase::Move(int new_dir)
 {
-	if (!mTankTimer.IsTimeOut())
+	if (!mTankTimer.IsTimeOut() || mDied)
 		return;
 
 	SignTank_8(mTankX, mTankY, _EMPTY);

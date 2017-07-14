@@ -178,30 +178,32 @@ void GameControl::RefreshData()
 	{
 		(*EnemyItor)->ShootBullet();
 
+		int result = (*EnemyItor)->BulletMoving();
+		switch (result)
+		{
+		case EnemyBulletShootKind::Player_1:
+		case EnemyBulletShootKind::Player_2:
+			for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+			{
+				if (p->data->GetID() + PLAYER_SIGN == result)
+				{
+					//printf("%d %d\n", result, result);
+					p->data->BeKill();
+					break;
+				}
+			}
+			break;
+
+		default:
+			break;
+		}
+
 		// Èç¹ûµÐ»úÔÝÍ£
 		if (mEnemyPause == false)
 		{
 			(*EnemyItor)->TankMoving(mCenter_hdc);
-			int result = (*EnemyItor)->BulletMoving();
-			switch(result)
-			{
-				case EnemyBulletShootKind::Player_1:
-				case EnemyBulletShootKind::Player_2:
-					for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
-					{
-						if (p->data->GetID() + PLAYER_SIGN == result)
-						{
-							p->data->BeKill();
-							break;
-						}
-					}
-					break;
-
-				default:
-					break;
-			}
 		}
-		else if (mEnemyPauseCounter++ > 4300)
+		else if (mEnemyPauseCounter++ > 14300)
 		{
 			mEnemyPause = false;
 			mEnemyPauseCounter = 0;;
@@ -460,18 +462,6 @@ void GameControl::CheckKillPlayer(list<EnemyBase*>::iterator enemyItor)
 			//printf("ads121 -   %d\n", id);
 			p->data->BeKill();
 			break;
-		}
-	}
-}*/
-
-/*
-void GameControl::SignBox_8(int iy, int jx, int val)
-{
-	for (int i = iy; i < iy + 2; i++)
-	{
-		for (int j = jx; j < jx + 2; j++)
-		{
-			mBoxMarkStruct->box_8[i][j] = CAMP_SIGN;
 		}
 	}
 }*/
