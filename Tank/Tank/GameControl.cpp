@@ -34,7 +34,7 @@ void GameControl::Init()
 	loadimage( &mFlagImage			 , _T("./res/big/flag.gif"			));		// 旗子
 	loadimage( &mBlackNumberImage	 , _T("./res/big/black-number.gif"	));		// 0123456789 黑色数字
 
-	mActiveEnemyTankNumber = 0;													// 已经出现在地图上的敌机数量,最多显示6架
+	mOutedEnemyTankNumber = 0;													// 已经出现在地图上的敌机数量,最多显示6架
 	mRemainEnemyTankNumber = 20;												// 剩余未出现的敌机数量
 	mCampDie = false;															// 标志大本营是否被击中
 
@@ -88,7 +88,7 @@ void GameControl::LoadMap()
 
 	while (StartGame())
 	{
-	AddEnemy();
+		AddEnemy();
 		Sleep(24);
 	}
 }
@@ -119,12 +119,12 @@ bool GameControl::StartGame()
 void GameControl::AddEnemy()
 {
 	//for (int i = 0; i < TOTAL_ENEMY_NUMBER; i++)
-	if (EnemyList.size() < 6 && mRemainEnemyTankNumber > 0)
+	if (EnemyList.size() < 6 && TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber > 0)
 	{
-		//printf("%d - %d\n", EnemyList.size(), mRemainEnemyTankNumber);
+		printf("%d - %d\n", EnemyList.size(), mRemainEnemyTankNumber);
 		//EnemyList.push_back((new BigestTank(TANK_KIND::PROP, mBoxMarkStruct)));
 		EnemyList.push_back((new PropTank(2, mBoxMarkStruct)));
-		//mRemainEnemyTankNumber--;
+		mOutedEnemyTankNumber++;
 		//EnemyList.push_back((new CommonTank(2, mBoxMarkStruct)));
 	}
 }
@@ -262,7 +262,7 @@ void GameControl::RefreshCenterPanel()
 		{
 			(*EnemyItor)->BeKill();
 			//mRemainEnemyTankNumber--;
-			mActiveEnemyTankNumber--;
+			//mActiveEnemyTankNumber--;
 		}
 	}
 
@@ -428,7 +428,7 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 				{
 					//delete (EnemyBase*)(&(*EnemyItor));  ????
 					(*EnemyItor)->BeKill();
-					mActiveEnemyTankNumber--;
+					//mActiveEnemyTankNumber--;
 
 					// 设置显示道具
 					//if ((*EnemyItor)->GetKind() == TANK_KIND::PROP)
