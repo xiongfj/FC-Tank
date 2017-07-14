@@ -31,7 +31,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		mTankX = 4 * 16 + BOX_SIZE;							// 坦克首次出现时候的中心坐标
 		mTankY = 12 * 16 + BOX_SIZE;
 
-		mTankTimer.SetDrtTime(23);
+		mTankTimer.SetDrtTime(23);		// 坦克移动速度, 不同级别不同玩家 不一样
 		mBulletTimer.SetDrtTime(23);
 	}
 	else
@@ -129,8 +129,9 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		loadimage(&RingClass::image[i], buf);
 	}
 
-	mBombTimer.SetDrtTime(40);
-	mBlastTimer.SetDrtTime(30);
+	//bug ? 
+	mBombTimer.SetDrtTime(20);	// 不能设置太小..
+	mBlastTimer.SetDrtTime(36);
 }
 
 PlayerBase::~PlayerBase()
@@ -224,7 +225,7 @@ void PlayerBase::DrawBullet(const HDC & center_hdc)
 //
 bool PlayerBase::PlayerControl()
 {
-	if (mDied || !mStar.mIsOuted || !mTankTimer.IsTimeOut())
+	if (mDied || !mStar.mIsOuted)
 		return true;
 
 	switch (player_id)
@@ -343,7 +344,7 @@ void PlayerBase::Bombing(const HDC& center_hdc)
 		{
 			TransparentBlt(center_hdc, mBombS[i].mBombX - BOX_SIZE, mBombS[i].mBombY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
 				GetImageHDC(&BombStruct::mBombImage[index[mBombS[i].counter % 3]]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
-			if (mBombTimer.IsTimeOut())
+		// bug?	if (mBombTimer.IsTimeOut())
 			{
 				if (mBombS[i].counter++ == 3)
 					mBombS[i].canBomb = false;
@@ -462,6 +463,9 @@ void PlayerBase::DispatchProp(int prop_kind)
 // 变向的同时调整坦克所在格子. 必须保证坦克中心在格子线上
 void PlayerBase::Move(int new_dir)
 {
+	if (!mTankTimer.IsTimeOut())
+		return;
+
 	SignTank_8(mTankX, mTankY, _EMPTY);
 
 	if (mTankDir != new_dir)
@@ -531,8 +535,9 @@ bool PlayerBase::CheckMoveable()
 		return false;
 	}
 	// 转换像素点所在的 xy[26][26] 下标
-	int index_i = (int)tempy / BOX_SIZE;
-	int index_j = (int)tempx / BOX_SIZE;
+	int index_i = tempy / BOX_SIZE;
+	int index_j = tempx / BOX_SIZE;
+
 
 	int dev[4][2][2] = { {{-1,-1},{0,-1}},  {{-1,-1},{-1,0}},  {{-1,1},{0,1}}, { {1,-1},{1,0}} };
 
@@ -541,13 +546,17 @@ bool PlayerBase::CheckMoveable()
 	int temp2 = bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]];
 
 	// 道具格子检测
-	int prop1 = bms->prop_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]];
-	int prop2 = bms->prop_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]];
-
-	if (prop1 >= PROP_SIGN && prop1 < PROP_SIGN + 6)
-		DispatchProp(prop1 - PROP_SIGN);
-	else if (prop2 >= PROP_SIGN && prop2 < PROP_SIGN + 6)
-		DispatchProp(prop2 - PROP_SIGN);
+	// 当前坦克所在的坐标, 不是下一步的坐标, 用于判断道具
+	int curi = mTankY / BOX_SIZE;
+	int curj = mTankX / BOX_SIZE;
+	//int prop1 = bms->prop_8[index_i + dev[mTankDir][0][0]][curj + dev[mTankDir][0][1]];
+	//int prop2 = bms->prop_8[index_i + dev[mTankDir][1][0]][curj + dev[mTankDir][1][1]];
+	int prop[4] = { bms->prop_8[curi][curj], bms->prop_8[curi - 1][curj], bms->prop_8[curi][curj - 1], bms->prop_8[curi - 1][curj - 1] };
+	for (int i = 0; i < 4; i++)
+	{
+		if (prop[i] >= PROP_SIGN && prop[i] < PROP_SIGN + 6)
+			DispatchProp(prop[i] - PROP_SIGN);
+	}
 
 	// 2 号玩家格子
 	int tank1 = bms->tank_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]];

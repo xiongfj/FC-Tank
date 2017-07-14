@@ -175,6 +175,6 @@ private:
 
 	TimeClock mTankTimer;			// 坦克移动计时器
 	TimeClock mBulletTimer;			// 子弹移动速度
-	TimeClock mBombTimer;			// 子弹爆炸速度
+	TimeClock mBombTimer;	//bug?		// 子弹爆炸速度
 	TimeClock mBlastTimer;			// 坦克爆炸速度
 };
