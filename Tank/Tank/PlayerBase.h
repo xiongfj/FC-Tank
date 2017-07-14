@@ -88,6 +88,9 @@ public:
 	static void ShowProp(const HDC&);
 private:
 
+	/*如果有生命重新出生*/
+	void Reborn();
+
 	/*获取到道具, 坦克移动内检测调用*/
 	void DispatchProp(int prop_kind);
 	/*

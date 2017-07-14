@@ -62,7 +62,6 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	for ( i = 0; i < 4; i++ )
 		mSpeed[i] = temp[i];
 		
-
 	/*********************************
 	* BulletStruct 数据初始化
 	*********************************/
@@ -346,8 +345,11 @@ void PlayerBase::Bombing(const HDC& center_hdc)
 				GetImageHDC(&BombStruct::mBombImage[index[mBombS[i].counter % 3]]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 		// bug?	if (mBombTimer.IsTimeOut())
 			{
-				if (mBombS[i].counter++ == 3)
+				if (mBombS[i].counter++ >= 3)
+				{
+					mBombS[i].counter = 0;
 					mBombS[i].canBomb = false;
+				}
 			}
 		}
 	}
@@ -371,7 +373,6 @@ bool PlayerBase::IsShootCamp()
 
 void PlayerBase::BeKill()
 {
-	mDied = true;
 	SignTank_8(mTankX, mTankY, _EMPTY);
 
 	// 设置爆炸坐标
@@ -390,9 +391,20 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 			GetImageHDC(&BlastStruct::image[index[mBlast.counter % 6]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
 		if (mBlastTimer.IsTimeOut())
 		{
-			if (mBlast.counter++ == 6)
+			if (mBlast.counter++ >= 5)
 			{
+				//printf("%d -%d\n", mBlast.counter, mBlast.canBlast);
+				mBlast.counter = 0;
 				mBlast.canBlast = false;
+
+				// 检测是否可以重生
+				if (mPlayerLife-- == 0)
+				{
+					mDied = true;
+					mPlayerLife = 0;
+				}
+				else
+					Reborn();
 				return true;
 			}
 		}
@@ -430,6 +442,31 @@ void PlayerBase::ShowProp(const HDC& center_hdc)
 
 /////////////////////////////////////////////////////////////
 
+
+//---------------------------------------------------------------- private function ---------
+void PlayerBase::Reborn()
+{
+	mDied = false;
+	mTankX = (4 + 4 * player_id) * 16 + BOX_SIZE;				// 坦克首次出现时候的中心坐标
+	mTankY = 12 * 16 + BOX_SIZE;
+	SignTank_8(mTankX, mTankY, PLAYER_SIGN + player_id);		// 坦克出现, 将四角星标记改为坦克标记
+
+	mPlayerTankLevel = 0;				// 坦克级别 [0-3]
+	mTankDir = DIR_UP;		// 坦克方向
+
+	for (int i = 0; i < 2; i++)
+	{
+		mBulletStruct[i].x = SHOOTABLE_X;		// x 坐标用于判断是否可以发射
+		mBulletStruct[i].y = -1000;
+		mBulletStruct[i].dir = DIR_UP;
+		mBulletStruct[i].mKillId = 0;			// 记录击中的敌机 id
+	}
+
+	mBullet_1_counter = 9;				// 子弹 1 运动 N 个循环后才可以发射子弹 2 
+	mMoving = false;
+	mRing.SetShowable();			// 显示保护环
+}
+
 void PlayerBase::DispatchProp(int prop_kind)
 {
 	mProp->StopShowProp();
@@ -457,8 +494,6 @@ void PlayerBase::DispatchProp(int prop_kind)
 		break;
 	}
 }
-
-//---------------------------------------------------------------- private function ---------
 
 // 变向的同时调整坦克所在格子. 必须保证坦克中心在格子线上
 void PlayerBase::Move(int new_dir)

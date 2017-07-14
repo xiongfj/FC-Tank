@@ -52,8 +52,8 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 	mBombS.canBomb = false;
 	mBombS.counter = 0;
 
-	// 存储子弹击中玩家,玩家的id
-	mShootedPlayerID = 0;
+	// 存储子弹击中玩家,玩家的id, 0或者1
+	//.mShootedPlayerID = -1;
 
 	// 敌机移动时间间隔
 	mTankTimer.SetDrtTime(50);
@@ -208,19 +208,30 @@ bool EnemyBase::ShootBullet()
 }
 
 //
-void EnemyBase::BulletMoving(const HDC& center_hdc)
+EnemyBulletShootKind EnemyBase::BulletMoving()
 {
 	// 如果子弹没有移动或者敌机死亡
 	if (mBulletStruct.x == SHOOTABLE_X || mDied || !mBulletTimer.IsTimeOut() )
-		return;
+		return EnemyBulletShootKind::None;
 	
 	// 如果玩家吃到暂停道具
 	//if (CheckPause())
 	//	return;
 
 	// 如果子弹在爆炸
-	if (CheckBomb())
-		return;
+	EnemyBulletShootKind result = CheckBomb();
+	switch (result)
+	{
+	case EnemyBulletShootKind::Other:
+	case EnemyBulletShootKind::Player_1:
+	case EnemyBulletShootKind::Player_2:
+		return result;
+
+	case EnemyBulletShootKind::None:
+		break;
+	default:
+		break;
+	}
 
 	int dir = mBulletStruct.dir;
 	mBulletStruct.x += mDevXY[dir][0] * mBulletStruct.speed[mEnemyTankLevel];
@@ -230,6 +241,7 @@ void EnemyBase::BulletMoving(const HDC& center_hdc)
 		BulletStruct::mBulletSize[dir][1], GetImageHDC(&BulletStruct::mBulletImage[dir]),
 		0, 0, BulletStruct::mBulletSize[dir][0], BulletStruct::mBulletSize[dir][1], 0x000000);
 		*/
+	return EnemyBulletShootKind::None;
 }
 
 //
@@ -242,8 +254,11 @@ void EnemyBase::Bombing(const HDC & center_hdc)
 			GetImageHDC(&BombStruct::mBombImage[index[mBombS.counter % 3]]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 		if (mBombTimer.IsTimeOut())
 		{
-			if ( mBombS.counter++ == 3 )
+			if (mBombS.counter++ >= 3)
+			{
+				mBombS.counter = 0;
 				mBombS.canBomb = false;
+			}
 		}
 	}
 }
@@ -267,15 +282,16 @@ void EnemyBase::BeKill()
 // 显示坦克爆炸效果, GameControl 内循环检测
 bool EnemyBase::Blasting(const HDC& center_hdc)
 {
-	int index[6] = {0,1,2,3,4,2};
+	int index[13] = {0,1,1,2,2,3,3,4,4,3,2,1,0};
 	if (mBlast.canBlast)
 	{
 		TransparentBlt(center_hdc, mBlast.blastx - BOX_SIZE * 2, mBlast.blasty - BOX_SIZE * 2, BOX_SIZE * 4, BOX_SIZE * 4,
-			GetImageHDC(&BlastStruct::image[index[mBlast.counter % 6]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+			GetImageHDC(&BlastStruct::image[index[mBlast.counter % 13]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
 		if (mBlastTimer.IsTimeOut())
 		{
-			if (mBlast.counter++ == 6)
+			if (mBlast.counter++ >= 13)
 			{
+				mBlast.counter = 0;
 				mBlast.canBlast = false;
 				return true;
 			}
@@ -288,15 +304,15 @@ bool EnemyBase::IsShootCamp()
 {
 	return mIsShootCamp;
 }
-
+/*.
 // 返回被击中玩家 id 或者 0 没有击中
 int EnemyBase::IsShootToPlayer()
 {
 	int temp = mShootedPlayerID;
-	mShootedPlayerID = 0;			// 获取后归零! 不然一直被标记击中该玩家
+	mShootedPlayerID = -1;			// 获取后归NONE! 不然一直被标记击中该玩家, 不能与玩家0,1 数值相同!!
 	return temp;
 }
-
+*/
 int EnemyBase::GetId()
 {
 	return mEnemyId;
@@ -458,7 +474,7 @@ void EnemyBase::RejustDirPosition()
 }
 
 //
-bool EnemyBase::CheckBomb()
+EnemyBulletShootKind EnemyBase::CheckBomb()
 {
 	int dir = mBulletStruct.dir;
 
@@ -500,7 +516,7 @@ bool EnemyBase::CheckBomb()
 		mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[dir][0]) * SMALL_BOX_SIZE;
 		mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[dir][1]) * SMALL_BOX_SIZE;
 		mBombS.counter = 0;
-		return true;
+		return EnemyBulletShootKind::Other;
 	}
 
 	int tempi, tempj;
@@ -532,9 +548,9 @@ bool EnemyBase::CheckBomb()
 				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
-
-				mShootedPlayerID = bms->tank_8[tempi][tempj];
-				return true;
+				//会检测多次..printf("%d, %d\n", tempi, tempj);
+				//.mShootedPlayerID = bms->tank_8[tempi][tempj];
+				return (EnemyBulletShootKind)bms->tank_8[tempi][tempj];
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
@@ -542,7 +558,7 @@ bool EnemyBase::CheckBomb()
 				mBulletStruct.x = SHOOTABLE_X;
 				mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
-				return true;
+				return EnemyBulletShootKind::Other;
 			}
 
 			// 4*4 检测
@@ -557,7 +573,7 @@ bool EnemyBase::CheckBomb()
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
 				ShootWhat(bombx, bomby);
-				return true;
+				return EnemyBulletShootKind::Other;
 			}
 		}
 	}
@@ -581,8 +597,9 @@ bool EnemyBase::CheckBomb()
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
 
-				mShootedPlayerID = bms->tank_8[tempi][tempj];
-				return true;
+				//printf("%d, %d\n", tempi, tempj);
+				//.mShootedPlayerID = bms->tank_8[tempi][tempj];
+				return EnemyBulletShootKind(bms->tank_8[tempi][tempj]);
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
@@ -590,7 +607,7 @@ bool EnemyBase::CheckBomb()
 				mBulletStruct.x = SHOOTABLE_X;
 				mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
-				return true;
+				return EnemyBulletShootKind::Other;
 			}
 
 			// 4*4 检测
@@ -605,7 +622,7 @@ bool EnemyBase::CheckBomb()
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
 				ShootWhat(bombx, bomby);
-				return true;
+				return EnemyBulletShootKind::Other;
 			}
 		}
 	}
@@ -613,7 +630,7 @@ bool EnemyBase::CheckBomb()
 	default:
 		break;
 	}
-	return false;
+	return EnemyBulletShootKind::None;
 }
 
 void EnemyBase::ShootWhat(int bulletx, int bullety)

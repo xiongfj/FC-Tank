@@ -55,6 +55,9 @@
 
 #define SHOOTABLE_X		-100	// 规定子弹坐标 x = -100 子弹可以发射
 
+// 敌机子弹击中的障碍物的类型, 用在 EnemyBase::CheckBomb 返回值
+enum EnemyBulletShootKind {None, Player_1 = PLAYER_SIGN, Player_2 = PLAYER_SIGN + 1, Other};
+
 /* 对应数值
 * 	#defien _EMPTY		0
 #define _WALL		3
@@ -82,6 +85,8 @@ struct BoxMarkStruct
 #define TOTAL_ENEMY_NUMBER	20
 #define SHOWING_STAR	true		// 正在显示四角星
 #define STOP_SHOW_STAR	false		// 四角星显示结束
+
+// 指示敌机类型道具坦克和普通坦克
 enum TANK_KIND { PROP, COMMON };
 
 struct BulletStruct

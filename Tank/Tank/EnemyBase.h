@@ -18,7 +18,7 @@ public:
 	virtual void DrawTank(const HDC&) {}			// 纯绘制坦克, 子类覆绘制
 	void DrawBullet(const HDC&);			// 绘制子弹, 需要与子弹移动分开,
 	bool ShootBullet();			// 发射子弹
-	void BulletMoving(const HDC& );			// 子弹移动
+	EnemyBulletShootKind BulletMoving( );			// 子弹移动
 	void Bombing(const HDC&);
 	void BeKill();					// 敌机被消灭, 清除 SignBox 标记
 	bool Blasting(const HDC& );		// 显示坦克爆炸图, true 标识爆炸完,GameControl 获取返回值然后将该敌机删除
@@ -35,7 +35,7 @@ private:
 	bool CheckBox_8();	// 检测某个 box_8 是否可以放置坦克, 参数是 16*16 格子的中心点, 与坦克坐标规则相同
 	bool CheckMoveable();			// 
 	void RejustDirPosition();		// 重新定位坦克方向, 调正坦克位置, 保持在格子上
-	bool CheckBomb();				// 移动子弹
+	EnemyBulletShootKind CheckBomb();				// 移动子弹
 	void ShootWhat(int, int);		// 检测射中何物
 
 protected:
@@ -63,7 +63,7 @@ protected:
 	BombStruct mBombS;			// 爆炸结构体
 	BlastStruct mBlast;			// 坦克爆炸结构
 
-	int mShootedPlayerID;		// 被击中玩家的id
+	//int mShootedPlayerID;		// 被击中玩家的id, -1,0,1
 	StarClass mStar;			// 四角星闪烁类
 	//static bool mIsPause;				// 玩家获取时钟道具, 通过 GameControl 传递设置该值
 	//static int mPauseCounter;			// 暂停多久

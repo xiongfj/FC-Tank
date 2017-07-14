@@ -182,7 +182,24 @@ void GameControl::RefreshData()
 		if (mEnemyPause == false)
 		{
 			(*EnemyItor)->TankMoving(mCenter_hdc);
-			(*EnemyItor)->BulletMoving(mCenter_hdc);
+			int result = (*EnemyItor)->BulletMoving();
+			switch(result)
+			{
+				case EnemyBulletShootKind::Player_1:
+				case EnemyBulletShootKind::Player_2:
+					for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+					{
+						if (p->data->GetID() + PLAYER_SIGN == result)
+						{
+							p->data->BeKill();
+							break;
+						}
+					}
+					break;
+
+				default:
+					break;
+			}
 		}
 		else if (mEnemyPauseCounter++ > 4300)
 		{
@@ -190,7 +207,7 @@ void GameControl::RefreshData()
 			mEnemyPauseCounter = 0;;
 		}
 
-		CheckKillPlayer(EnemyItor);
+		//.CheckKillPlayer(EnemyItor);
 	}
 }
 
@@ -243,7 +260,7 @@ void GameControl::RefreshCenterPanel()
 {
 		BitBlt(mCenter_hdc, 0, 0, CENTER_WIDTH, CENTER_HEIGHT, GetImageHDC(&mBlackBackgroundImage), 0, 0, SRCCOPY);// 中心黑色背景游戏区
 
-																												   // 四角星闪烁控制
+	   // 四角星闪烁控制
 		for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 		{
 			// 一个四角星动画结束后再执行下一个
@@ -429,30 +446,23 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 		}
 	}
 }
-
+/*.
 void GameControl::CheckKillPlayer(list<EnemyBase*>::iterator enemyItor)
 {
 	int id = (*enemyItor)->IsShootToPlayer();
-	if (id == 0)
+	if (id == -1)
 		return;
 
-	/*for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
-	{
-		if ((*itor)->GetID() + PLAYER_SIGN == id)
-		{
-			(*itor)->BeKill();
-			break;
-		}
-	}*/
 	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 	{
 		if (p->data->GetID() + PLAYER_SIGN == id)
 		{
+			//printf("ads121 -   %d\n", id);
 			p->data->BeKill();
 			break;
 		}
 	}
-}
+}*/
 
 /*
 void GameControl::SignBox_8(int iy, int jx, int val)
