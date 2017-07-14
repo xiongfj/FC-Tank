@@ -289,6 +289,7 @@ void GameControl::RefreshCenterPanel()
 		}
 	}*/
 
+	// 绘图操作时间
 	if (mTimer.IsTimeOut())
 	{
 		for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
@@ -314,6 +315,7 @@ void GameControl::RefreshCenterPanel()
 			}
 		}
 	}
+	// 操作,不包括绘图, 必须放在第一层循环中,内含计时器
 	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 		p->data->PlayerControl();
 

@@ -54,6 +54,8 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 
 	// 存储子弹击中玩家,玩家的id
 	mShootedPlayerID = 0;
+
+	mTankTimer.SetDrtTime(50);
 }
 
 EnemyBase::~EnemyBase()
@@ -125,7 +127,7 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 
 void EnemyBase::TankMoving(const HDC& center_hdc)
 {
-	if (!mStar.mIsOuted || mDied )
+	if (!mStar.mIsOuted || mDied || mTankTimer.IsTimeOut() == false )
 		return;
 	
 	mBulletT2 = timeGetTime();

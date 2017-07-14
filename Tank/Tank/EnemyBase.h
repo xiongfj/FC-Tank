@@ -1,6 +1,7 @@
 #pragma once
 #include "TankClass.h"
 #include "struct.h"
+#include "TimeClock.h"
 
 /************** 敌机坦克 ************
 * 一个敌机实例化一个对象
@@ -64,6 +65,8 @@ protected:
 	StarClass mStar;			// 四角星闪烁类
 	//static bool mIsPause;				// 玩家获取时钟道具, 通过 GameControl 传递设置该值
 	//static int mPauseCounter;			// 暂停多久
+
+	TimeClock mTankTimer;		// 敌机移动速度
 };
 
 // 前三种普通坦克
