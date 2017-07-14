@@ -121,7 +121,6 @@ void GameControl::AddEnemy()
 	//for (int i = 0; i < TOTAL_ENEMY_NUMBER; i++)
 	if (EnemyList.size() < 6 && TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber > 0)
 	{
-		printf("%d - %d\n", EnemyList.size(), mRemainEnemyTankNumber);
 		//EnemyList.push_back((new BigestTank(TANK_KIND::PROP, mBoxMarkStruct)));
 		EnemyList.push_back((new PropTank(2, mBoxMarkStruct)));
 		mOutedEnemyTankNumber++;

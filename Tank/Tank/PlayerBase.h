@@ -148,7 +148,7 @@ private:
 	byte mPlayerTankLevel : 2;				// [0-3] 坦克级别,获得道具后升级坦克
 	byte mTankDir : 2;						// 当前坦克方向0-左,1-上,2右,3-下
 	static int mDevXY[4][2];				// 四个方向的偏移量
-	int mSpeed[4];							// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样
+	//int mSpeed[4];							// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样
 
 	BulletStruct mBulletStruct[2];			// 两颗子弹
 	int mBullet_1_counter;					// 子弹 1 的计数, 子弹 1 发射多久后才能发射子弹 2

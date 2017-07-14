@@ -45,6 +45,9 @@
     <ClInclude Include="List.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TimeClock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -72,6 +75,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="List.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeClock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

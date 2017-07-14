@@ -154,6 +154,7 @@
     <ClInclude Include="struct.h" />
     <ClInclude Include="TankClass.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TimeClock.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EnemyBase.cpp" />
@@ -170,6 +171,7 @@
     <ClCompile Include="struct.cpp" />
     <ClCompile Include="Tank.cpp" />
     <ClCompile Include="TankClass.cpp" />
+    <ClCompile Include="TimeClock.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

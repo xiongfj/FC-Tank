@@ -85,7 +85,6 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 	{
 		mEnemyId = TOTAL_ENEMY_NUMBER - remainnumber;
 		remainnumber -= 1;
-		printf("%d\n", remainnumber);
 		mTankNumberReduce = false;
 
 		// 标记为 STAR_SIGN = 2000, 2000 属于坦克不能穿行的标志
