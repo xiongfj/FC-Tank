@@ -43,18 +43,11 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 		mBulletStruct.speed[i] = 3;		// 不能超过 4
 	mBulletStruct.mKillId = 0;			// 记录击中玩家坦克的id
 	
-	//mBulletT1 = timeGetTime();
-	//mBulletT2 = timeGetTime();
-	//mBulletT = rand() % 111 + 320;		// 发射子弹的间隔时间 4000 
-
 	// 爆炸图片
 	mBombS.mBombX = -100;
 	mBombS.mBombY = -100;
 	mBombS.canBomb = false;
 	mBombS.counter = 0;
-
-	// 存储子弹击中玩家,玩家的id, 0或者1
-	//.mShootedPlayerID = -1;
 
 	// 敌机移动时间间隔
 	mTankTimer.SetDrtTime(50);
@@ -70,6 +63,9 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 
 	// 坦克爆炸速率
 	mBlastTimer.SetDrtTime(37);
+
+	// 设置回头射击频率
+	mShootBackTimer.SetDrtTime( rand()%5000 + 9000 );
 }
 
 EnemyBase::~EnemyBase()
@@ -144,10 +140,11 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 	if (!mStar.mIsOuted || mDied || mTankTimer.IsTimeOut() == false )
 		return;
 	
-	//mBulletT2 = timeGetTime();
-
 	// 移动前取消标记
 	SignTank_8(mTankX, mTankY, _EMPTY);
+
+	// 内部计时, 一定时差后回头射击
+	ShootBack();
 
 	// 重定向
 	if (mStep-- < 0)
@@ -455,9 +452,6 @@ void EnemyBase::RejustDirPosition()
 {
 	mStep = rand() % 250;
 
-	// 需要重新标记, 更正位置可能会改变所在的 4*4 格子
-	//SignBox_8(0);
-
 	// 原左右变上下方向
 	if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
 	{
@@ -475,9 +469,18 @@ void EnemyBase::RejustDirPosition()
 			mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;					// 靠近格子线上的上边节点
 	}
 
-	// 重定向, 必须调正位置后才能设置方向
-	mTankDir = rand() % 4;
-	//SignBox_8(ENEMY_SIGN + mEnemyId);
+	/* 重定向, 必须调正位置后才能设置方向
+	* 设置坦克向下移动的几率大些*/
+	if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
+	{
+		bool val = rand() % 100 < 70;
+		if (val)
+			mTankDir = DIR_DOWN;
+		else
+			mTankDir = rand() % 4;
+	}
+	else
+		mTankDir = rand() % 4;
 }
 
 //
@@ -715,7 +718,36 @@ void EnemyBase::ShootWhat(int bulletx, int bullety)
 	}
 }
 
+/*
+* 设置敌机回头运动较小的一段距离
+*/
+void EnemyBase::ShootBack()
+{
+	if (!mShootBackTimer.IsTimeOut())
+		return;
 
+	int back_dir[4] = {DIR_RIGHT, DIR_DOWN, DIR_LEFT, DIR_UP};
+
+	// 原左右变上下方向
+	if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
+	{
+		if (mTankX > (mTankX / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2 - 1)	// 如果是靠近格子线上的右边节点, -1是修正
+			mTankX = (mTankX / BOX_SIZE + 1) * BOX_SIZE;
+		else
+			mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;					// 靠近格子线上的左边节点
+	}
+	// 上下变左右
+	else
+	{
+		if (mTankY > (mTankY / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2 - 1)	// 如果是靠近格子线上的下边节点, -1是修正
+			mTankY = (mTankY / BOX_SIZE + 1) * BOX_SIZE;
+		else
+			mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;					// 靠近格子线上的上边节点
+	}
+
+	mStep = rand() % 30 + 30;
+	mTankDir = back_dir[mTankDir];
+}
 
 
 CommonTank::CommonTank( byte level, BoxMarkStruct* bms) :

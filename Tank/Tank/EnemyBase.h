@@ -41,6 +41,8 @@ private:
 	EnemyBulletShootKind CheckBomb();				// 移动子弹
 	void ShootWhat(int, int);		// 检测射中何物
 
+	/*在TankMoving()内调用*/
+	void ShootBack();		// 回头射击
 
 protected:
 	int mEnemyId;				// 区别敌机与敌机
@@ -71,6 +73,8 @@ protected:
 	TimeClock mShootTimer;		// 发射子弹频率
 	TimeClock mBombTimer;		// 子弹爆炸速度
 	TimeClock mBlastTimer;		// 坦克爆炸速度
+
+	TimeClock mShootBackTimer;	// 坦克回头射击,然后短距离再次变向
 };
 
 // 前三种普通坦克
