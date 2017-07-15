@@ -763,7 +763,7 @@ bool PlayerBase::CheckBomb(int i)
 			// 检测 4*4 格子, 由此判断障碍物
 			tempi = bi + temp[n][0];
 			tempj = bj + temp[n][1];
-			if (bms->box_4[tempi][tempj] > 2)
+			if (bms->box_4[tempi][tempj] == _WALL || bms->box_4[tempi][tempj] == _STONE)
 			{
 				// 设定爆炸参数, 修正爆炸中心所在的格子,左右或上下偏移一个格子之类的..
 				mBulletStruct[i].x = SHOOTABLE_X;
@@ -820,7 +820,7 @@ bool PlayerBase::CheckBomb(int i)
 			// 检测 4*4 是否击中障碍
 			tempi = bi + temp[n][0];
 			tempj = bj + temp[n][1];
-			if (bms->box_4[tempi][tempj] > 2)
+			if (bms->box_4[tempi][tempj] == _WALL || bms->box_4[tempi][tempj] == _STONE)
 			{
 				// 设定爆炸参数, 修正爆炸中心所在的格子,左右或上下偏移一个格子之类的..
 				mBulletStruct[i].x = SHOOTABLE_X;
@@ -979,8 +979,8 @@ void PlayerBase::SignTank_8(int cx, int cy, int val)
 void PlayerBase::SignBox_4(int cx, int cy, int val)
 {
 	// 右坦克中心索引转到左上角那个的 格子索引
-	int iy = cy / BOX_SIZE - 1;
-	int jx = cx / BOX_SIZE - 1;
+	int iy = 2 * (cy / BOX_SIZE - 1);
+	int jx = 2 * (cx / BOX_SIZE - 1);
 	for (int i = iy; i < iy + 4; i++)
 	{
 		for (int j = jx; j < jx + 4; j++)
