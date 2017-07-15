@@ -748,7 +748,7 @@ bool PlayerBase::CheckBomb(int i)
 			tempj = b8j + temp[n][1];
 			if (bms->tank_8[tempi][tempj] >= ENEMY_SIGN && bms->tank_8[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
 			{
-				mBulletStruct[i].x = SHOOTABLE_X;
+				/*mBulletStruct[i].x = SHOOTABLE_X;
 				mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
 				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
 				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
@@ -757,7 +757,7 @@ bool PlayerBase::CheckBomb(int i)
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->tank_8[tempi][tempj];
 				mProp->StartShowProp(100, 100);
-				return true;
+				return true;*/
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
@@ -806,7 +806,7 @@ bool PlayerBase::CheckBomb(int i)
 			if (bms->tank_8[tempi][tempj] >= ENEMY_SIGN && bms->tank_8[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
 			{
 			//	printf("%d\n", bms->box_8[tempi][tempj]);
-				mBulletStruct[i].x = SHOOTABLE_X;
+				/*mBulletStruct[i].x = SHOOTABLE_X;
 				mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
 				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
 				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
@@ -815,7 +815,7 @@ bool PlayerBase::CheckBomb(int i)
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->tank_8[tempi][tempj];
 				mProp->StartShowProp(100, 100);
-				return true;
+				return true;*/
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
@@ -952,7 +952,7 @@ void PlayerBase::SignBox_8(int x, int y, int val)
 
 //
 void PlayerBase::SignTank_8(int cx, int cy, int val)
-{
+{/*
 	// 右坦克中心索引转到左上角那个的 格子索引
 	int iy = cy / BOX_SIZE - 1;
 	int jx = cx / BOX_SIZE - 1;
@@ -963,7 +963,7 @@ void PlayerBase::SignTank_8(int cx, int cy, int val)
 			bms->tank_8[i][j] = val;
 		}
 	}
-
+	*/
 	SignBox_4(cx, cy, val);
 }
 

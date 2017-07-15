@@ -351,7 +351,7 @@ void EnemyBase::SignBox_8(int x, int y, int value)
 
 // 
 void EnemyBase::SignTank_8(int x, int y, int val)
-{
+{/*
 	// 右坦克中心索引转到左上角那个的 格子索引
 	int iy = y / BOX_SIZE - 1;
 	int jx = x / BOX_SIZE - 1;
@@ -361,7 +361,7 @@ void EnemyBase::SignTank_8(int x, int y, int val)
 		{
 			bms->tank_8[i][j] = val;
 		}
-	}
+	}*/
 	SignBox_4(x, y, val);
 }
 
@@ -403,18 +403,6 @@ void EnemyBase::SignBox_4(int cx, int cy, int val)
 // 检测某个16*16位置可以放坦克吗, x,y 16*16的中心点
 bool EnemyBase::CheckBox_8()
 {
-	/*int iy = mTankY / BOX_SIZE - 1;
-	int jx = mTankX / BOX_SIZE - 1;
-	for (int i = iy; i < iy + 2; i++)
-	{
-		for (int j = jx; j < jx + 2; j++)
-		{
-			if (bms->box_8[i][j] != STAR_SIGN && bms->box_8[i][j] != _EMPTY ||
-				bms->tank_8[i][j] >= PLAYER_SIGN && bms->tank_8[i][j] <= ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
-				return false;
-		}
-	}*/
-
 	// 获取坦克左上角的 4*4 下标 
 	int iy = mTankY / SMALL_BOX_SIZE - 2;
 	int jx = mTankX / SMALL_BOX_SIZE - 2;
