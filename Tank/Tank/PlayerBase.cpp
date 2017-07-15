@@ -375,20 +375,6 @@ bool PlayerBase::IsShootCamp()
 void PlayerBase::BeKill()
 {
 	SignTank_8(mTankX, mTankY, _EMPTY);
-
-/*
-	// 右坦克中心索引转到左上角那个的 格子索引
-	int iy = mTankY / BOX_SIZE - 1;
-	int jx = mTankX / BOX_SIZE - 1;
-	for (int i = iy; i < iy + 2; i++)
-	{
-		for (int j = jx; j < jx + 2; j++)
-		{
-			printf("%d, %d--  \n", i, j);
-			bms->tank_8[i][j] = _EMPTY;
-		}
-	}
-	*/
 	mDied = true;
 
 	// 设置爆炸坐标
@@ -409,7 +395,6 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 		{
 			if (mBlast.counter++ >= 5)
 			{
-				//printf("%d -%d\n", mBlast.counter, mBlast.canBlast);
 				mBlast.counter = 0;
 				mBlast.canBlast = false;
 
@@ -990,6 +975,23 @@ void PlayerBase::SignBox_4(int cx, int cy, int val)
 			bms->box_4[i][j] = val;
 		}
 	}
+}
+
+// 检测 16*16 格子内的 4*4 格子是否有东西
+bool PlayerBase::CheckBox_4(int cx, int cy)
+{
+	// 右坦克中心索引转到左上角那个的 格子索引
+	int iy = cy / SMALL_BOX_SIZE - 2;
+	int jx = cx / SMALL_BOX_SIZE - 2;
+	for (int i = iy; i < iy + 4; i++)
+	{
+		for (int j = jx; j < jx + 4; j++)
+		{
+			if (bms->box_4[i][j] > _FOREST)
+				return false;
+		}
+	}
+	return true;
 }
 
 

@@ -583,7 +583,7 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 		int temp[2][2] = { { 0, 0 },{ -1, 0 } };
 		for (int n = 0; n < 2; n++)
 		{
-			// 8*8 格子, 判断是否击中玩家
+			// 8*8 格子, 判断是否击鸟巢
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
 			if (bms->box_8[tempi][tempj] == CAMP_SIGN)
@@ -600,7 +600,7 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 			tempj = bj + temp[n][1];
 			if (bms->box_4[tempi][tempj] == _WALL || bms->box_4[tempi][tempj] == _STONE )
 			{
-				// 设定爆炸参数, 修正爆炸中心所在的格子,左右或上下偏移一个格子之类的..
+				// 设定爆炸参数, 修正爆炸中心所在的格子,
 				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
 				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
@@ -609,7 +609,7 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 				ShootWhat(bombx, bomby);
 				return EnemyBulletShootKind::Other;
 			}
-			// 4*4 玩家小格子
+			// 4*4 玩家格子
 			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
 			{
 				mBulletStruct.x = SHOOTABLE_X;
@@ -630,7 +630,7 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 		int temp[2][2] = { { 0, 0 },{ 0, -1 } };
 		for (int n = 0; n < 2; n++)
 		{
-			// 8*8 格子, 判断是否击中
+			// 8*8 格子, 判断是否击中鸟巢
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
 			if (bms->box_8[tempi][tempj] == CAMP_SIGN)
@@ -647,7 +647,7 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 			tempj = bj + temp[n][1];
 			if (bms->box_4[tempi][tempj] == _WALL || bms->box_4[tempi][tempj] == _STONE)
 			{
-				// 设定爆炸参数, 修正爆炸中心所在的格子,左右或上下偏移一个格子之类的..
+				// 设定爆炸参数, 修正爆炸中心所在的格子
 				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
 				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;

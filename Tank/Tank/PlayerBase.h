@@ -137,6 +137,13 @@ private:
 	// 根据坦克中心坐标, 标记16个 4*4 格子
 	void SignBox_4(int, int, int);
 
+	/*
+	* 坦克重生时调用检测重生位置是否被敌机占用
+	* 检测某个中心位置可以放置坦克与否
+	* 参数必须是 8*8 格子线上的点
+	*/
+	bool CheckBox_4(int cx, int cy);
+
 private:
 	bool mDied;								// 生命是否用完,死亡
 	byte player_id : 1;						// [0-1] 玩家
