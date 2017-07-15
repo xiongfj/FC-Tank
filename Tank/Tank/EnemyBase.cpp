@@ -403,7 +403,7 @@ void EnemyBase::SignBox_4(int cx, int cy, int val)
 // 检测某个16*16位置可以放坦克吗, x,y 16*16的中心点
 bool EnemyBase::CheckBox_8()
 {
-	int iy = mTankY / BOX_SIZE - 1;
+	/*int iy = mTankY / BOX_SIZE - 1;
 	int jx = mTankX / BOX_SIZE - 1;
 	for (int i = iy; i < iy + 2; i++)
 	{
@@ -411,6 +411,19 @@ bool EnemyBase::CheckBox_8()
 		{
 			if (bms->box_8[i][j] != STAR_SIGN && bms->box_8[i][j] != _EMPTY ||
 				bms->tank_8[i][j] >= PLAYER_SIGN && bms->tank_8[i][j] <= ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
+				return false;
+		}
+	}*/
+
+	// 获取坦克左上角的 4*4 下标 
+	int iy = mTankY / SMALL_BOX_SIZE - 2;
+	int jx = mTankX / SMALL_BOX_SIZE - 2;
+	for (int i = iy; i < iy + 4; i++)
+	{
+		for (int j = jx; j < jx + 4; j++)
+		{
+			// 检测四角星, 玩家,敌机,
+			if (bms->box_4[i][j] != STAR_SIGN && bms->box_4[i][j] > _FOREST)
 				return false;
 		}
 	}
@@ -426,7 +439,6 @@ bool EnemyBase::CheckMoveable()
 
 	if (tempx < BOX_SIZE || tempy < BOX_SIZE || tempy > CENTER_WIDTH - BOX_SIZE || tempx > CENTER_HEIGHT - BOX_SIZE)
 	{
-		//SignBox_8(_EMPTY);
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
 		switch (mTankDir)
 		{
@@ -436,7 +448,6 @@ bool EnemyBase::CheckMoveable()
 		case DIR_DOWN:	mTankY = (tempy / BOX_SIZE) * BOX_SIZE;	break;
 		default:														break;
 		}
-		//SignBox_8(ENEMY_SIGN + mEnemyId);
 		return false;
 	}
 
@@ -462,21 +473,10 @@ bool EnemyBase::CheckMoveable()
 	bool tank3 = bms->box_4[index_4i + dev_4[mTankDir][2][0]][index_4j + dev_4[mTankDir][2][1]] <= _FOREST;
 	bool tank4 = bms->box_4[index_4i + dev_4[mTankDir][3][0]][index_4j + dev_4[mTankDir][3][1]] <= _FOREST;
 
-	// 如果遇到障碍物或其它敌机,或者其它标志..
+	// 遇到障碍物
 	if (bms->box_8 [index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] > 2 ||
-		bms->box_8 [index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] > 2 /*||
-		
-		bms->tank_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] != ENEMY_SIGN + mEnemyId &&
-		bms->tank_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] >= ENEMY_SIGN ||
-		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] != ENEMY_SIGN + mEnemyId &&
-		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] >= ENEMY_SIGN  ||
-		
-		bms->tank_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] >= PLAYER_SIGN &&
-		bms->tank_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] < PLAYER_SIGN + 2 ||
-		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] >= PLAYER_SIGN &&
-		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] < PLAYER_SIGN + 2 */)
+		bms->box_8 [index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] > 2 )
 	{
-		//SignBox_8(_EMPTY);
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
 		switch (mTankDir)
 		{
@@ -486,7 +486,6 @@ bool EnemyBase::CheckMoveable()
 		case DIR_DOWN:	mTankY = (tempy  / BOX_SIZE) * BOX_SIZE;	break;
 		default:													break;
 		}
-		//SignBox_8(ENEMY_SIGN + mEnemyId);
 		return false;
 	}
 	// 遇到坦克不用调节

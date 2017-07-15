@@ -20,6 +20,14 @@
 #define _RIVER		4		// 河流
 #define _STONE		5		// 石头
 
+#define PLAYER_SIGN	100
+#define CAMP_SIGN	200			// 大本营标记
+#define ENEMY_SIGN	1000		// 4*4 或 8*8 格子标记, 加上敌机自身 id再标记
+#define STAR_SIGN	2000		// 敌机出现四角星标记, 此时敌机不能进来
+
+// prop_8 标记
+#define PROP_SIGN	3000		// 道具在 prop_8 的标记
+
 #define BOX_SIZE					8		// 26*26 的格子
 #define SMALL_BOX_SIZE				4		// 52*52 格子大小
 #define BLACK_NUMBER_SIZE			7		// 黑色数字大小
@@ -42,15 +50,6 @@
 #define RED_TANK	1		// 红色坦克
 #define YELLOW_TANK	2		// 
 #define GREEN_TANK	3
-
-#define PLAYER_SIGN	100
-#define CAMP_SIGN	200			// 大本营标记
-
-// 4*4 或 8*8 格子标记, 加上敌机自身 id再标记
-#define ENEMY_SIGN	1000
-#define STAR_SIGN	2000		// 敌机出现四角星标记, 此时敌机不能进来
-
-#define PROP_SIGN	0x100		// 道具在 prop_8 的标记
 
 
 #define SHOOTABLE_X		-100	// 规定子弹坐标 x = -100 子弹可以发射
