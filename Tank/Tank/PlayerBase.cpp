@@ -726,13 +726,14 @@ bool PlayerBase::CheckBomb(int i)
 
 	int tempi, tempj;
 
-	// 将坐标转换成 4*4 格子索引
-	int bi = bomby / SMALL_BOX_SIZE;
-	int bj = bombx / SMALL_BOX_SIZE;
-
 	// 坐标所在 8*8 格子的索引
 	int b8i = bomby / BOX_SIZE;
 	int b8j = bombx / BOX_SIZE;
+
+	// 将坐标转换成 4*4 格子索引
+	int b4i = bomby / SMALL_BOX_SIZE;
+	int b4j = bombx / SMALL_BOX_SIZE;
+
 
 	switch (mBulletStruct[i].dir)
 	{
@@ -767,16 +768,11 @@ bool PlayerBase::CheckBomb(int i)
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
 				return true;
 			}
-			// 检测击中 2 玩家
-			else if (bms->tank_8[tempi][tempj] == PLAYER_SIGN + 1)
-			{
-				//printf("2hao玩家被击中%d \n", rand()%2222);
-			}
 
 			// 左右检测子弹头所在的4*4格子和它上面相邻的那个
 			// 检测 4*4 格子, 由此判断障碍物
-			tempi = bi + temp[n][0];
-			tempj = bj + temp[n][1];
+			tempi = b4i + temp[n][0];
+			tempj = b4j + temp[n][1];
 			if (bms->box_4[tempi][tempj] == _WALL || bms->box_4[tempi][tempj] == _STONE)
 			{
 				// 设定爆炸参数, 修正爆炸中心所在的格子,左右或上下偏移一个格子之类的..
@@ -786,6 +782,19 @@ bool PlayerBase::CheckBomb(int i)
 				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 				mBombS[i].counter = 0;
 				ClearWallOrStone(i, bombx, bomby);
+				return true;
+			}
+			else if (bms->box_4[tempi][tempj] >= ENEMY_SIGN && bms->box_4[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
+			{
+				mBulletStruct[i].x = SHOOTABLE_X;
+				mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
+				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
+				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
+				mBombS[i].counter = 0;
+
+				// 标记击中了敌机的 id
+				mBulletStruct[i].mKillId = bms->box_4[tempi][tempj];
+				mProp->StartShowProp(100, 100);
 				return true;
 			}
 		}
@@ -825,15 +834,10 @@ bool PlayerBase::CheckBomb(int i)
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
 				return true;
 			}
-			// 检测击中 2 玩家
-			else if (bms->tank_8[tempi][tempj] == PLAYER_SIGN + 1)
-			{
-				//printf("2hao玩家被击中%d \n", rand() % 2222);
-			}
 
 			// 检测 4*4 是否击中障碍
-			tempi = bi + temp[n][0];
-			tempj = bj + temp[n][1];
+			tempi = b4i + temp[n][0];
+			tempj = b4j + temp[n][1];
 			if (bms->box_4[tempi][tempj] == _WALL || bms->box_4[tempi][tempj] == _STONE)
 			{
 				// 设定爆炸参数, 修正爆炸中心所在的格子,左右或上下偏移一个格子之类的..
@@ -843,6 +847,19 @@ bool PlayerBase::CheckBomb(int i)
 				mBombS[i].mBombY =( bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 				mBombS[i].counter = 0;
 				ClearWallOrStone(i, bombx, bomby );
+				return true;
+			}
+			else if (bms->box_4[tempi][tempj] >= ENEMY_SIGN && bms->box_4[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
+			{
+				mBulletStruct[i].x = SHOOTABLE_X;
+				mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
+				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
+				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
+				mBombS[i].counter = 0;
+
+				// 标记击中了敌机的 id
+				mBulletStruct[i].mKillId = bms->box_4[tempi][tempj];
+				mProp->StartShowProp(100, 100);
 				return true;
 			}
 		}
