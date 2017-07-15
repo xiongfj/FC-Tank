@@ -594,36 +594,46 @@ bool PlayerBase::CheckMoveable()
 	int temp2 = bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]];
 
 	// 道具格子检测
-	// 当前坦克所在的坐标, 不是下一步的坐标, 用于判断道具
-	int curi = mTankY / BOX_SIZE;
+	int curi = mTankY / BOX_SIZE;	// 当前坦克所在的坐标, 不是下一步的坐标, 用于判断道具
 	int curj = mTankX / BOX_SIZE;
-	//int prop1 = bms->prop_8[index_i + dev[mTankDir][0][0]][curj + dev[mTankDir][0][1]];
-	//int prop2 = bms->prop_8[index_i + dev[mTankDir][1][0]][curj + dev[mTankDir][1][1]];
 	int prop[4] = { bms->prop_8[curi][curj],	 bms->prop_8[curi - 1][curj], 
 					bms->prop_8[curi][curj - 1], bms->prop_8[curi - 1][curj - 1] };
 	for (int i = 0; i < 4; i++)
 	{
 		if (prop[i] >= PROP_SIGN && prop[i] < PROP_SIGN + 6)
+		{
 			DispatchProp(prop[i] - PROP_SIGN);
+			break;
+		}
 	}
 
-	// 2 号玩家格子
-	int tank1 = bms->tank_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]];
-	int tank2 = bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]];
+	// 四个方向需要检测的两个 4*4 的格子与坦克中心所在 4*4 格子的下标偏移量
+	int  dev_4[4][4][2] = { {{-2,-2},{1,-2},{-1,-2},{0,-2}}, {{-2,-2},{-2,1},{-2,-1},{-2,0}},
+							{{-2,2},{1,2},{-1,2},{0,2}}, {{2,-2},{2,1},{2,-1},{2,0}} };
+	int index_4i = tempy / SMALL_BOX_SIZE;
+	int index_4j = tempx / SMALL_BOX_SIZE;
 
-	if (temp1 > 2 || temp2 > 2 || tank1 != _EMPTY || tank2 != _EMPTY )
+	// 检测坦克 4*4 格子
+	bool tank1 = bms->box_4[index_4i + dev_4[mTankDir][0][0]][index_4j + dev_4[mTankDir][0][1]] <= 0;
+	bool tank2 = bms->box_4[index_4i + dev_4[mTankDir][1][0]][index_4j + dev_4[mTankDir][1][1]] <= 0;
+	bool tank3 = bms->box_4[index_4i + dev_4[mTankDir][2][0]][index_4j + dev_4[mTankDir][2][1]] <= 0;
+	bool tank4 = bms->box_4[index_4i + dev_4[mTankDir][3][0]][index_4j + dev_4[mTankDir][3][1]] <= 0;
+
+	if (temp1 > 2 || temp2 > 2)
 	{
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
 		switch (mTankDir)
 		{
 		case DIR_LEFT:	mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;	break;	// mTankX 与 tempx 之间跨越了格子, 将坦克放到mTankX所在的格子线上
 		case DIR_UP:	mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;	break;
-		case DIR_RIGHT: mTankX = (tempx  / BOX_SIZE) * BOX_SIZE;	break;
-		case DIR_DOWN:	mTankY = (tempy  / BOX_SIZE) * BOX_SIZE;	break;
+		case DIR_RIGHT: mTankX = (tempx / BOX_SIZE) * BOX_SIZE;	break;
+		case DIR_DOWN:	mTankY = (tempy / BOX_SIZE) * BOX_SIZE;	break;
 		default:													break;
 		}
 		return false;
 	}
+	else if (!tank1 || !tank2 || !tank3 || !tank4)
+		return false;
 	return true;
 }
 
@@ -756,7 +766,7 @@ bool PlayerBase::CheckBomb(int i)
 			// 检测击中 2 玩家
 			else if (bms->tank_8[tempi][tempj] == PLAYER_SIGN + 1)
 			{
-				printf("2hao玩家被击中%d \n", rand()%2222);
+				//printf("2hao玩家被击中%d \n", rand()%2222);
 			}
 
 			// 左右检测子弹头所在的4*4格子和它上面相邻的那个
@@ -814,7 +824,7 @@ bool PlayerBase::CheckBomb(int i)
 			// 检测击中 2 玩家
 			else if (bms->tank_8[tempi][tempj] == PLAYER_SIGN + 1)
 			{
-				printf("2hao玩家被击中%d \n", rand() % 2222);
+				//printf("2hao玩家被击中%d \n", rand() % 2222);
 			}
 
 			// 检测 4*4 是否击中障碍
@@ -938,29 +948,7 @@ void PlayerBase::SignBox_8(int x, int y, int val)
 
 //
 void PlayerBase::SignTank_8(int cx, int cy, int val)
-{/*
-	// 左右调整 cs,cy 到占据百分比最多的4 个 8*8 的格子中心
-	if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
-	{
-		if (cx > (cx / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2)	// 如果是靠近格子线上的右边节点, -1是修正
-		{
-			printf("                 %d- %d\n", cx, (cx / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2);
-			cx = (cx / BOX_SIZE + 1) * BOX_SIZE;
-		}
-		else {
-			printf("%d-.  %d\n", cx, (cx / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2);
-			cx = (cx / BOX_SIZE) * BOX_SIZE;					// 靠近格子线上的左边节点
-		}
-	}
-	// 上下
-	else
-	{
-		if (cy > (cy / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2 )	// 如果是靠近格子线上的下边节点, -1是修正
-			cy = (cy / BOX_SIZE + 1) * BOX_SIZE;
-		else
-			cy = (cy / BOX_SIZE) * BOX_SIZE;					// 靠近格子线上的上边节点
-	}*/
-
+{
 	// 右坦克中心索引转到左上角那个的 格子索引
 	int iy = cy / BOX_SIZE - 1;
 	int jx = cx / BOX_SIZE - 1;
@@ -978,9 +966,29 @@ void PlayerBase::SignTank_8(int cx, int cy, int val)
 // 根据坦克中心坐标, 标记16个 4*4 格子
 void PlayerBase::SignBox_4(int cx, int cy, int val)
 {
+	// 左右调整 cs,cy 到占据百分比最多的4 个 8*8 的格子中心
+	if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
+	{
+		if (cx > (cx / SMALL_BOX_SIZE) * SMALL_BOX_SIZE + SMALL_BOX_SIZE / 2)	// 如果是靠近格子线上的右边节点, -1是修正
+		{
+			cx = (cx / SMALL_BOX_SIZE + 1) * SMALL_BOX_SIZE;
+		}
+		else {
+			cx = (cx / SMALL_BOX_SIZE) * SMALL_BOX_SIZE;					// 靠近格子线上的左边节点
+		}
+	}
+	// 上下
+	else
+	{
+		if (cy > (cy / SMALL_BOX_SIZE) * SMALL_BOX_SIZE + SMALL_BOX_SIZE / 2 )	// 如果是靠近格子线上的下边节点, -1是修正
+			cy = (cy / SMALL_BOX_SIZE + 1) * SMALL_BOX_SIZE;
+		else
+			cy = (cy / SMALL_BOX_SIZE) * SMALL_BOX_SIZE;					// 靠近格子线上的上边节点
+	}
+
 	// 右坦克中心索引转到左上角那个的 格子索引
-	int iy = 2 * (cy / BOX_SIZE - 1);
-	int jx = 2 * (cx / BOX_SIZE - 1);
+	int iy = cy / SMALL_BOX_SIZE - 2;
+	int jx = cx / SMALL_BOX_SIZE - 2;
 	for (int i = iy; i < iy + 4; i++)
 	{
 		for (int j = jx; j < jx + 4; j++)

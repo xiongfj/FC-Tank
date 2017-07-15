@@ -590,7 +590,7 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 				return EnemyBulletShootKind::Other;
 			}
 			// 4*4 玩家小格子
-			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
+			/*else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
 			{
 				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
@@ -598,7 +598,7 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
 				return (EnemyBulletShootKind)bms->box_4[tempi][tempj];
-			}
+			}*/
 		}
 	}
 	break;
@@ -646,7 +646,7 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 				return EnemyBulletShootKind::Other;
 			}
 			// 4*4 玩家小格子
-			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
+			/*else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
 			{
 				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
@@ -654,7 +654,7 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
 				return (EnemyBulletShootKind)bms->box_4[tempi][tempj];
-			}
+			}*/
 		}
 	}
 	break;
