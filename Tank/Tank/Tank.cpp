@@ -65,3 +65,7 @@ void main()
 	control->LoadMap();
 	closegraph();
 }
+
+/*
+* _WALL 被消除后标志为 _CLEAR = -1;
+*/
