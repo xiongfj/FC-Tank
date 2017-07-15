@@ -46,7 +46,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		mTankX = 8 * 16 + BOX_SIZE;
 		mTankY = 12 * 16 + BOX_SIZE;
 
-		mTankTimer.SetDrtTime(43);
+		mTankTimer.SetDrtTime(83);
 		mBulletTimer.SetDrtTime(33);
 	}
 
@@ -58,7 +58,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 不同级别坦克移动速度系数
-	int temp[4] = {1, 1, 2, 2};
+	int temp[4] = {1, 1, 1, 1};
 	for ( i = 0; i < 4; i++ )
 		mSpeed[i] = temp[i];
 		
@@ -599,7 +599,8 @@ bool PlayerBase::CheckMoveable()
 	int curj = mTankX / BOX_SIZE;
 	//int prop1 = bms->prop_8[index_i + dev[mTankDir][0][0]][curj + dev[mTankDir][0][1]];
 	//int prop2 = bms->prop_8[index_i + dev[mTankDir][1][0]][curj + dev[mTankDir][1][1]];
-	int prop[4] = { bms->prop_8[curi][curj], bms->prop_8[curi - 1][curj], bms->prop_8[curi][curj - 1], bms->prop_8[curi - 1][curj - 1] };
+	int prop[4] = { bms->prop_8[curi][curj],	 bms->prop_8[curi - 1][curj], 
+					bms->prop_8[curi][curj - 1], bms->prop_8[curi - 1][curj - 1] };
 	for (int i = 0; i < 4; i++)
 	{
 		if (prop[i] >= PROP_SIGN && prop[i] < PROP_SIGN + 6)
@@ -608,7 +609,7 @@ bool PlayerBase::CheckMoveable()
 
 	// 2 号玩家格子
 	int tank1 = bms->tank_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]];
-	int tank2 = bms->tank_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]];
+	int tank2 = bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]];
 
 	if (temp1 > 2 || temp2 > 2 || tank1 != _EMPTY || tank2 != _EMPTY )
 	{
@@ -721,10 +722,10 @@ bool PlayerBase::CheckBomb(int i)
 
 	switch (mBulletStruct[i].dir)
 	{
-	// 左右检测子弹头所在的4*4格子和它上面相邻的那个
 	case DIR_LEFT:
 	case DIR_RIGHT:
 	{
+		// 自身格子和上一个
 		int temp[2][2] = { {0, 0}, {-1, 0} };
 		for (int n = 0; n < 2; n++)
 		{
@@ -752,7 +753,13 @@ bool PlayerBase::CheckBomb(int i)
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
 				return true;
 			}
+			// 检测击中 2 玩家
+			else if (bms->tank_8[tempi][tempj] == PLAYER_SIGN + 1)
+			{
+				printf("2hao玩家被击中%d \n", rand()%2222);
+			}
 
+			// 左右检测子弹头所在的4*4格子和它上面相邻的那个
 			// 检测 4*4 格子, 由此判断障碍物
 			tempi = bi + temp[n][0];
 			tempj = bj + temp[n][1];
@@ -775,6 +782,7 @@ bool PlayerBase::CheckBomb(int i)
 	case DIR_UP:
 	case DIR_DOWN:
 	{
+		// 自身格子和左边那一个格子
 		int temp[2][2] = { { 0, 0 },{ 0, -1 } };
 		for (int n = 0; n < 2; n++)
 		{
@@ -802,6 +810,11 @@ bool PlayerBase::CheckBomb(int i)
 				mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
 				return true;
+			}
+			// 检测击中 2 玩家
+			else if (bms->tank_8[tempi][tempj] == PLAYER_SIGN + 1)
+			{
+				printf("2hao玩家被击中%d \n", rand() % 2222);
 			}
 
 			// 检测 4*4 是否击中障碍
@@ -838,7 +851,7 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 	case DIR_LEFT:
 	case DIR_RIGHT:
 	{
-		// 相邻的四个 4*4 格子, 顺序不能变, 后面用到下标判断
+		// 在同一直线相邻的四个 4*4 格子, 顺序不能变, 后面用到下标判断
 		int temp[4][2] = { { -2, 0 },{ -1, 0 },{ 0, 0 },{ 1, 0 } };
 		for (int i = 0; i < 4; i++)
 		{
@@ -923,11 +936,34 @@ void PlayerBase::SignBox_8(int x, int y, int val)
 	}
 }
 
-void PlayerBase::SignTank_8(int x, int y, int val)
+//
+void PlayerBase::SignTank_8(int cx, int cy, int val)
 {
+	// 左右调整 cs,cy 到占据百分比最多的4 个 8*8 的格子中心
+	if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
+	{
+		if (cx > (cx / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2)	// 如果是靠近格子线上的右边节点, -1是修正
+		{
+			printf("                 %d- %d\n", cx, (cx / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2);
+			cx = (cx / BOX_SIZE + 1) * BOX_SIZE;
+		}
+		else {
+			printf("%d-.  %d\n", cx, (cx / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2);
+			cx = (cx / BOX_SIZE) * BOX_SIZE;					// 靠近格子线上的左边节点
+		}
+	}
+	// 上下
+	else
+	{
+		if (cy > (cy / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2 )	// 如果是靠近格子线上的下边节点, -1是修正
+			cy = (cy / BOX_SIZE + 1) * BOX_SIZE;
+		else
+			cy = (cy / BOX_SIZE) * BOX_SIZE;					// 靠近格子线上的上边节点
+	}
+
 	// 右坦克中心索引转到左上角那个的 格子索引
-	int iy = y / BOX_SIZE - 1;
-	int jx = x / BOX_SIZE - 1;
+	int iy = cy / BOX_SIZE - 1;
+	int jx = cx / BOX_SIZE - 1;
 	for (int i = iy; i < iy + 2; i++)
 	{
 		for (int j = jx; j < jx + 2; j++)
@@ -935,6 +971,24 @@ void PlayerBase::SignTank_8(int x, int y, int val)
 			bms->tank_8[i][j] = val;
 		}
 	}
+
+	//SignBox_4(x, y, val);
 }
+
+// 根据坦克中心坐标, 标记16个 4*4 格子
+void PlayerBase::SignBox_4(int cx, int cy, int val)
+{
+	// 右坦克中心索引转到左上角那个的 格子索引
+	int iy = cy / BOX_SIZE - 1;
+	int jx = cx / BOX_SIZE - 1;
+	for (int i = iy; i < iy + 4; i++)
+	{
+		for (int j = jx; j < jx + 4; j++)
+		{
+			bms->box_4[i][j] = val;
+		}
+	}
+}
+
 
 

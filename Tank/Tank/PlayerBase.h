@@ -134,6 +134,9 @@ private:
 	void SignBox_8(int x, int y, int val);
 	void SignTank_8(int, int, int);
 
+	// 根据坦克中心坐标, 标记16个 4*4 格子
+	void SignBox_4(int, int, int);
+
 private:
 	bool mDied;								// 生命是否用完,死亡
 	byte player_id : 1;						// [0-1] 玩家

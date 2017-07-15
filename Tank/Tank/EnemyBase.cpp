@@ -335,16 +335,16 @@ void EnemyBase::SetPause(bool val)
 }*/
 
 // 标记或取消坦克所在的 4*4 = 16 个格子
-void EnemyBase::SignBox_4(int value)
+void EnemyBase::SignBox_4(int cx, int cy, int val)
 {
-	// box_4[i][j] 对应索引
-	int ix = mTankY / (BOX_SIZE / 2) - 2;		// -2 是从中心点右下第一个格子移到左上角那个格子
-	int jy = mTankX / (BOX_SIZE / 2) - 2;
-	for (int i = ix; i < ix + 4; i++)
+	// 右坦克中心索引转到左上角那个的 格子索引
+	int iy = cy / BOX_SIZE - 1;
+	int jx = cx / BOX_SIZE - 1;
+	for (int i = iy; i < iy + 4; i++)
 	{
-		for (int j = jy; j < jy + 4; j++)
+		for (int j = jx; j < jx + 4; j++)
 		{
-			bms->box_4[i][j] = value;
+			bms->box_4[i][j] = val;
 		}
 	}
 }
@@ -424,12 +424,18 @@ bool EnemyBase::CheckMoveable()
 	int dev[4][2][2] = { { { -1,-1 },{ 0,-1 } },{ { -1,-1 },{ -1,0 } },{ { -1,1 },{ 0,1 } },{ { 1,-1 },{ 1,0 } } };
 
 	// 如果遇到障碍物或其它敌机,或者其它标志..
-	if (bms->box_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] > 2 ||
-		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][0][1]] != ENEMY_SIGN + mEnemyId &&
-		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][0][1]] >= ENEMY_SIGN ||
-		bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] > 2 ||
+	if (bms->box_8 [index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] > 2 ||
+		bms->box_8 [index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] > 2 ||
+
+		bms->tank_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] != ENEMY_SIGN + mEnemyId &&
+		bms->tank_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] >= ENEMY_SIGN ||
 		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] != ENEMY_SIGN + mEnemyId &&
-		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] >= ENEMY_SIGN)
+		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] >= ENEMY_SIGN  ||
+		
+		bms->tank_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] >= PLAYER_SIGN &&
+		bms->tank_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] < PLAYER_SIGN + 2 ||
+		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] >= PLAYER_SIGN &&
+		bms->tank_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]] < PLAYER_SIGN + 2 )
 	{
 		//SignBox_8(_EMPTY);
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
@@ -553,12 +559,12 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 			tempj = b8j + temp[n][1];
 			if (bms->tank_8[tempi][tempj] == PLAYER_SIGN || bms->tank_8[tempi][tempj] == PLAYER_SIGN + 1)
 			{
-				mBulletStruct.x = SHOOTABLE_X;
+				/*mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
 				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
-				return (EnemyBulletShootKind)bms->tank_8[tempi][tempj];
+				return (EnemyBulletShootKind)bms->tank_8[tempi][tempj];*/
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
@@ -582,7 +588,17 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 				mBombS.counter = 0;
 				ShootWhat(bombx, bomby);
 				return EnemyBulletShootKind::Other;
-			}
+			}/*
+			// 4*4 玩家小格子
+			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
+			{
+				mBulletStruct.x = SHOOTABLE_X;
+				mBombS.canBomb = true;				// 指示 i bomb 爆炸
+				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
+				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
+				mBombS.counter = 0;
+				return (EnemyBulletShootKind)bms->box_4[tempi][tempj];
+			}*/
 		}
 	}
 	break;
@@ -598,13 +614,13 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
 			if (bms->tank_8[tempi][tempj] == PLAYER_SIGN || bms->tank_8[tempi][tempj] == PLAYER_SIGN + 1)
-			{
+			{/*
 				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
 				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
-				return EnemyBulletShootKind(bms->tank_8[tempi][tempj]);
+				return EnemyBulletShootKind(bms->tank_8[tempi][tempj]);*/
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
@@ -628,7 +644,17 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 				mBombS.counter = 0;
 				ShootWhat(bombx, bomby);
 				return EnemyBulletShootKind::Other;
-			}
+			}/**
+			// 4*4 玩家小格子
+			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
+			{
+				mBulletStruct.x = SHOOTABLE_X;
+				mBombS.canBomb = true;				// 指示 i bomb 爆炸
+				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
+				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
+				mBombS.counter = 0;
+				return (EnemyBulletShootKind)bms->box_4[tempi][tempj];
+			}*/
 		}
 	}
 	break;
@@ -705,6 +731,8 @@ void EnemyBase::ShootWhat(int bulletx, int bullety)
 						isClear = false;
 				}
 			}
+
+			// 4 个 4*4 组成的 8*8 格子被清除完
 			if (isClear)
 			{
 				bms->box_8[n][m] = _EMPTY;
