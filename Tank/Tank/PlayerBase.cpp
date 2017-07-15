@@ -747,20 +747,7 @@ bool PlayerBase::CheckBomb(int i)
 			// 8*8 格子, 判断是否击中敌机
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
-			if (bms->tank_8[tempi][tempj] >= ENEMY_SIGN && bms->tank_8[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
-			{
-				/*mBulletStruct[i].x = SHOOTABLE_X;
-				mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
-				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
-				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
-				mBombS[i].counter = 0;
-
-				// 标记击中了敌机的 id
-				mBulletStruct[i].mKillId = bms->tank_8[tempi][tempj];
-				mProp->StartShowProp(100, 100);
-				return true;*/
-			}
-			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
+			if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
 				mBulletStruct[i].x = SHOOTABLE_X;
 				mBombS[i].counter = 0;
@@ -812,21 +799,7 @@ bool PlayerBase::CheckBomb(int i)
 			// 8*8 格子, 判断是否击中敌机
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
-			if (bms->tank_8[tempi][tempj] >= ENEMY_SIGN && bms->tank_8[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
-			{
-			//	printf("%d\n", bms->box_8[tempi][tempj]);
-				/*mBulletStruct[i].x = SHOOTABLE_X;
-				mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
-				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
-				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
-				mBombS[i].counter = 0;
-
-				// 标记击中了敌机的 id
-				mBulletStruct[i].mKillId = bms->tank_8[tempi][tempj];
-				mProp->StartShowProp(100, 100);
-				return true;*/
-			}
-			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
+			if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
 				mBulletStruct[i].x = SHOOTABLE_X;
 				mBombS[i].counter = 0;
