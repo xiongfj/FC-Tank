@@ -559,12 +559,12 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 			tempj = b8j + temp[n][1];
 			if (bms->tank_8[tempi][tempj] == PLAYER_SIGN || bms->tank_8[tempi][tempj] == PLAYER_SIGN + 1)
 			{
-				/*mBulletStruct.x = SHOOTABLE_X;
+				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
 				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
-				return (EnemyBulletShootKind)bms->tank_8[tempi][tempj];*/
+				return (EnemyBulletShootKind)bms->tank_8[tempi][tempj];
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
@@ -614,13 +614,13 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
 			if (bms->tank_8[tempi][tempj] == PLAYER_SIGN || bms->tank_8[tempi][tempj] == PLAYER_SIGN + 1)
-			{/*
+			{
 				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
 				mBombS.mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][0]) * SMALL_BOX_SIZE;
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
-				return EnemyBulletShootKind(bms->tank_8[tempi][tempj]);*/
+				return EnemyBulletShootKind(bms->tank_8[tempi][tempj]);
 			}
 			else if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{

@@ -46,14 +46,14 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		mTankX = 8 * 16 + BOX_SIZE;
 		mTankY = 12 * 16 + BOX_SIZE;
 
-		mTankTimer.SetDrtTime(83);
+		mTankTimer.SetDrtTime(23);
 		mBulletTimer.SetDrtTime(33);
 	}
 
 	// 共同的数据
 	loadimage(&mPlayerTankIcoImage, _T("./res/big/playertank-ico.gif"	));	// 玩家坦克图标
 	loadimage(&mBlackNumberImage,	_T("./res/big/black-number.gif"		));	// 黑色数字
-	mPlayerLife = 2;		// 玩家 HP
+	mPlayerLife = 52;		// 玩家 HP
 	mPlayerTankLevel = 3;													// 坦克级别 [0-3]
 	mTankDir = DIR_UP;		// 坦克方向
 
@@ -938,7 +938,7 @@ void PlayerBase::SignBox_8(int x, int y, int val)
 
 //
 void PlayerBase::SignTank_8(int cx, int cy, int val)
-{
+{/*
 	// 左右调整 cs,cy 到占据百分比最多的4 个 8*8 的格子中心
 	if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
 	{
@@ -959,7 +959,7 @@ void PlayerBase::SignTank_8(int cx, int cy, int val)
 			cy = (cy / BOX_SIZE + 1) * BOX_SIZE;
 		else
 			cy = (cy / BOX_SIZE) * BOX_SIZE;					// 靠近格子线上的上边节点
-	}
+	}*/
 
 	// 右坦克中心索引转到左上角那个的 格子索引
 	int iy = cy / BOX_SIZE - 1;
@@ -972,7 +972,7 @@ void PlayerBase::SignTank_8(int cx, int cy, int val)
 		}
 	}
 
-	//SignBox_4(x, y, val);
+	SignBox_4(cx, cy, val);
 }
 
 // 根据坦克中心坐标, 标记16个 4*4 格子
