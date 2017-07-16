@@ -18,7 +18,7 @@ public:
 	virtual void DrawTank(const HDC&) {}			// 纯绘制坦克, 子类覆绘制
 	void DrawBullet(const HDC&);			// 绘制子弹, 需要与子弹移动分开,
 	bool ShootBullet();			// 发射子弹
-	EnemyBulletShootKind BulletMoving( );			// 子弹移动
+	BulletShootKind BulletMoving( );			// 子弹移动
 	void Bombing(const HDC&);
 	void BeKill();					// 敌机被消灭, 清除 SignBox 标记
 	bool Blasting(const HDC& );		// 显示坦克爆炸图, true 标识爆炸完,GameControl 获取返回值然后将该敌机删除
@@ -38,7 +38,7 @@ private:
 	bool CheckBox_8();	// 检测某个 box_8 是否可以放置坦克, 参数是 16*16 格子的中心点, 与坦克坐标规则相同
 	bool CheckMoveable();			// 
 	void RejustDirPosition();		// 重新定位坦克方向, 调正坦克位置, 保持在格子上
-	EnemyBulletShootKind CheckBomb();				// 移动子弹
+	BulletShootKind CheckBomb();				// 移动子弹
 	void ShootWhat(int, int);		// 检测射中何物
 
 	/*在TankMoving()内调用*/
@@ -49,8 +49,6 @@ protected:
 	TANK_KIND mEnemyTankKind;		// 敌机类别, 道具坦克和普通坦克两种, [0-1]
 	byte mEnemyTankLevel : 2;	// 敌机坦克4个级别 [0-3]
 	bool mDied;					// 是否被被消灭, 被击中后设置为 true, 敌机检测改值不能移动
-	//.bool mIsShootCamp;			// 是否击中大本营
-	//TankInfo* mEnemyTank;		// 指向坦克详细信息
 	BoxMarkStruct* bms;			// 指向格子标记结构, 由 GameControl 传递进来
 
 	int mTankX, mTankY;			// 坦克坐标, 坦克的中心点

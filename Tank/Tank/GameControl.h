@@ -45,19 +45,14 @@ public:
 
 private:
 	// 窗口绘图接口
-	//Graphics* mGraphics;
 	IMAGE mCenterImage;				// 用于保持 mCenter_hdc 存在有效性.
 	HDC mDes_hdc,					// 主窗口hdc, main 传入
 		mImage_hdc,					// 256*224 的 hdc, main 传入
 		mCenter_hdc;				// 208*208 的 hdc, 本类产生, 是游戏区域,分开,经常更新,坐标也容易设定
 
 	BoxMarkStruct* mBoxMarkStruct;			// 存储格子标记
-	//list<PlayerBase*> PlayerList;			// 存储玩家列表
 	ListTable<PlayerBase*> PlayerList;
-	//list<PlayerBase*>::iterator PlayerItor;	// 用于遍历 PlayerList
-
 	list<EnemyBase*> EnemyList;				// 敌机列表
-	//list<EnemyBase*>::iterator EnemyItor;	// 用于遍历 PlayerList
 
 	IMAGE mGrayBackgroundImage;		// 游戏灰色背景图
 	IMAGE mBlackBackgroundImage;	// 黑色背景图
@@ -82,12 +77,12 @@ private:
 	BlastStruct mBlast;				// 大本营爆炸
 	bool mCampDie;					// 大本营被击中, 不再 Camp 贴图 
 
-	//PropClass mProp;			// 道具类		
-
 	bool mEnemyPause;			// 是否可以移动敌机
 	int mEnemyPauseCounter;		// 敌机暂停计数
 
 	TimeClock mTimer;			// 控制绘图频率
+	TimeClock mCampTimer;		// Camp 爆炸速度
+	//TimeClock mScorePanelTimer1; // GameOver 显示完后多久显示分数面板
 
 	int mGameOverX, mGameOverY;	// 
 	bool mGameOverFlag;			// 游戏结束标记, 玩家生命用完, 鸟巢被击中

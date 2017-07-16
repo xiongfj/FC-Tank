@@ -26,7 +26,9 @@
 
 #define PLAYER_SIGN	100
 #define CAMP_SIGN	200			// 大本营标记
-#define ENEMY_SIGN	1000		// 4*4 或 8*8 格子标记, 加上敌机自身 id再标记
+
+/*重新定义规则: 规定标记是 10000 + 1000*mEnemyTankLevel + 100*menemyKind + enemy_id */
+#define ENEMY_SIGN	10000		// 4*4 或 8*8 格子标记, 加上敌机自身 id再标记
 #define STAR_SIGN	2000		// 敌机出现四角星标记, 此时敌机不能进来
 
 // prop_8 标记
@@ -58,8 +60,8 @@
 
 #define SHOOTABLE_X		-100	// 规定子弹坐标 x = -100 子弹可以发射
 
-// 敌机子弹击中的障碍物的类型, 用在 EnemyBase::CheckBomb 返回值
-enum EnemyBulletShootKind {None, Player_1 = PLAYER_SIGN, Player_2 = PLAYER_SIGN + 1, Camp, Other};
+// 子弹击中的障碍物的类型, 用在 EnemyBase::CheckBomb 返回值
+enum BulletShootKind {None, Player_1 = PLAYER_SIGN, Player_2 = PLAYER_SIGN + 1, Camp, Other};
 
 /* 对应数值
 * 	#defien _EMPTY		0

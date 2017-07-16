@@ -41,7 +41,7 @@ public:
 	* GameControl 内循环调用,
 	* mBulletStruct[i].x = SHOOTABLE_X 子弹才运动
 	*/
-	void BulletMoving(const HDC&);
+	BulletShootKind BulletMoving(const HDC&);
 
 	/*
 	* GameControl 内循环调用
@@ -120,7 +120,7 @@ private:
 	* BulletMoving() 内调用
 	* 检测子弹移动过程是否击中东西
 	*/
-	bool CheckBomb(int);
+	BulletShootKind CheckBomb(int);
 
 	/*
 	* CheckBomb() 内击中障碍物时调用
@@ -196,5 +196,5 @@ private:
 
 	ScorePanel* mScorePanel;		// 关卡结束后显示分数结果
 
-	int mKillEnemyNumber;			// 杀敌数量
+	int mKillEnemyNumber[4];		// 四种敌机类型,杀敌数量
 };

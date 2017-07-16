@@ -135,7 +135,8 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	mScorePanel = new ScorePanel(player_id);
 
 	// 杀敌数
-	mKillEnemyNumber = 0;
+	for ( i = 0 ; i< 4; i++)
+		mKillEnemyNumber[i] = 0;
 }
 
 PlayerBase::~PlayerBase()
@@ -311,10 +312,10 @@ bool PlayerBase::PlayerControl()
 }
 
 //
-void PlayerBase::BulletMoving(const HDC& center_hdc)
+BulletShootKind PlayerBase::BulletMoving(const HDC& center_hdc)
 {
 	if (mDied || mBulletTimer.IsTimeOut() == false)
-		return;
+		return BulletShootKind::None;
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -322,7 +323,10 @@ void PlayerBase::BulletMoving(const HDC& center_hdc)
 		if (mBulletStruct[i].x != SHOOTABLE_X)
 		{
 			// 检测打中障碍物与否
-			if (CheckBomb(i))
+			BulletShootKind kind = CheckBomb(i);
+			if (kind == BulletShootKind::Camp)
+				return BulletShootKind::Camp;
+			else if (kind == BulletShootKind::Other )
 				continue;
 
 			int dir = mBulletStruct[i].dir;
@@ -334,12 +338,8 @@ void PlayerBase::BulletMoving(const HDC& center_hdc)
 				mBullet_1_counter--;
 		}
 	}
-	/*
-	if (mPlayerTankLevel > 1 && mBulletX[1] != SHOOTABLE_X)
-	{
-		mBulletX[1] += mDevXY[mBulletDir[1]][0] * 6;
-		mBulletY[1] += mDevXY[mBulletDir[1]][1] * 6;
-	}*/
+
+	return BulletShootKind::None;
 }
 
 
@@ -676,7 +676,7 @@ bool PlayerBase::ShootBullet( int bullet_id )
 }
 
 //
-bool PlayerBase::CheckBomb(int i)
+BulletShootKind PlayerBase::CheckBomb(int i)
 {
 	//if (mBombS[i].canBomb)
 	//	return true;
@@ -721,7 +721,7 @@ bool PlayerBase::CheckBomb(int i)
 		mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 		mBombS[i].counter = 0;
 
-		return true;
+		return BulletShootKind::Other;
 	}
 
 	int tempi, tempj;
@@ -753,7 +753,7 @@ bool PlayerBase::CheckBomb(int i)
 				mBombS[i].counter = 0;
 				mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
-				return true;
+				return BulletShootKind::Camp;
 			}
 
 			// 左右检测子弹头所在的4*4格子和它上面相邻的那个
@@ -769,9 +769,9 @@ bool PlayerBase::CheckBomb(int i)
 				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 				mBombS[i].counter = 0;
 				ClearWallOrStone(i, bombx, bomby);
-				return true;
+				return BulletShootKind::Other;
 			}
-			else if (bms->box_4[tempi][tempj] >= ENEMY_SIGN && bms->box_4[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
+			else if (bms->box_4[tempi][tempj] >= ENEMY_SIGN /*&& bms->box_4[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER*/)
 			{
 				mBulletStruct[i].x = SHOOTABLE_X;
 				mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
@@ -782,7 +782,7 @@ bool PlayerBase::CheckBomb(int i)
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_4[tempi][tempj];
 				mProp->StartShowProp(100, 100);
-				return true;
+				return BulletShootKind::Other;
 			}
 		}
 	}
@@ -805,7 +805,7 @@ bool PlayerBase::CheckBomb(int i)
 				mBombS[i].counter = 0;
 				mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
-				return true;
+				return BulletShootKind::Camp;
 			}
 
 			// 检测 4*4 是否击中障碍
@@ -820,9 +820,9 @@ bool PlayerBase::CheckBomb(int i)
 				mBombS[i].mBombY =( bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 				mBombS[i].counter = 0;
 				ClearWallOrStone(i, bombx, bomby );
-				return true;
+				return BulletShootKind::Other;
 			}
-			else if (bms->box_4[tempi][tempj] >= ENEMY_SIGN && bms->box_4[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
+			else if (bms->box_4[tempi][tempj] >= ENEMY_SIGN/* && bms->box_4[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER*/)
 			{
 				mBulletStruct[i].x = SHOOTABLE_X;
 				mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
@@ -833,7 +833,7 @@ bool PlayerBase::CheckBomb(int i)
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_4[tempi][tempj];
 				mProp->StartShowProp(100, 100);
-				return true;
+				return BulletShootKind::Other;
 			}
 		}
 	}
@@ -841,7 +841,7 @@ bool PlayerBase::CheckBomb(int i)
 	default:
 		break;
 	}
-	return false;
+	return BulletShootKind::None;
 }
 
 // 子弹击中障碍物爆炸调用该函数, 击中边界不可调用, 下标会越界[52][52]

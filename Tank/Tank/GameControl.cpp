@@ -43,6 +43,10 @@ void GameControl::Init()
 
 	//PlayerList = new ListTable<PlayerBase*>();
 	mTimer.SetDrtTime(14);
+	mCampTimer.SetDrtTime(23);
+
+	// mScorePanelTimer1.Init();
+	//mScorePanelTimer1.SetDrtTime(2000);		// GameOVer 字样显示完后多久显示分数面板
 
 	// GameOver 图片
 	mGameOverX = -100;
@@ -395,10 +399,8 @@ void GameControl::AddEnemy()
 	//for (int i = 0; i < TOTAL_ENEMY_NUMBER; i++)
 	if (EnemyList.size() < 16 && TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber > 0)
 	{
-		//EnemyList.push_back((new BigestTank(TANK_KIND::PROP, mBoxMarkStruct)));
 		EnemyList.push_back((new PropTank(2, mBoxMarkStruct)));
 		mOutedEnemyTankNumber++;
-		//EnemyList.push_back((new CommonTank(2, mBoxMarkStruct)));
 	}
 }
 
@@ -437,7 +439,17 @@ bool GameControl::RefreshData()
 
 	// 玩家, 不能包含绘图操作! 内含计时器
 	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+	{
 		p->data->PlayerControl();
+
+		// 如果玩家击中大本营
+		if (p->data->BulletMoving(mCenter_hdc) == BulletShootKind::Camp)
+		{
+			mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
+			mGameOverY = CENTER_HEIGHT;
+			mGameOverFlag = true;
+		}
+	}
 
 	// 敌机, 此处不能包含计绘图操作, 内含计时器, 不然那会导致计时器与主计时器不一致,导致失帧
 	for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
@@ -447,8 +459,8 @@ bool GameControl::RefreshData()
 		int result = (*EnemyItor)->BulletMoving();
 		switch (result)
 		{
-		case EnemyBulletShootKind::Player_1:
-		case EnemyBulletShootKind::Player_2:
+		case BulletShootKind::Player_1:
+		case BulletShootKind::Player_2:
 			for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 			{
 				if (p->data->GetID() + PLAYER_SIGN == result)
@@ -458,7 +470,7 @@ bool GameControl::RefreshData()
 				}
 			}
 			break;
-		case EnemyBulletShootKind::Camp:
+		case BulletShootKind::Camp:
 			mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
 			mGameOverY = CENTER_HEIGHT;
 			mGameOverFlag = true; 
@@ -556,9 +568,6 @@ void GameControl::RefreshCenterPanel()
 				case _WALL:
 					BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mWallImage), 0, 0, SRCCOPY);
 					break;
-					//case _FOREST:
-					//	BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, SRCCOPY);
-					//break;
 				case _ICE:
 					BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mIceImage), 0, 0, SRCCOPY);
 					break;
@@ -593,18 +602,16 @@ void GameControl::RefreshCenterPanel()
 			p->data->ShowStar(mCenter_hdc);
 			p->data->DrawPlayerTank(mCenter_hdc);		// 坦克
 			p->data->DrawBullet(mCenter_hdc);
-
-			p->data->BulletMoving(mCenter_hdc);
 			CheckKillEnemy(p->data);
 
 			if (p->data->IsShootCamp())
 			{
-				if (mBlast.canBlast == false)
+				if (mBlast.canBlast == false )
 				{
 					int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
 					TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
 						GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
-					if (mBlast.counter++ == 17)
+					if (mCampTimer.IsTimeOut()  && mBlast.counter++ == 17)
 						mBlast.canBlast = true;
 					mCampDie = true;
 				}
@@ -650,7 +657,7 @@ void GameControl::RefreshCenterPanel()
 					int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
 					TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
 						GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
-					if (mBlast.counter++ == 17)
+					if ( mCampTimer.IsTimeOut() && mBlast.counter++ == 17)
 						mBlast.canBlast = true;
 					mCampDie = true;
 				}
@@ -665,8 +672,6 @@ void GameControl::RefreshCenterPanel()
 			// 爆炸完成后
 			if (p->data->Blasting(mCenter_hdc))
 			{
-				//PlayerItor = PlayerList.erase(PlayerItor);	// 不能赋值??! 删除最后一个数据的时候 bug 异常!!
-				//break;
 			}
 		}
 
@@ -692,25 +697,17 @@ void GameControl::RefreshCenterPanel()
 void GameControl::CheckKillEnemy(PlayerBase* pb)
 {
 	int bullet[2] = {0, 0};
-	//(*pb)->GetKillEnemy(bullet[0], bullet[1]);		// 获取玩家击中的敌机id, 存储进 bullet[2] 内
 	pb->GetKillEnemy(bullet[0], bullet[1]);		// 获取玩家击中的敌机id, 存储进 bullet[2] 内
 
 	for (int i = 0; i < 2; i++)
 	{
-		if (bullet[i] >= ENEMY_SIGN && bullet[i] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER)
+		if (bullet[i] >= ENEMY_SIGN /*&& bullet[i] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER*/)
 		{
 			for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 			{
-				if ((*EnemyItor)->GetId() + ENEMY_SIGN == bullet[i])
+				if ((*EnemyItor)->GetId() == bullet[i] % 100)		// 100xx 后两位是 id
 				{
-					//delete (EnemyBase*)(&(*EnemyItor));  ????
 					(*EnemyItor)->BeKill();
-					//mActiveEnemyTankNumber--;
-
-					// 设置显示道具
-					//if ((*EnemyItor)->GetKind() == TANK_KIND::PROP)
-						//mProp.StartShowProp(100, 100);
-					//EnemyItor = EnemyList.erase(EnemyItor); //放到爆炸图显示完全之后再调用
 					break;
 				}
 			}
@@ -721,9 +718,6 @@ void GameControl::IsGameOver()
 {
 	if (!mGameOverFlag)
 		return;
-
-	//if (mGameOverY < CENTER_HEIGHT * 0.4)
-		//mGameOverFlag = false;
 
 	TransparentBlt(mCenter_hdc, mGameOverX, mGameOverY, GAMEOVER_WIDTH, GAMEOVER_HEIGHT,
 		GetImageHDC(&mGameOverImage), 0, 0, GAMEOVER_WIDTH, GAMEOVER_HEIGHT, 0x000000);
