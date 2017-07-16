@@ -54,6 +54,9 @@ void GameControl::Init()
 	loadimage(&mCreateMapTankImage, _T("./res/big/0Player/m0-1-2.gif"));
 	mCMTImageX = BOX_SIZE;
 	mCMTImageY = BOX_SIZE;
+
+	// 每次进入地图制作之前都检测之前是否有制作地图
+	mHasCustomMap = false;
 }
 
 // 存储玩家进链表
@@ -125,8 +128,9 @@ bool GameControl::CreateMap()
 	
 	int cur_index = 13;		// 对应上面数组
 
-	// 初始化标记
-	InitSignBox();
+	// 清除或保留上次绘制的地图
+	if ( !mHasCustomMap )
+		ClearSignBox();
 
 	// 按键速度
 	TimeClock click;
@@ -197,6 +201,7 @@ bool GameControl::CreateMap()
 							SignBox_4(i, j, mBoxMarkStruct->box_8[i][j]);
 					}
 				}
+				mHasCustomMap = true;
 				return true;
 			}
 
@@ -313,6 +318,34 @@ bool GameControl::StartGame()
 /////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////// 私有函数,本类使用 //////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
+
+//
+void GameControl::ClearSignBox()
+{
+	// 初始化标记各种格子
+	int x = 0, y = 0;
+	for (int i = 0; i < 26; i++)
+	{
+		for (int j = 0; j < 26; j++)
+		{
+			mBoxMarkStruct->prop_8[i][j] = _EMPTY;
+			mBoxMarkStruct->box_8[i][j] = _EMPTY;	// 26*26
+			SignBox_4(i, j, _EMPTY);		// 标记 26*26 和 52*52 格子
+		}
+	}
+
+	// 标记大本营
+	for (int i = 23; i < 26; i++)
+	{
+		for (int j = 11; j < 15; j++)
+		{
+			if (i >= 24 && j >= 12 && j <= 13)
+				mBoxMarkStruct->box_8[i][j] = CAMP_SIGN;
+			else
+				mBoxMarkStruct->box_8[i][j] = _WALL;			// 鸟巢周围是 _WALL
+		}
+	}
+}
 
 //
 void GameControl::InitSignBox()

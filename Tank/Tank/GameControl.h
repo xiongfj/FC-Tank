@@ -30,6 +30,7 @@ public:
 	bool StartGame();								// 更新绘制游戏各种东西, 返回 false 结束游戏
 
 private:
+	void ClearSignBox();
 	void InitSignBox();		// 初始化格子标记
 	void AddEnemy();						// 游戏开始前 添加20 架敌机
 	void SignBox_4(int i, int j, int sign_val);	// 标记格子, LoadMap() 内调用
@@ -94,4 +95,6 @@ private:
 
 	IMAGE mCreateMapTankImage;		// 自定义地图中的 坦克游标图片
 	int mCMTImageX, mCMTImageY;		// 游标中心点坐标
+
+	bool mHasCustomMap;			// 当前是否有制作地图, 用于退出制作再次进入制作, 不会之前制作的数据
 };
