@@ -203,6 +203,7 @@ public:
 	static IMAGE background;
 	IMAGE player;
 	IMAGE pts;
+	static IMAGE bunds;		// bunds 1000pts ×ÖÑù
 
 	int player_x, player_y;
 	int pts_x, pts_y;
