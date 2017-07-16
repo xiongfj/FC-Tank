@@ -52,16 +52,17 @@ RingClass::RingClass()
 	index_counter = 0;
 }
 
-void RingClass::ShowRing(const HDC &canvas_hdc, int mTankX, int mTankY)
+bool RingClass::ShowRing(const HDC &canvas_hdc, int mTankX, int mTankY)
 {
 	if (index_counter > 790)
 	{
 		canshow = false;
 		index_counter = 0;
-		return;
+		return false;
 	}
 	TransparentBlt(canvas_hdc, (int)(mTankX - BOX_SIZE), (int)(mTankY - BOX_SIZE), BOX_SIZE * 2, 
 			BOX_SIZE * 2, GetImageHDC(&image[index_counter++ / 4 % 2]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+	return true;
 }
 
 void RingClass::SetShowable()

@@ -198,7 +198,11 @@ void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 
 	// // 显示保护环
 	if (mRing.canshow)
-		mRing.ShowRing(canvas_hdc, mTankX, mTankY);
+	{
+		if (mRing.ShowRing(canvas_hdc, mTankX, mTankY) == false)
+			// 防止玩家爆炸到结束的时候,重生位置被敌机占用,然后玩家标记被擦除
+			SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);
+	}
 }
 
 void PlayerBase::DrawBullet(const HDC & center_hdc)
