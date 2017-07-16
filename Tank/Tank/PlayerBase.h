@@ -86,6 +86,9 @@ public:
 
 	/*在 gameControl 内循环调用 检测并显示闪烁道具*/
 	static void ShowProp(const HDC&);
+
+	/*GameCnotrol 内循环调用, 函数内调用成员ScorePanel 函数显示结果*/
+	void ShowScorePanel(const HDC&);
 private:
 
 	/*如果有生命重新出生*/
@@ -190,4 +193,6 @@ private:
 	TimeClock mBulletTimer;			// 子弹移动速度
 	TimeClock mBombTimer;	//bug?		// 子弹爆炸速度
 	TimeClock mBlastTimer;			// 坦克爆炸速度
+
+	ScorePanel* mScorePanel;		// 关卡结束后显示分数结果
 };

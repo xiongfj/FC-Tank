@@ -57,6 +57,9 @@ void GameControl::Init()
 
 	// 每次进入地图制作之前都检测之前是否有制作地图
 	mHasCustomMap = false;
+
+	// 关卡结束显示分数面板
+	mShowScorePanel = false;
 }
 
 // 存储玩家进链表
@@ -294,6 +297,19 @@ bool GameControl::StartGame()
 	// 主绘图操作时间
 	if (mTimer.IsTimeOut())
 	{
+		if (mShowScorePanel)
+		{
+			BitBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&ScorePanel::background), 0, 0, SRCCOPY);
+			for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+			{
+				p->data->ShowScorePanel(mImage_hdc);
+			}
+			// 整张画布缩放显示 image 到主窗口
+			StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
+			FlushBatchDraw();
+			return true;
+		}
+
 		AddEnemy();
 
 		// 更新右边面板的数据, 待判断, 因为不需要经常更新 mImage_hdc
@@ -301,7 +317,6 @@ bool GameControl::StartGame()
 
 		// 更新中心游戏区域: mCenter_hdc
 		RefreshCenterPanel();
-
 
 		// 将中心画布印到主画布 mImage_hdc 上
 		BitBlt( mImage_hdc, CENTER_X, CENTER_Y, CENTER_WIDTH, CENTER_HEIGHT, mCenter_hdc, 0, 0, SRCCOPY );
@@ -715,7 +730,11 @@ void GameControl::IsGameOver()
 		GetImageHDC(&mGameOverImage), 0, 0, GAMEOVER_WIDTH, GAMEOVER_HEIGHT, 0x000000);
 
 	if (mGameOverTimer.IsTimeOut() && mGameOverY >= CENTER_HEIGHT * 0.45)
-		mGameOverY -= 2;;
+		mGameOverY -= 2;
+	else if (mGameOverY <= CENTER_HEIGHT * 0.45)
+	{
+		mShowScorePanel = true;
+	}
 }
 /*.
 void GameControl::CheckKillPlayer(list<EnemyBase*>::iterator enemyItor)

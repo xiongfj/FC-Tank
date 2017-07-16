@@ -130,6 +130,8 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 
 	mBombTimer.SetDrtTime(20);	// 不能设置太小..
 	mBlastTimer.SetDrtTime(36);
+
+	mScorePanel = new ScorePanel(player_id);
 }
 
 PlayerBase::~PlayerBase()
@@ -439,6 +441,12 @@ bool PlayerBase::IsGetBombProp()
 void PlayerBase::ShowProp(const HDC& center_hdc)
 {
 	mProp->ShowProp(center_hdc);
+}
+
+//
+void PlayerBase::ShowScorePanel(const HDC& image_hdc)
+{
+	mScorePanel->show(image_hdc);// 整张画布缩放显示 image 到主窗口
 }
 
 /////////////////////////////////////////////////////////////

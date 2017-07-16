@@ -147,3 +147,42 @@ void PropClass::SignPropBox(int val)
 IMAGE PropClass::image[6];
 int PropClass::prop_kind = ADD_PROP;
 */
+IMAGE ScorePanel::background;
+ScorePanel::ScorePanel(int player_id)
+{
+	switch (player_id)
+	{
+	case 0:
+		player_x = 24;
+		player_y = 47;
+		pts_x = 25;
+		pts_y = 85;
+		loadimage(&player, _T("./res/big/scorepanel/player-0.gif") );
+		loadimage(&pts, _T("./res/big/scorepanel/pts-0.gif"));
+		
+		loadimage(&background, _T("./res/big/scorepanel/background.gif"));
+		break;
+	case 1:
+		player_x = 170;
+		player_y = 47;
+		pts_x = 137;
+		pts_y = 85;
+		loadimage(&player, _T("./res/big/scorepanel/player-1.gif"));
+		loadimage(&pts, _T("./res/big/scorepanel/pts-1.gif"));
+		break;
+	default :
+		break;
+	}
+}
+
+ScorePanel::~ScorePanel()
+{
+}
+
+void ScorePanel::show(const HDC& image_hdc)
+{
+	Sleep(30);
+	//GameControl ÄÚ»æÖÆBitBlt(image_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&background), 0, 0, SRCCOPY);
+	BitBlt(image_hdc, player_x, player_y, player.getwidth(), player.getheight(), GetImageHDC(&player), 0, 0, SRCCOPY);
+	BitBlt(image_hdc, pts_x, pts_y, pts.getwidth(), pts.getheight(), GetImageHDC(&pts), 0, 0, SRCCOPY);
+}

@@ -97,4 +97,5 @@ private:
 	int mCMTImageX, mCMTImageY;		// 游标中心点坐标
 
 	bool mHasCustomMap;			// 当前是否有制作地图, 用于退出制作再次进入制作, 不会之前制作的数据
+	bool mShowScorePanel;		// 是否显示分数面板
 };

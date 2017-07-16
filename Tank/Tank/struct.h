@@ -187,3 +187,23 @@ private:
 	bool can_show;				// 是否可以显示道具
 	//TimeClock mTimer;
 };
+
+/*
+* 每一关胜利\失败后显示的分数面板
+* PlayerBase 内实例化
+* 一个玩家一个对象
+*/
+class ScorePanel
+{
+public:
+	ScorePanel(int player_id);
+	~ScorePanel();
+	void show(const HDC&);
+
+	static IMAGE background;
+	IMAGE player;
+	IMAGE pts;
+
+	int player_x, player_y;
+	int pts_x, pts_y;
+};
