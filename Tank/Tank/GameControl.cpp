@@ -49,6 +49,11 @@ void GameControl::Init()
 	mGameOverY = -100;
 	mGameOverFlag = false;
 	mGameOverTimer.SetDrtTime(30);
+
+	// 自定义绘制地图
+	loadimage(&mCreateMapTankImage, _T("./res/big/0Player/m0-1-2.gif"));
+	mCMTImageX = BOX_SIZE;
+	mCMTImageY = BOX_SIZE;
 }
 
 // 存储玩家进链表
@@ -67,33 +72,152 @@ void GameControl::LoadMap()
 {
 	// 读取地图文件数据
 	FILE* fp = NULL;
-	if ( 0 != fopen_s(&fp, "./res/data/map.txt", "rb") )
+	if (0 != fopen_s(&fp, "./res/data/map.txt", "rb"))
 		throw _T("读取地图数据文件异常.");
-	fseek(fp, sizeof(Map) * (mCurrentStage - 1), SEEK_SET );
+	fseek(fp, sizeof(Map) * (mCurrentStage - 1), SEEK_SET);
 	fread(&mMap, sizeof(Map), 1, fp);
 	fclose(fp);
 
-	// 初始化标记各种格子
-	int x = 0, y = 0;
-	for ( int i = 0; i < 26; i++ )
-	{
-		for ( int j = 0; j < 26; j++ )
-		{
-			SignBoxMark( i, j, mMap.buf[i][j] - '0' );		// 标记 26*26 和 52*52 格子
-			mBoxMarkStruct->prop_8[i][j] = _EMPTY;
-			//mBoxMarkStruct->tank_8[i][j] = _EMPTY;
-		}
-	}
+	InitSignBox();
+}
 
-	// 标记大本营
-	for (int i = 24; i < 26; i++)
-	{
-		for (int j = 12; j < 14; j++)
-		{
-			mBoxMarkStruct->box_8[i][j] = CAMP_SIGN;
-		}
-	}
+// 玩家自己创建地图
+void GameControl::CreateMap()
+{
+	int i, j, x = 0, y = 0;
+	int tempx, tempy;
+	bool flag = true;
+	int keys[4] = {VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN};		// 下标必须与 DIR_LEFT 等对应
+	int dev[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 游标坦克移动分量
+	int key_counter = 0;			// 控制按键响应速度
+	int twinkle_counter = 0;	// 坦克游标闪烁计数
+	int lastx = mCMTImageX, lasty = mCMTImageY;			// 记录坦克上次的坐标, 如果坦克移动不会变换 sign_order 图形
 
+	// 14 中情况
+	int sign_order[14][4] = { {_ICE, _ICE, _ICE, _ICE},		// 四个格子都是冰, 依次左上右上左下 ..
+		{ _FOREST,	_FOREST,	_FOREST,	_FOREST},
+		{ _RIVER,	_RIVER,		_RIVER,		_RIVER },
+		{ _STONE,	_STONE ,	_STONE ,	_STONE },
+		{ _STONE ,	_STONE ,	_EMPTY,		_EMPTY},
+		{ _STONE ,	_EMPTY,		_STONE ,	_EMPTY},
+		{ _EMPTY,	_EMPTY,		_STONE ,	_STONE },
+		{ _EMPTY,	_STONE ,	_EMPTY,		_STONE },
+		{ _WALL,	_WALL ,		_WALL ,		_WALL },
+		{ _WALL ,	_WALL ,		_EMPTY,		_EMPTY},
+		{ _WALL ,	_EMPTY,		_WALL,		_EMPTY},
+		{ _EMPTY,	_EMPTY,		_WALL ,		_WALL },
+		{ _EMPTY,	_WALL ,		_EMPTY,		_WALL },
+		{ _EMPTY,	_EMPTY ,	_EMPTY ,	_EMPTY } };
+	
+	int cur_index = 13;		// 对应上面数组
+	//bool empty[13][13] = {}; // 标志每个 16*16 格子是否是空, 如果当前坦克游标所在的 16*16 格子不为空, 则 cur_index + 1;
+
+	//int index13_i = 0, index13_j = 0;
+
+	// 初始化标记
+	InitSignBox();
+
+	// 灰色背景
+	StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&mGrayBackgroundImage), 0, 0, 66, 66, SRCCOPY);
+
+	while ( flag )
+	{
+		Sleep(10);
+
+		if (key_counter++ > 6)
+		{
+					key_counter = 0;
+			for (i = 0; i < 4; i++)
+			{
+				if (GetAsyncKeyState(keys[i]) & 0x8000)
+				{
+					lastx = mCMTImageX;
+					lasty = mCMTImageY;
+					tempx = mCMTImageX + dev[i][0] * BOX_SIZE * 2;
+					tempy = mCMTImageY + dev[i][1] * BOX_SIZE * 2;
+					if (tempx >= BOX_SIZE && tempx <= BOX_SIZE * 25 && tempy >= BOX_SIZE && tempy <= BOX_SIZE * 25)
+					{
+						mCMTImageX += dev[i][0] * BOX_SIZE * 2;
+						mCMTImageY += dev[i][1] * BOX_SIZE * 2;
+					}
+				}
+
+				// 放置障碍物
+				else if (GetAsyncKeyState('M') & 0x8000)
+				{
+					if (mCMTImageX == lastx && mCMTImageY == lasty)
+					{
+						cur_index = cur_index + 1 > 13 ? 0 : cur_index + 1;
+					}
+					else
+					{
+						lastx = mCMTImageX;
+						lasty = mCMTImageY;
+					}
+
+					// 更改 16*16 的地图
+					i = mCMTImageY / BOX_SIZE - 1;
+					j = mCMTImageX / BOX_SIZE - 1;
+					mBoxMarkStruct->box_8[i][j] = sign_order[cur_index][0];
+					mBoxMarkStruct->box_8[i][j + 1] = sign_order[cur_index][1];
+					mBoxMarkStruct->box_8[i + 1][j] = sign_order[cur_index][2];
+					mBoxMarkStruct->box_8[i + 1][j + 1] = sign_order[cur_index][3];
+				}
+			}
+		}
+
+		// 黑色背景
+		StretchBlt(mCenter_hdc, 0, 0, CENTER_WIDTH, CENTER_HEIGHT, GetImageHDC(&mBlackBackgroundImage), 0, 0, CENTER_WIDTH, CENTER_HEIGHT, SRCCOPY);
+		
+		for (int i = 0; i < 26; i++)
+		{
+			for (int j = 0; j < 26; j++)
+			{
+				x = j * BOX_SIZE;// +CENTER_X;
+				y = i * BOX_SIZE;// +CENTER_Y;
+				switch (mBoxMarkStruct->box_8[i][j])
+				{
+				case _WALL:
+					BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mWallImage), 0, 0, SRCCOPY);
+					break;
+				case _FOREST:
+					BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, SRCCOPY);
+					break;
+				case _ICE:
+					BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mIceImage), 0, 0, SRCCOPY);
+					break;
+				case _RIVER:
+					BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mRiverImage[0]), 0, 0, SRCCOPY);
+					break;
+				case _STONE:
+					BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mStoneImage), 0, 0, SRCCOPY);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+
+
+		// 大本营
+		TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
+			GetImageHDC(&mCamp[0]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+
+		// 坦克游标
+		if(twinkle_counter++ / 28 % 2 == 0)
+			TransparentBlt(mCenter_hdc, mCMTImageX - BOX_SIZE, mCMTImageY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
+				GetImageHDC(&mCreateMapTankImage), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+
+		// 将中心画布印到主画布 mImage_hdc 上
+		BitBlt(mImage_hdc, CENTER_X, CENTER_Y, CENTER_WIDTH, CENTER_HEIGHT, mCenter_hdc, 0, 0, SRCCOPY);
+		// 整张画布缩放显示 image 到主窗口
+		StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
+		FlushBatchDraw();
+	}
+}
+
+void GameControl::GameLoop()
+{
 	while (StartGame())
 	{
 		Sleep(1);
@@ -114,9 +238,6 @@ bool GameControl::StartGame()
 		RefreshCenterPanel();
 
 
-
-
-
 		// 将中心画布印到主画布 mImage_hdc 上
 		BitBlt( mImage_hdc, CENTER_X, CENTER_Y, CENTER_WIDTH, CENTER_HEIGHT, mCenter_hdc, 0, 0, SRCCOPY );
 		// 整张画布缩放显示 image 到主窗口
@@ -134,6 +255,33 @@ bool GameControl::StartGame()
 /////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////// 私有函数,本类使用 //////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
+
+//
+void GameControl::InitSignBox()
+{
+	// 初始化标记各种格子
+	int x = 0, y = 0;
+	for (int i = 0; i < 26; i++)
+	{
+		for (int j = 0; j < 26; j++)
+		{
+			SignBoxMark(i, j, mMap.buf[i][j] - '0');		// 标记 26*26 和 52*52 格子
+			mBoxMarkStruct->prop_8[i][j] = _EMPTY;
+		}
+	}
+
+	// 标记大本营
+	for (int i = 23; i < 26; i++)
+	{
+		for (int j = 11; j < 15; j++)
+		{
+			if (i >= 24 && j >= 12 && j <= 13)
+				mBoxMarkStruct->box_8[i][j] = CAMP_SIGN;
+			else
+				mBoxMarkStruct->box_8[i][j] = _WALL;			// 鸟巢周围是 _WALL
+		}
+	}
+}
 
 // 待修改, 添加的敌机种类需要修改
 void GameControl::AddEnemy()

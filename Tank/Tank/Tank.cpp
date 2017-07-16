@@ -57,12 +57,14 @@ void main()
 		control->AddPlayer(TWO_PLAYER);		// 两个玩家
 		break;
 	case Custom:					// 玩家自定义地图
+		control->CreateMap();
 		break;
 	default:
 		return;
 	}
 
 	control->LoadMap();
+	control->GameLoop();
 	closegraph();
 }
 

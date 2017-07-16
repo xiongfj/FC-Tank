@@ -85,12 +85,12 @@ EnumSelectResult SelectPanel::ShowSelectPanel()
 		FlushBatchDraw();
 
 		temp++;
-		if ( GetAsyncKeyState('W') & 0x8000 && temp > 3 )
+		if ( GetAsyncKeyState(VK_UP) & 0x8000 && temp > 3 )
 		{
 			temp = 0;
 			mSelectIndex = ( mSelectIndex - 1 >= 0 ) ? mSelectIndex - 1 : 2;
 		}
-		else if ( GetAsyncKeyState('S') & 0x8000 && temp > 3 )
+		else if ( GetAsyncKeyState(VK_DOWN) & 0x8000 && temp > 3 )
 		{
 			temp = 0;
 			mSelectIndex = ( mSelectIndex + 1 < 3 ) ? mSelectIndex + 1 : 0;
