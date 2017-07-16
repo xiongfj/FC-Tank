@@ -201,12 +201,20 @@ public:
 	ScorePanel(int player_id);
 	~ScorePanel();
 	void show(const HDC&);
+	void SetKillNum(const int *);
 
+	static IMAGE number;
 	static IMAGE background;
 	IMAGE player;
 	IMAGE pts;
 	static IMAGE bunds;		// bunds 1000pts 字样
 
+	byte counter : 3;		// 多少次刷新一次数据
 	int player_x, player_y;
 	int pts_x, pts_y;
+	int kill_num[4], kill_num2[4];		// 4种敌机杀敌数, kill_num = -1 的项先不显示
+
+	// x[..][0] 是分数, x[..][1] 是杀敌数
+	int x[4][2];	// 一个是分数, 一个是杀敌数, 分数等于 杀敌数*100,200,400...
+	int y[4][2];
 };

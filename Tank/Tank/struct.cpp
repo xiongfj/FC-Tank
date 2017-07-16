@@ -147,6 +147,7 @@ void PropClass::SignPropBox(int val)
 IMAGE PropClass::image[6];
 int PropClass::prop_kind = ADD_PROP;
 */
+IMAGE ScorePanel::number;
 IMAGE ScorePanel::bunds;
 IMAGE ScorePanel::background;
 ScorePanel::ScorePanel(int player_id)
@@ -161,9 +162,20 @@ ScorePanel::ScorePanel(int player_id)
 		loadimage(&player, _T("./res/big/scorepanel/player-0.gif") );
 		loadimage(&pts, _T("./res/big/scorepanel/pts-0.gif"));
 
+		loadimage(&number, _T("./res/big/white-number.gif"));
 		loadimage(&background, _T("./res/big/scorepanel/background.gif"));
 		loadimage(&bunds, _T("./res/big/scorepanel/bunds.gif"));
+
+		for (int i = 0; i < 4; i++)
+		{
+			x[i][0] = 34;
+			x[i][1] = 103;
+
+			y[i][0] = 88 + i * 24;
+			y[i][1] = 88 + i * 24;
+		}
 		break;
+
 	case 1:
 		player_x = 170;
 		player_y = 47;
@@ -171,9 +183,24 @@ ScorePanel::ScorePanel(int player_id)
 		pts_y = 85;
 		loadimage(&player, _T("./res/big/scorepanel/player-1.gif"));
 		loadimage(&pts, _T("./res/big/scorepanel/pts-1.gif"));
+
+		for (int i = 0; i < 4; i++)
+		{
+			x[i][0] = 177;
+			x[i][1] = 155;
+			
+			y[i][0] = 88 + i * 24;
+			y[i][1] = 88 + i * 24;
+		}
 		break;
-	default :
+	default:
 		break;
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		kill_num[i] = 0;		// 接收 PlayerBase 传递过来的数据
+		kill_num2[i] = -1;		// 默认杀敌数 = -1 flag, 此时不显示
 	}
 }
 
@@ -183,8 +210,81 @@ ScorePanel::~ScorePanel()
 
 void ScorePanel::show(const HDC& image_hdc)
 {
-	Sleep(30);
 	//GameControl 内绘制BitBlt(image_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&background), 0, 0, SRCCOPY);
 	BitBlt(image_hdc, player_x, player_y, player.getwidth(), player.getheight(), GetImageHDC(&player), 0, 0, SRCCOPY);
 	BitBlt(image_hdc, pts_x, pts_y, pts.getwidth(), pts.getheight(), GetImageHDC(&pts), 0, 0, SRCCOPY);
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (kill_num[i] < 10)
+		{
+			TransparentBlt(image_hdc, x[i][1], y[i][1], BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+				BLACK_NUMBER_SIZE * kill_num[i], 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+		}
+		else
+		{
+			TransparentBlt(image_hdc, x[i][1]- 8, y[i][1], BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+				BLACK_NUMBER_SIZE * (kill_num[i] / 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+
+			TransparentBlt(image_hdc, x[i][1], y[i][1], BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+				BLACK_NUMBER_SIZE * (kill_num[i] % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+		}
+
+		int score = (i + 1) * 100 * kill_num[i];	// 一级坦克一架100分, 依次类推
+
+		// 计算分数是多少位数
+		int temp = score;
+		int score_bit = 1;		
+		while (temp / 10 != 0)
+		{
+			score_bit++;
+			temp /= 10;
+		}
+
+		// 分数最多 4 位数
+		switch (score_bit)
+		{
+		case 1:
+			TransparentBlt(image_hdc, x[i][0] + 16, y[i][0], BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+				BLACK_NUMBER_SIZE * 0, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+			break;
+		// 不可能是 两位数!?!? case 2: break;
+
+		case 3:
+			TransparentBlt(image_hdc, x[i][0], y[i][0], BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+				BLACK_NUMBER_SIZE * (score / 100), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+
+			TransparentBlt(image_hdc, x[i][0] + 8, y[i][0], BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+				BLACK_NUMBER_SIZE * 0, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+
+			TransparentBlt(image_hdc, x[i][0] + 16, y[i][0], BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+				BLACK_NUMBER_SIZE * 0, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+			break;
+
+		case 4:
+			TransparentBlt(image_hdc, x[i][0] - 8, y[i][0], BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+				BLACK_NUMBER_SIZE * (score / 1000), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+
+			TransparentBlt(image_hdc, x[i][0], y[i][0], BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+				BLACK_NUMBER_SIZE * (score % 1000 / 100), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+
+			TransparentBlt(image_hdc, x[i][0] + 8, y[i][0], BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+				BLACK_NUMBER_SIZE * 0, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+
+			TransparentBlt(image_hdc, x[i][0] + 16, y[i][0], BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+				BLACK_NUMBER_SIZE * 0, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
+void ScorePanel::SetKillNum(const int * nums)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		kill_num[i] = nums[i];
+	}
 }

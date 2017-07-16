@@ -509,7 +509,7 @@ void EnemyBase::RejustDirPosition()
 
 //
 BulletShootKind EnemyBase::CheckBomb()
-{
+{/*
 	int dir = mBulletStruct.dir;
 
 	// 子弹头接触到障碍物的那个点, 左右方向点在上, 上下方向点在右
@@ -661,6 +661,7 @@ BulletShootKind EnemyBase::CheckBomb()
 	default:
 		break;
 	}
+	*/
 	return BulletShootKind::None;
 }
 

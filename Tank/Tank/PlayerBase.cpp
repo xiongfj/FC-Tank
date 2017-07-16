@@ -453,6 +453,11 @@ void PlayerBase::ShowScorePanel(const HDC& image_hdc)
 	mScorePanel->show(image_hdc);// 整张画布缩放显示 image 到主窗口
 }
 
+void PlayerBase::SendKillNumToScorePanel()
+{
+	mScorePanel->SetKillNum(mKillEnemyNumber);
+}
+
 /////////////////////////////////////////////////////////////
 
 
@@ -781,6 +786,7 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_4[tempi][tempj];
+				mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000 ]++;	// 记录消灭敌机的种类的数量
 				mProp->StartShowProp(100, 100);
 				return BulletShootKind::Other;
 			}
@@ -832,6 +838,7 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_4[tempi][tempj];
+				mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000]++;		// 记录消灭敌机的种类的数量
 				mProp->StartShowProp(100, 100);
 				return BulletShootKind::Other;
 			}

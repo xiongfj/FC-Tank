@@ -52,7 +52,7 @@ void GameControl::Init()
 	mGameOverX = -100;
 	mGameOverY = -100;
 	mGameOverFlag = false;
-	mGameOverTimer.SetDrtTime(30);
+	mGameOverTimer.SetDrtTime(10);
 
 	// 自定义绘制地图
 	loadimage(&mCreateMapTankImage, _T("./res/big/0Player/m0-1-2.gif"));
@@ -399,7 +399,9 @@ void GameControl::AddEnemy()
 	//for (int i = 0; i < TOTAL_ENEMY_NUMBER; i++)
 	if (EnemyList.size() < 16 && TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber > 0)
 	{
-		EnemyList.push_back((new PropTank(2, mBoxMarkStruct)));
+		EnemyList.push_back((new CommonTank(2, mBoxMarkStruct)));
+		//EnemyList.push_back((new PropTank(2, mBoxMarkStruct)));
+		//EnemyList.push_back( new BigestTank(TANK_KIND::PROP, mBoxMarkStruct) );
 		mOutedEnemyTankNumber++;
 	}
 }
@@ -716,7 +718,7 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 }
 void GameControl::IsGameOver()
 {
-	if (!mGameOverFlag)
+	if (!mGameOverFlag && !mShowScorePanel )
 		return;
 
 	TransparentBlt(mCenter_hdc, mGameOverX, mGameOverY, GAMEOVER_WIDTH, GAMEOVER_HEIGHT,
@@ -727,6 +729,10 @@ void GameControl::IsGameOver()
 	else if (mGameOverY <= CENTER_HEIGHT * 0.45)
 	{
 		mShowScorePanel = true;
+		for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+		{
+			p->data->SendKillNumToScorePanel();
+		}
 	}
 }
 /*.
