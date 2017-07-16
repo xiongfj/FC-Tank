@@ -147,6 +147,7 @@ void PropClass::SignPropBox(int val)
 IMAGE PropClass::image[6];
 int PropClass::prop_kind = ADD_PROP;
 */
+IMAGE ScorePanel::bunds;
 IMAGE ScorePanel::background;
 ScorePanel::ScorePanel(int player_id)
 {
@@ -159,8 +160,9 @@ ScorePanel::ScorePanel(int player_id)
 		pts_y = 85;
 		loadimage(&player, _T("./res/big/scorepanel/player-0.gif") );
 		loadimage(&pts, _T("./res/big/scorepanel/pts-0.gif"));
-		
+
 		loadimage(&background, _T("./res/big/scorepanel/background.gif"));
+		loadimage(&bunds, _T("./res/big/scorepanel/bunds.gif"));
 		break;
 	case 1:
 		player_x = 170;

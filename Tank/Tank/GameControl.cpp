@@ -323,7 +323,6 @@ bool GameControl::StartGame()
 		// 整张画布缩放显示 image 到主窗口
 		StretchBlt( mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY );
 		FlushBatchDraw();
-
 	}
 
 	// 数据变化, 不能涉及绘图操作
@@ -644,7 +643,7 @@ void GameControl::RefreshCenterPanel()
 			}
 
 			// 如果该敌机击中大本营
-			if ((*EnemyItor)->IsShootCamp())
+			if (/*(*EnemyItor)->IsShootCamp()*/mGameOverFlag)
 			{
 				if (mBlast.canBlast == false)
 				{

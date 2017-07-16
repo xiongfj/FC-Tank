@@ -195,4 +195,6 @@ private:
 	TimeClock mBlastTimer;			// 坦克爆炸速度
 
 	ScorePanel* mScorePanel;		// 关卡结束后显示分数结果
+
+	int mKillEnemyNumber;			// 杀敌数量
 };

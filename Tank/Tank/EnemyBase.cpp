@@ -16,7 +16,7 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 	mEnemyTankKind = kind;
 	mEnemyTankLevel = level;
 	mDied = false;
-	mIsShootCamp = false;
+	//.mIsShootCamp = false;
 	bms = b;
 
 	int tempx[3] = {BOX_SIZE, 13 * BOX_SIZE, 25 * BOX_SIZE};	// 坦克随机出现的三个位置 x 坐标
@@ -299,10 +299,10 @@ bool EnemyBase::Blasting(const HDC& center_hdc)
 	return false;
 }
 
-bool EnemyBase::IsShootCamp()
-{
-	return mIsShootCamp;
-}
+//.bool EnemyBase::IsShootCamp()
+//.{
+	//.return mIsShootCamp;
+//.}
 
 //
 void EnemyBase::SetPause(bool val)
@@ -591,7 +591,7 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 			{
 				mBombS.counter = 0;
 				mBulletStruct.x = SHOOTABLE_X;
-				mIsShootCamp = true;
+				//.mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
 				return EnemyBulletShootKind::Camp;
 			}
@@ -638,7 +638,7 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 			{
 				mBombS.counter = 0;
 				mBulletStruct.x = SHOOTABLE_X;
-				mIsShootCamp = true;
+				//.mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
 				return EnemyBulletShootKind::Camp;
 			}

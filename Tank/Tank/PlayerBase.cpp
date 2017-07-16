@@ -131,7 +131,11 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	mBombTimer.SetDrtTime(20);	// 不能设置太小..
 	mBlastTimer.SetDrtTime(36);
 
+	// 显示分数面板
 	mScorePanel = new ScorePanel(player_id);
+
+	// 杀敌数
+	mKillEnemyNumber = 0;
 }
 
 PlayerBase::~PlayerBase()
