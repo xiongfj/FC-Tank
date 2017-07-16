@@ -128,7 +128,6 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		loadimage(&RingClass::image[i], buf);
 	}
 
-	//bug ? 
 	mBombTimer.SetDrtTime(20);	// 不能设置太小..
 	mBlastTimer.SetDrtTime(36);
 }
