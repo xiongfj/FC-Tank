@@ -59,8 +59,22 @@ void GameControl::Init()
 // 存储玩家进链表
 void GameControl::AddPlayer(int player_num)
 {
+	// 清空原来数据
+	for (ListNode<PlayerBase*>* p = PlayerList.First(); ;)
+	{
+		if (p != NULL)
+		{
+			ListNode<PlayerBase*>* temp = p->pnext;
+			delete p->data;
+			delete p;
+
+			p = temp;
+		}
+		else
+			break;
+	}
+
 	for (int i = 0; i < player_num; i++)
-		//PlayerList.push_back( new PlayerBase(i, mBoxMarkStruct/*, &mProp*/) );	// 后面插入数据
 		PlayerList.Add(new PlayerBase(i, mBoxMarkStruct/*, &mProp*/) );
 }
 
@@ -82,16 +96,16 @@ void GameControl::LoadMap()
 }
 
 // 玩家自己创建地图
-void GameControl::CreateMap()
+bool GameControl::CreateMap()
 {
 	int i, j, x = 0, y = 0;
 	int tempx, tempy;
 	bool flag = true;
 	int keys[4] = {VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN};		// 下标必须与 DIR_LEFT 等对应
 	int dev[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 游标坦克移动分量
-	int key_counter = 0;			// 控制按键响应速度
 	int twinkle_counter = 0;	// 坦克游标闪烁计数
 	int lastx = mCMTImageX, lasty = mCMTImageY;			// 记录坦克上次的坐标, 如果坦克移动不会变换 sign_order 图形
+	bool M_down = false;		// 检测 M 是否按下, 一直按下 M 不会切换地图, 只按下的那一次切换
 
 	// 14 中情况
 	int sign_order[14][4] = { {_ICE, _ICE, _ICE, _ICE},		// 四个格子都是冰, 依次左上右上左下 ..
@@ -110,23 +124,23 @@ void GameControl::CreateMap()
 		{ _EMPTY,	_EMPTY ,	_EMPTY ,	_EMPTY } };
 	
 	int cur_index = 13;		// 对应上面数组
-	//bool empty[13][13] = {}; // 标志每个 16*16 格子是否是空, 如果当前坦克游标所在的 16*16 格子不为空, 则 cur_index + 1;
-
-	//int index13_i = 0, index13_j = 0;
 
 	// 初始化标记
 	InitSignBox();
+
+	// 按键速度
+	TimeClock click;
+	click.SetDrtTime(90);
 
 	// 灰色背景
 	StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&mGrayBackgroundImage), 0, 0, 66, 66, SRCCOPY);
 
 	while ( flag )
 	{
-		Sleep(10);
+		Sleep(4);
 
-		if (key_counter++ > 6)
+		if (click.IsTimeOut())
 		{
-					key_counter = 0;
 			for (i = 0; i < 4; i++)
 			{
 				if (GetAsyncKeyState(keys[i]) & 0x8000)
@@ -141,29 +155,73 @@ void GameControl::CreateMap()
 						mCMTImageY += dev[i][1] * BOX_SIZE * 2;
 					}
 				}
-
-				// 放置障碍物
-				else if (GetAsyncKeyState('M') & 0x8000)
-				{
-					if (mCMTImageX == lastx && mCMTImageY == lasty)
-					{
-						cur_index = cur_index + 1 > 13 ? 0 : cur_index + 1;
-					}
-					else
-					{
-						lastx = mCMTImageX;
-						lasty = mCMTImageY;
-					}
-
-					// 更改 16*16 的地图
-					i = mCMTImageY / BOX_SIZE - 1;
-					j = mCMTImageX / BOX_SIZE - 1;
-					mBoxMarkStruct->box_8[i][j] = sign_order[cur_index][0];
-					mBoxMarkStruct->box_8[i][j + 1] = sign_order[cur_index][1];
-					mBoxMarkStruct->box_8[i + 1][j] = sign_order[cur_index][2];
-					mBoxMarkStruct->box_8[i + 1][j + 1] = sign_order[cur_index][3];
-				}
 			}
+
+			// J,K 键一个顺序,一个逆序
+			SHORT J_KEY = GetAsyncKeyState('J') & 0x8000;
+			SHORT K_KEY = GetAsyncKeyState('K') & 0x8000;
+
+			// 放置障碍物
+			if (J_KEY || K_KEY)
+			{
+				if (mCMTImageX == lastx && mCMTImageY == lasty)
+				{
+					if (J_KEY)
+						cur_index = cur_index + 1 > 13 ? 0 : cur_index + 1;
+					else if (K_KEY)
+						cur_index = cur_index - 1 < 0 ? 13 : cur_index - 1;
+				}
+				else
+				{
+					lastx = mCMTImageX;
+					lasty = mCMTImageY;
+				}
+
+				// 更改 16*16 的地图
+				i = mCMTImageY / BOX_SIZE - 1;
+				j = mCMTImageX / BOX_SIZE - 1;
+				mBoxMarkStruct->box_8[i][j] = sign_order[cur_index][0];
+				mBoxMarkStruct->box_8[i][j + 1] = sign_order[cur_index][1];
+				mBoxMarkStruct->box_8[i + 1][j] = sign_order[cur_index][2];
+				mBoxMarkStruct->box_8[i + 1][j + 1] = sign_order[cur_index][3];
+			}
+
+			if (GetAsyncKeyState(VK_RETURN) & 0x8000)
+			{
+				// 标记 8*8 格子内部的 4*4 格子
+				for (i = 0; i < 26; i++)
+				{
+					for (j = 0; j < 26; j++)
+					{
+						if (mBoxMarkStruct->box_8[i][j] != _EMPTY)
+							SignBox_4(i, j, mBoxMarkStruct->box_8[i][j]);
+					}
+				}
+				return true;
+			}
+
+			/*M键功能: 不会连续更换地图if (GetAsyncKeyState('M') & 0x8000 && M_down == false)
+			{
+				M_down = true;
+				if (mCMTImageX == lastx && mCMTImageY == lasty)
+				{
+					cur_index = cur_index + 1 > 13 ? 0 : cur_index + 1;
+				}
+				else
+				{
+					lastx = mCMTImageX;
+					lasty = mCMTImageY;
+				}
+
+				// 更改 16*16 的地图
+				i = mCMTImageY / BOX_SIZE - 1;
+				j = mCMTImageX / BOX_SIZE - 1;
+				mBoxMarkStruct->box_8[i][j] = sign_order[cur_index][0];
+				mBoxMarkStruct->box_8[i][j + 1] = sign_order[cur_index][1];
+				mBoxMarkStruct->box_8[i + 1][j] = sign_order[cur_index][2];
+				mBoxMarkStruct->box_8[i + 1][j + 1] = sign_order[cur_index][3];
+			}else if ( !GetAsyncKeyState('M') & 0x8000 )
+				M_down = false;*/
 		}
 
 		// 黑色背景
@@ -214,6 +272,8 @@ void GameControl::CreateMap()
 		StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 		FlushBatchDraw();
 	}
+
+	return true;
 }
 
 void GameControl::GameLoop()
@@ -247,9 +307,7 @@ bool GameControl::StartGame()
 	}
 
 	// 数据变化, 不能涉及绘图操作
-	RefreshData();
-
-	return true;
+	return RefreshData();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -265,8 +323,9 @@ void GameControl::InitSignBox()
 	{
 		for (int j = 0; j < 26; j++)
 		{
-			SignBoxMark(i, j, mMap.buf[i][j] - '0');		// 标记 26*26 和 52*52 格子
 			mBoxMarkStruct->prop_8[i][j] = _EMPTY;
+			mBoxMarkStruct->box_8[i][j] = mMap.buf[i][j] - '0';	// 26*26
+			SignBox_4(i, j, mMap.buf[i][j] - '0');		// 标记 26*26 和 52*52 格子
 		}
 	}
 
@@ -296,10 +355,9 @@ void GameControl::AddEnemy()
 	}
 }
 
-// 标记 26*26 和 52*52 的格子
-void GameControl::SignBoxMark(int i, int j, int sign_val)
+// 提供8*8 的索引, 标记里面4个 4*4 的格子
+void GameControl::SignBox_4(int i, int j, int sign_val)
 {
-	mBoxMarkStruct->box_8[i][j] = sign_val;	// 26*26
 	int temp_i[4] = { 2 * i, 2 * i + 1, 2 * i, 2 * i + 1 };
 	int temp_j[4] = { 2 * j, 2 * j, 2 * j + 1, 2 * j + 1 };
 
@@ -308,8 +366,11 @@ void GameControl::SignBoxMark(int i, int j, int sign_val)
 }
 
 // 数据更新, 不涉及绘图操作!!
-void GameControl::RefreshData()
+bool GameControl::RefreshData()
 {
+	if (GetAsyncKeyState(27) & 0x8000)
+		return false;
+
 	// 检测玩家是否获得 '时钟' 静止道具
 	if (PlayerBase::IsGetTimeProp())
 	{
@@ -351,9 +412,9 @@ void GameControl::RefreshData()
 			}
 			break;
 		case EnemyBulletShootKind::Camp:
-			mGameOverX = CENTER_WIDTH * 0.5 - 0.5 * GAMEOVER_WIDTH;
+			mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
 			mGameOverY = CENTER_HEIGHT;
-			mGameOverFlag = true; printf("asdsad\n");
+			mGameOverFlag = true; 
 			break;
 
 		default:
@@ -372,6 +433,8 @@ void GameControl::RefreshData()
 			(*EnemyItor)->SetPause(false);
 		}
 	}
+
+	return true;
 }
 
 void GameControl::RefreshRightPanel()

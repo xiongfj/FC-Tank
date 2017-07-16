@@ -49,12 +49,13 @@ void SelectPanel::Init()
 EnumSelectResult SelectPanel::ShowSelectPanel()
 {
 	// 选择玩家面板上升动画
-	while (true)
+	while (mSelect_player_image_y > 0)
 	{
 		Sleep(19);
 		mSelect_player_image_y -= 35;
 		if ( mSelect_player_image_y < 0 )
 			mSelect_player_image_y = 0;
+
 		// 绘制在 mImage_hdc 上
 		//mGraphics->DrawImage(mSelect_player_image, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT );
 		TransparentBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, 
@@ -64,8 +65,8 @@ EnumSelectResult SelectPanel::ShowSelectPanel()
 		StretchBlt(mDes_hdc, 0, mSelect_player_image_y, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0 , CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 		FlushBatchDraw();
 
-		if ( mSelect_player_image_y == 0 )
-			break; 
+		//if ( mSelect_player_image_y == 0 )
+		//	break; 
 	}
 
 	int temp = 0;					// 控制按键响应速度,不能太快!

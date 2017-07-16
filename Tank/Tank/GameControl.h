@@ -25,15 +25,15 @@ public:
 	void Init();
 	void AddPlayer(int player_num);					// 加载玩家进该类控制
 	void LoadMap();									// 读取 .map 地图文件|解析绘制地图
-	void CreateMap();				// 玩家自定义地图
+	bool CreateMap();				// 玩家自定义地图
 	void GameLoop();
 	bool StartGame();								// 更新绘制游戏各种东西, 返回 false 结束游戏
 
 private:
 	void InitSignBox();		// 初始化格子标记
 	void AddEnemy();						// 游戏开始前 添加20 架敌机
-	void SignBoxMark(int i, int j, int sign_val);	// 标记格子, LoadMap() 内调用
-	void RefreshData();
+	void SignBox_4(int i, int j, int sign_val);	// 标记格子, LoadMap() 内调用
+	bool RefreshData();
 	void RefreshRightPanel();						// 刷新右边信息面板数据, 根据数据变化才调用更新
 	void RefreshCenterPanel();						// 刷新中间游戏区域 208 * 208
 	void CheckKillEnemy(PlayerBase*);		// 检测玩家是否击中敌机, 击中则删除该敌机

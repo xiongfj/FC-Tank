@@ -33,6 +33,7 @@ IMAGE temp_img(600, 600);
 void main()
 {
 	srand((unsigned)time(0));
+	bool isCustomMap = false;		// 自定义地图
 
 	// 灰色背景
 	initgraph(WINDOW_WIDTH, WINDOW_HEIGHT, SHOWCONSOLE);
@@ -46,25 +47,45 @@ void main()
 	HDC canvas_hdc = GetImageHDC(&canvas_img);
 
 	SelectPanel* selecter = new SelectPanel(des_hdc, canvas_hdc);	// 显示玩家功能选择面板
-	EnumSelectResult result = selecter->ShowSelectPanel();					// 获取玩家选择结果
 	GameControl* control = new GameControl(des_hdc, canvas_hdc/*, &Q_boxmark*/);
-	switch (result)
-	{
-	case OnePlayer:
-		control->AddPlayer(ONE_PLAYER);		// 一个玩家
-		break;
-	case TwoPlayer:
-		control->AddPlayer(TWO_PLAYER);		// 两个玩家
-		break;
-	case Custom:					// 玩家自定义地图
-		control->CreateMap();
-		break;
-	default:
-		return;
-	}
+	EnumSelectResult result;
 
-	control->LoadMap();
-	control->GameLoop();
+	while (_kbhit() != 27)
+	{
+		result = selecter->ShowSelectPanel();		// 获取玩家选择结果
+		switch (result)
+		{
+			case OnePlayer:
+				control->AddPlayer(ONE_PLAYER);		// 一个玩家
+				if (isCustomMap)
+					control->GameLoop();
+				else
+				{
+					control->LoadMap();
+					control->GameLoop();
+				}
+				break;
+
+			case TwoPlayer:
+				control->AddPlayer(TWO_PLAYER);		// 两个玩家
+				if (isCustomMap)
+					control->GameLoop();
+				else
+				{
+					control->LoadMap();
+					control->GameLoop();
+				}
+				break;
+
+			case Custom:							// 玩家自定义地图
+				isCustomMap = control->CreateMap();
+				break;
+
+			default:
+				return;
+		}
+	}
+	 
 	closegraph();
 }
 
