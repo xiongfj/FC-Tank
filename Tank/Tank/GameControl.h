@@ -34,8 +34,7 @@ private:
 	void RefreshRightPanel();						// 刷新右边信息面板数据, 根据数据变化才调用更新
 	void RefreshCenterPanel();						// 刷新中间游戏区域 208 * 208
 	void CheckKillEnemy(PlayerBase*);		// 检测玩家是否击中敌机, 击中则删除该敌机
-	//void CheckKillPlayer(list<EnemyBase*>::iterator);					// 
-	//void SignBox_8(int i, int j, int val);					// 根据参数左上角 8*8 格子的索引, 标记 四个 8*8 格子
+	void IsGameOver();					// 循环检测是否flag,  gameover
 
 public:
 	static int mCurrentStage;						// [1-35] 当前关卡, SelectPanel 内使用, 本类内使用
@@ -70,6 +69,7 @@ private:
 	IMAGE mEnemyTankIcoImage;		// 敌机坦克图标
 	IMAGE mFlagImage;				// 旗子
 	IMAGE mBlackNumberImage;		// 0123456789 当前关卡数
+	IMAGE mGameOverImage;			//
 
 	// 初始 mActiveEnemyTankNumber + mRemainEnemyTankNumber = 20
 	int mOutedEnemyTankNumber;		// 累计已经添加到显示列表的敌机数, 包括已经被消灭的,当前移动的,在队列中还没有出现的敌机
@@ -84,4 +84,8 @@ private:
 	int mEnemyPauseCounter;		// 敌机暂停计数
 
 	TimeClock mTimer;			// 控制绘图频率
+
+	int mGameOverX, mGameOverY;	// 
+	bool mGameOverFlag;			// 游戏结束标记, 玩家生命用完, 鸟巢被击中
+	TimeClock mGameOverTimer;	// 上升控制
 };

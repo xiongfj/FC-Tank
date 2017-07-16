@@ -10,6 +10,10 @@
 #define CENTER_X		16		// 黑色游戏区域相对左上角的坐标
 #define CENTER_Y		9
 
+// GameOver 字样大小
+#define GAMEOVER_WIDTH	31
+#define GAMEOVER_HEIGHT	15
+
 // 标记, 用于 markxx[26][26]
 #define _CLEAR		-1		// 标记障碍物被消除的格子, 用于扫描时与 0 区分开, 然后绘制黑色图片, 避免对 0 也进行多余操作
 #define _EMPTY		0		// 空地
@@ -55,7 +59,7 @@
 #define SHOOTABLE_X		-100	// 规定子弹坐标 x = -100 子弹可以发射
 
 // 敌机子弹击中的障碍物的类型, 用在 EnemyBase::CheckBomb 返回值
-enum EnemyBulletShootKind {None, Player_1 = PLAYER_SIGN, Player_2 = PLAYER_SIGN + 1, Other};
+enum EnemyBulletShootKind {None, Player_1 = PLAYER_SIGN, Player_2 = PLAYER_SIGN + 1, Camp, Other};
 
 /* 对应数值
 * 	#defien _EMPTY		0

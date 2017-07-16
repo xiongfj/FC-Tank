@@ -2,10 +2,9 @@
 #include "GameControl.h"
 #include "typeinfo.h"
 
-int GameControl::mCurrentStage = 3;	// [1-35]
+int GameControl::mCurrentStage = 1;	// [1-35]
 GameControl::GameControl( HDC des_hdc, HDC image_hdc/*, BoxMarkStruct* bms*/)
 {
-	//mGraphics = grap;
 	mDes_hdc = des_hdc;
 	mImage_hdc = image_hdc;
 	mCenterImage.Resize( CENTER_WIDTH, CENTER_HEIGHT );
@@ -33,6 +32,7 @@ void GameControl::Init()
 	loadimage( &mEnemyTankIcoImage	 , _T("./res/big/enemytank-ico.gif"	));		// 敌机图标
 	loadimage( &mFlagImage			 , _T("./res/big/flag.gif"			));		// 旗子
 	loadimage( &mBlackNumberImage	 , _T("./res/big/black-number.gif"	));		// 0123456789 黑色数字
+	loadimage( &mGameOverImage		 , _T("./res/big/gameover.gif"	));		
 
 	mOutedEnemyTankNumber = 0;													// 已经出现在地图上的敌机数量,最多显示6架
 	mRemainEnemyTankNumber = 20;												// 剩余未出现的敌机数量
@@ -43,6 +43,12 @@ void GameControl::Init()
 
 	//PlayerList = new ListTable<PlayerBase*>();
 	mTimer.SetDrtTime(14);
+
+	// GameOver 图片
+	mGameOverX = -100;
+	mGameOverY = -100;
+	mGameOverFlag = false;
+	mGameOverTimer.SetDrtTime(30);
 }
 
 // 存储玩家进链表
@@ -107,9 +113,12 @@ bool GameControl::StartGame()
 		// 更新中心游戏区域: mCenter_hdc
 		RefreshCenterPanel();
 
+
+
+
+
 		// 将中心画布印到主画布 mImage_hdc 上
 		BitBlt( mImage_hdc, CENTER_X, CENTER_Y, CENTER_WIDTH, CENTER_HEIGHT, mCenter_hdc, 0, 0, SRCCOPY );
-	
 		// 整张画布缩放显示 image 到主窗口
 		StretchBlt( mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY );
 		FlushBatchDraw();
@@ -188,11 +197,15 @@ void GameControl::RefreshData()
 			{
 				if (p->data->GetID() + PLAYER_SIGN == result)
 				{
-					//printf("%d %d\n", result, result);
 					p->data->BeKill();
 					break;
 				}
 			}
+			break;
+		case EnemyBulletShootKind::Camp:
+			mGameOverX = CENTER_WIDTH * 0.5 - 0.5 * GAMEOVER_WIDTH;
+			mGameOverY = CENTER_HEIGHT;
+			mGameOverFlag = true; printf("asdsad\n");
 			break;
 
 		default:
@@ -210,8 +223,6 @@ void GameControl::RefreshData()
 			mEnemyPauseCounter = 0;;
 			(*EnemyItor)->SetPause(false);
 		}
-
-		//.CheckKillPlayer(EnemyItor);
 	}
 }
 
@@ -233,10 +244,6 @@ void GameControl::RefreshRightPanel()
 	}
 	
 	// 玩家1P\2P\坦克图标\生命数
-	/*for (list<PlayerBase*>::iterator PlayerItor = PlayerList.begin(); PlayerItor != PlayerList.end(); PlayerItor++)
-	{
-		(*PlayerItor)->DrawPlayerTankIco(mImage_hdc);		// 坦克图标
-	}*/
 	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 	{
 		p->data->DrawPlayerTankIco(mImage_hdc);
@@ -419,6 +426,8 @@ void GameControl::RefreshCenterPanel()
 			TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
 				GetImageHDC(&mCamp[1]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 		}
+
+		IsGameOver();
 }
 
 // 读取PlayerBase 内的数据, 消灭敌机
@@ -449,6 +458,20 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 			}
 		}
 	}
+}
+void GameControl::IsGameOver()
+{
+	if (!mGameOverFlag)
+		return;
+
+	//if (mGameOverY < CENTER_HEIGHT * 0.4)
+		//mGameOverFlag = false;
+
+	TransparentBlt(mCenter_hdc, mGameOverX, mGameOverY, GAMEOVER_WIDTH, GAMEOVER_HEIGHT,
+		GetImageHDC(&mGameOverImage), 0, 0, GAMEOVER_WIDTH, GAMEOVER_HEIGHT, 0x000000);
+
+	if (mGameOverTimer.IsTimeOut() && mGameOverY >= CENTER_HEIGHT * 0.45)
+		mGameOverY -= 2;;
 }
 /*.
 void GameControl::CheckKillPlayer(list<EnemyBase*>::iterator enemyItor)

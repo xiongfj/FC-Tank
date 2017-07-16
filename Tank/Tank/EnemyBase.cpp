@@ -220,6 +220,7 @@ EnemyBulletShootKind EnemyBase::BulletMoving()
 	EnemyBulletShootKind result = CheckBomb();
 	switch (result)
 	{
+	case EnemyBulletShootKind::Camp:
 	case EnemyBulletShootKind::Other:
 	case EnemyBulletShootKind::Player_1:
 	case EnemyBulletShootKind::Player_2:
@@ -592,7 +593,7 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 				mBulletStruct.x = SHOOTABLE_X;
 				mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
-				return EnemyBulletShootKind::Other;
+				return EnemyBulletShootKind::Camp;
 			}
 
 			// 4*4 ¼ì²â
@@ -639,7 +640,7 @@ EnemyBulletShootKind EnemyBase::CheckBomb()
 				mBulletStruct.x = SHOOTABLE_X;
 				mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
-				return EnemyBulletShootKind::Other;
+				return EnemyBulletShootKind::Camp;
 			}
 
 			// 4*4 ¼ì²â
