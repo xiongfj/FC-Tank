@@ -73,6 +73,7 @@ private:
 	// 初始 mActiveEnemyTankNumber + mRemainEnemyTankNumber = 20
 	int mOutedEnemyTankNumber;		// 累计已经添加到显示列表的敌机数, 包括已经被消灭的,当前移动的,在队列中还没有出现的敌机
 	int mRemainEnemyTankNumber;		// 余下未显示的敌机数量, 初始值=20, 出现一架敌机该值减一
+	int mKillEnemyNum;				// 已经消灭的敌机数
 
 	BlastStruct mBlast;				// 大本营爆炸
 	bool mCampDie;					// 大本营被击中, 不再 Camp 贴图 
@@ -93,4 +94,6 @@ private:
 
 	bool mHasCustomMap;			// 当前是否有制作地图, 用于退出制作再次进入制作, 不会之前制作的数据
 	bool mShowScorePanel;		// 是否显示分数面板
+
+	bool mWin;			// 消灭完敌机,胜利
 };

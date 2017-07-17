@@ -36,17 +36,14 @@ void GameControl::Init()
 
 	mOutedEnemyTankNumber = 0;													// 已经出现在地图上的敌机数量,最多显示6架
 	mRemainEnemyTankNumber = 20;												// 剩余未出现的敌机数量
+	mKillEnemyNum = 0;
 	mCampDie = false;															// 标志大本营是否被击中
 
 	mEnemyPause = false;			// 敌机暂停与否
 	mEnemyPauseCounter = 0;			// 敌机暂停多久
 
-	//PlayerList = new ListTable<PlayerBase*>();
 	mTimer.SetDrtTime(14);
 	mCampTimer.SetDrtTime(23);
-
-	// mScorePanelTimer1.Init();
-	//mScorePanelTimer1.SetDrtTime(2000);		// GameOVer 字样显示完后多久显示分数面板
 
 	// GameOver 图片
 	mGameOverX = -100;
@@ -64,6 +61,8 @@ void GameControl::Init()
 
 	// 关卡结束显示分数面板
 	mShowScorePanel = false;
+
+	mWin = false;
 }
 
 // 存储玩家进链表
@@ -396,7 +395,7 @@ void GameControl::InitSignBox()
 // 待修改, 添加的敌机种类需要修改
 void GameControl::AddEnemy()
 {
-	if (EnemyList.size() >= 16 || TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber <= 0)
+	if (EnemyList.size() >= 6 || TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber <= 0)
 		return;
 
 	int level;
@@ -437,15 +436,6 @@ void GameControl::AddEnemy()
 	default:
 		break;
 	}
-
-	//for (int i = 0; i < TOTAL_ENEMY_NUMBER; i++)
-	/*if (EnemyList.size() < 16 && TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber > 0)
-	{
-		EnemyList.push_back((new CommonTank(2, mBoxMarkStruct)));
-		//EnemyList.push_back((new PropTank(2, mBoxMarkStruct)));
-		//EnemyList.push_back( new BigestTank(TANK_KIND::PROP, mBoxMarkStruct) );
-		mOutedEnemyTankNumber++;
-	}*/
 }
 
 // 提供8*8 的索引, 标记里面4个 4*4 的格子
@@ -752,6 +742,9 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 				if ((*EnemyItor)->GetId() == bullet[i] % 100)		// 100xx 后两位是 id
 				{
 					(*EnemyItor)->BeKill();
+					mKillEnemyNum++;
+					if (mKillEnemyNum == 20)
+						mWin = true;
 					break;
 				}
 			}
