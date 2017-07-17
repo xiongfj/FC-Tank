@@ -476,7 +476,7 @@ void PlayerBase::SendKillNumToScorePanel()
 	{
 		//mHasSendKillNumToScorePanel = true;
 		mScorePanel->SetKillNum(mKillEnemyNumber);
-		printf("11111111111111asdas\n");
+		//printf("11111111111111asdas\n");
 	}
 }
 

@@ -862,7 +862,7 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 }
 void GameControl::IsGameOver()
 {
-	if (!mGameOverFlag || !mShowScorePanel )
+	if (!mGameOverFlag)
 		return;
 
 	TransparentBlt(mCenter_hdc, mGameOverX, mGameOverY, GAMEOVER_WIDTH, GAMEOVER_HEIGHT,
@@ -872,6 +872,7 @@ void GameControl::IsGameOver()
 		mGameOverY -= 2;
 	else if (mGameOverY <= CENTER_HEIGHT * 0.45)
 	{
+		//mGameOverFlag = false;
 		mShowScorePanel = true;
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
