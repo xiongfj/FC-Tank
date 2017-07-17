@@ -159,7 +159,6 @@
   <ItemGroup>
     <ClCompile Include="EnemyBase.cpp" />
     <ClCompile Include="GameControl.cpp" />
-    <ClCompile Include="List.cpp" />
     <ClCompile Include="PlayerBase.cpp" />
     <ClCompile Include="SelectPanel.cpp" />
     <ClCompile Include="stdafx.cpp">

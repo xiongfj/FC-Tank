@@ -71,22 +71,11 @@ void GameControl::Init()
 void GameControl::AddPlayer(int player_num)
 {
 	// 清空原来数据
-	for (ListNode<PlayerBase*>* p = PlayerList.First(); ;)
-	{
-		if (p != NULL)
-		{
-			ListNode<PlayerBase*>* temp = p->pnext;
-			delete p->data;
-			delete p;
-
-			p = temp;
-		}
-		else
-			break;
-	}
+	PlayerList.clear();
 
 	for (int i = 0; i < player_num; i++)
-		PlayerList.Add(new PlayerBase(i, mBoxMarkStruct/*, &mProp*/) );
+		//PlayerList.Add(new PlayerBase(i, mBoxMarkStruct/*, &mProp*/) );
+		PlayerList.push_back(new PlayerBase(i, mBoxMarkStruct));
 }
 
 /*
@@ -209,9 +198,11 @@ bool GameControl::CreateMap()
 							SignBox_4(i, j, mBoxMarkStruct->box_8[i][j]);
 					}
 				}
-				mHasCustomMap = true;
-				return true;
+				break;
 			}
+
+			if (GetAsyncKeyState(27) & 0x8000)
+				break;
 
 			/*M键功能: 不会连续更换地图if (GetAsyncKeyState('M') & 0x8000 && M_down == false)
 			{
@@ -285,7 +276,7 @@ bool GameControl::CreateMap()
 		StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 		FlushBatchDraw();
 	}
-
+	mHasCustomMap = true;
 	return true;
 }
 
@@ -305,9 +296,13 @@ bool GameControl::StartGame()
 		if (mShowScorePanel)
 		{
 			BitBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&ScorePanel::background), 0, 0, SRCCOPY);
-			for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+			/*for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 			{
 				p->data->ShowScorePanel(mImage_hdc);
+			}*/
+			for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+			{
+				(*itor)->ShowScorePanel(mImage_hdc);
 			}
 			// 整张画布缩放显示 image 到主窗口
 			StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
@@ -474,14 +469,14 @@ bool GameControl::RefreshData()
 	}
 
 	// 玩家, 不能包含绘图操作! 内含计时器
-	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+	for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 	{
 		// 鸟巢被消灭玩家停止移动
 		if (!mGameOverFlag)
-			p->data->PlayerControl();
+			(*itor)->PlayerControl();
 
-		// 如果玩家击中大本营
-		BulletShootKind kind = p->data->BulletMoving(mCenter_hdc);
+		// 玩家子弹击中结果
+		BulletShootKind kind = (*itor)->BulletMoving(mCenter_hdc);
 		switch (kind)
 		{
 		case BulletShootKind::Camp:
@@ -490,14 +485,14 @@ bool GameControl::RefreshData()
 			mGameOverFlag = true;
 			break;
 
-		case BulletShootKind::Player_1://printf("a322423rerer3\n");
-			if (p->data->GetID() == (int)BulletShootKind::Player_1)
-				p->data->SetPause();
+		case BulletShootKind::Player_1:
+			if ((*itor)->GetID() + PLAYER_SIGN == (int)BulletShootKind::Player_1)
+				(*itor)->SetPause();
 			break;
 
-		case BulletShootKind::Player_2://printf("a32243\n");
-			if (p->data->GetID() == (int)BulletShootKind::Player_2)
-				p->data->SetPause();
+		case BulletShootKind::Player_2:
+			if ((*itor)->GetID() + PLAYER_SIGN == (int)BulletShootKind::Player_2)
+				(*itor)->SetPause();
 			break;
 		default:
 			break;
@@ -514,11 +509,20 @@ bool GameControl::RefreshData()
 		{
 		case BulletShootKind::Player_1:
 		case BulletShootKind::Player_2:
-			for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+			/*for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 			{
 				if (p->data->GetID() + PLAYER_SIGN == result)
 				{
 					p->data->BeKill();
+					break;
+				}
+			}*/
+
+			for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+			{
+				if ((*itor)->GetID() + PLAYER_SIGN == result)
+				{
+					(*itor)->BeKill();
 					break;
 				}
 			}
@@ -567,9 +571,13 @@ void GameControl::RefreshRightPanel()
 	}
 	
 	// 玩家1P\2P\坦克图标\生命数
-	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+	/*for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 	{
 		p->data->DrawPlayerTankIco(mImage_hdc);
+	}*/
+	for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+	{
+		(*itor)->DrawPlayerTankIco(mImage_hdc);
 	}
 
 	// 旗子
@@ -650,7 +658,7 @@ void GameControl::RefreshCenterPanel()
 		}
 
 		// 玩家
-		for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+		/*for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 		{
 			p->data->ShowStar(mCenter_hdc);
 			p->data->DrawPlayerTank(mCenter_hdc);		// 坦克
@@ -665,6 +673,25 @@ void GameControl::RefreshCenterPanel()
 					TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
 						GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
 					if (mCampTimer.IsTimeOut()  && mBlast.counter++ == 17)
+						mBlast.canBlast = true;
+					mCampDie = true;
+				}
+			}
+		}*/
+		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+		{
+			(*itor) ->ShowStar(mCenter_hdc);
+			(*itor)->DrawPlayerTank(mCenter_hdc);		// 坦克
+			(*itor)->DrawBullet(mCenter_hdc);
+			CheckKillEnemy(*itor);
+			if ((*itor)->IsShootCamp())
+			{
+				if (mBlast.canBlast == false)
+				{
+					int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
+					TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
+						GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+					if (mCampTimer.IsTimeOut() && mBlast.counter++ == 17)
 						mBlast.canBlast = true;
 					mCampDie = true;
 				}
@@ -718,13 +745,21 @@ void GameControl::RefreshCenterPanel()
 		}
 
 		// 玩家子弹
-		for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+		/*for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 		{
 			p->data->Bombing(mCenter_hdc);
 
 			// 爆炸完成后
 			if (p->data->Blasting(mCenter_hdc))
 			{
+			}
+		}*/
+		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+		{
+			(*itor)->Bombing(mCenter_hdc);
+			if ((*itor)->Blasting(mCenter_hdc))
+			{
+
 			}
 		}
 
@@ -787,9 +822,13 @@ void GameControl::IsGameOver()
 	else if (mGameOverY <= CENTER_HEIGHT * 0.45)
 	{
 		mShowScorePanel = true;
-		for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+		/*for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 		{
 			p->data->SendKillNumToScorePanel();
+		}*/
+		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+		{
+			(*itor)->SendKillNumToScorePanel();
 		}
 	}
 }
@@ -800,9 +839,14 @@ void GameControl::IsWinOver()
 	if (mWin && mWinCounter++ > 210 && !mGameOverFlag)
 	{
 		mShowScorePanel = true;
-		for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+		/*for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 		{
 			p->data->SendKillNumToScorePanel();
+		}*/
+
+		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+		{
+			(*itor)->SendKillNumToScorePanel();
 		}
 	}
 }

@@ -74,9 +74,6 @@
     <ClCompile Include="struct.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="List.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TimeClock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -32,7 +32,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		mTankY = 12 * 16 + BOX_SIZE;
 
 		mTankTimer.SetDrtTime(23);		// 坦克移动速度, 不同级别不同玩家 不一样
-		mBulletTimer.SetDrtTime(23);
+		mBulletTimer.SetDrtTime(13);
 	}
 	else
 	{
@@ -47,7 +47,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		mTankY = 12 * 16 + BOX_SIZE;
 
 		mTankTimer.SetDrtTime(23);
-		mBulletTimer.SetDrtTime(33);
+		mBulletTimer.SetDrtTime(13);
 	}
 
 	// 共同的数据

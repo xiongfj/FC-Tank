@@ -44,8 +44,8 @@ ListNode<N>::ListNode(const N& d, ListNode<N>* phead)
 template<class N>
 ListNode<N>::~ListNode()
 {
-	if (pnext != NULL)
-		delete pnext;
+	//if (pnext != NULL)
+	//	delete pnext;
 }
 
 template<class N>
