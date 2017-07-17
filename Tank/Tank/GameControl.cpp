@@ -396,14 +396,42 @@ void GameControl::InitSignBox()
 // 待修改, 添加的敌机种类需要修改
 void GameControl::AddEnemy()
 {
+	if (EnemyList.size() >= 16 || TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber <= 0)
+		return;
+
+	int level, kind;
+	level = rand() % 4;
+	kind = rand() % 2;
+	switch (level)
+	{
+	case 0:
+	case 1:
+	case 2:
+		mOutedEnemyTankNumber++;
+		switch (kind)
+		{
+			case 0: EnemyList.push_back((new CommonTank(level, mBoxMarkStruct))); break;
+			case 1: EnemyList.push_back((new PropTank(level, mBoxMarkStruct))); break;
+			default: break;
+		}
+		break;
+
+	case 3:
+		EnemyList.push_back(new BigestTank((TANK_KIND)kind, mBoxMarkStruct));
+		mOutedEnemyTankNumber++;
+		break;
+	default:
+		break;
+	}
+
 	//for (int i = 0; i < TOTAL_ENEMY_NUMBER; i++)
-	if (EnemyList.size() < 16 && TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber > 0)
+	/*if (EnemyList.size() < 16 && TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber > 0)
 	{
 		EnemyList.push_back((new CommonTank(2, mBoxMarkStruct)));
 		//EnemyList.push_back((new PropTank(2, mBoxMarkStruct)));
 		//EnemyList.push_back( new BigestTank(TANK_KIND::PROP, mBoxMarkStruct) );
 		mOutedEnemyTankNumber++;
-	}
+	}*/
 }
 
 // 提供8*8 的索引, 标记里面4个 4*4 的格子
