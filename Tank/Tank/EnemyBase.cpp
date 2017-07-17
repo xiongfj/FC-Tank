@@ -250,12 +250,15 @@ void EnemyBase::Bombing(const HDC & center_hdc)
 	}
 }
 
-// 有Gamecontrol内检测, 然后调用
-void EnemyBase::BeKill()
+/* 有Gamecontrol内检测, 然后调用
+* BigestTank.class 需要覆盖这个方法, 
+* 因为它需要射击四次才能杀死
+*/
+bool EnemyBase::BeKill()
 {
 	// 如果敌机还没有出现
 	if (mStar.mIsOuted == false)
-		return;
+		return false;
 
 	mDied = true;
 	SignTank_8(mTankX, mTankY, _EMPTY);
@@ -264,6 +267,8 @@ void EnemyBase::BeKill()
 	mBlast.blastx = mTankX;
 	mBlast.blasty = mTankY;
 	mBlast.canBlast = true;
+
+	return true;
 }
 
 // 显示坦克爆炸效果, GameControl 内循环检测
@@ -822,6 +827,8 @@ BigestTank::BigestTank(TANK_KIND kind, BoxMarkStruct * bms):
 	mTank[YELLOW_TANK] = new TankInfo(YELLOW_TANK, 3, true);
 	mTank[RED_TANK] = new TankInfo(RED_TANK, 3, true);
 	mTank[GREEN_TANK] = new TankInfo(GREEN_TANK, 3, true);
+
+	hp = 4;
 }
 
 void BigestTank::DrawTank(const HDC & center_hdc)
@@ -830,20 +837,47 @@ void BigestTank::DrawTank(const HDC & center_hdc)
 		return;
 
 	// 道具坦克和普通坦克变色区别
-	TankInfo* temp = NULL;
+	TankInfo* temp[2] = { mTank[GRAY_TANK], mTank[GRAY_TANK] };
+
 	switch (mEnemyTankKind)
 	{
 	case TANK_KIND::PROP:
-		if (index_counter++ % 3)
-			temp = mTank[RED_TANK];
-		else
-			temp = mTank[GRAY_TANK];
+		switch(hp)
+		{
+			case 4:
+				temp[0] = mTank[RED_TANK];
+				temp[1] = mTank[GRAY_TANK];
+				break;
+			case 3:
+				temp[0] = mTank[RED_TANK];
+				temp[1] = mTank[YELLOW_TANK];
+				break;
+			case 2:
+				temp[0] = mTank[YELLOW_TANK];
+				temp[1] = mTank[GRAY_TANK];
+				break;
+			default:
+				break;
+		}
 		break;
 	case TANK_KIND::COMMON:
-		if (index_counter++ % 3)
-			temp = mTank[GREEN_TANK];
-		else
-			temp = mTank[GRAY_TANK];
+		switch (hp)
+		{
+		case 4:
+			temp[0] = mTank[GREEN_TANK];
+			temp[1] = mTank[GRAY_TANK];
+			break;
+		case 3:
+			temp[0] = mTank[GRAY_TANK];
+			temp[1] = mTank[YELLOW_TANK];
+			break;
+		case 2:
+			temp[0] = mTank[YELLOW_TANK];
+			temp[1] = mTank[GREEN_TANK];
+			break;
+		default:
+			break;
+		}
 		break;
 	}
 
@@ -853,5 +887,12 @@ void BigestTank::DrawTank(const HDC & center_hdc)
 		return;
 	}
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
-		GetImageHDC(&temp->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+		GetImageHDC(&temp[index_counter++ / 3 % 2]->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+}
+
+bool BigestTank::BeKill()
+{
+	if (--hp <= 0)
+		return this->EnemyBase::BeKill();
+	return false;
 }

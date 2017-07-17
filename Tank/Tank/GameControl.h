@@ -1,7 +1,6 @@
 #pragma once
 #include "PlayerBase.h"
 #include "EnemyBase.h"
-#include "List.h"
 #include "TimeClock.h"
 
 struct Map

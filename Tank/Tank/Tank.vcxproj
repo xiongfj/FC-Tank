@@ -147,7 +147,6 @@
   <ItemGroup>
     <ClInclude Include="EnemyBase.h" />
     <ClInclude Include="GameControl.h" />
-    <ClInclude Include="List.h" />
     <ClInclude Include="PlayerBase.h" />
     <ClInclude Include="SelectPanel.h" />
     <ClInclude Include="stdafx.h" />

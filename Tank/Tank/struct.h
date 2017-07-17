@@ -85,7 +85,6 @@ struct BoxMarkStruct
 	int prop_8[26][26];			// 道具的格子标记
 };
 
-
 #define TOTAL_ENEMY_NUMBER	20
 #define SHOWING_STAR	true		// 正在显示四角星
 #define STOP_SHOW_STAR	false		// 四角星显示结束

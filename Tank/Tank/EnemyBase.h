@@ -20,7 +20,7 @@ public:
 	bool ShootBullet();			// 发射子弹
 	BulletShootKind BulletMoving( );			// 子弹移动
 	void Bombing(const HDC&);
-	void BeKill();					// 敌机被消灭, 清除 SignBox 标记
+	virtual bool BeKill();			// 敌机被消灭, 清除 SignBox 标记
 	bool Blasting(const HDC& );		// 显示坦克爆炸图, true 标识爆炸完,GameControl 获取返回值然后将该敌机删除
 	//.bool IsShootCamp();				// 是否击中大本营, GeamControl 内循环检测
 	//int  IsShootToPlayer();			// 获取被击中的玩家 id
@@ -81,6 +81,7 @@ class CommonTank : public EnemyBase
 public:
 	CommonTank(byte level, BoxMarkStruct* bm);
 	void DrawTank(const HDC&);				// 纯绘制坦克
+
 	TankInfo* mTank;			// 灰色坦克
 };
 
@@ -90,6 +91,7 @@ class PropTank : public EnemyBase
 public:
 	PropTank(byte level, BoxMarkStruct* bm);
 	void DrawTank(const HDC&);		// 纯绘制坦克
+
 	TankInfo* mTank[2];				// 存储灰色和红色的坦克
 	byte index_counter : 6;		// 下标索引变色
 };
@@ -100,6 +102,9 @@ class BigestTank : public EnemyBase
 public:
 	BigestTank(TANK_KIND kind, BoxMarkStruct* bm);
 	void DrawTank(const HDC&);	// 纯绘制坦克
+	bool BeKill();
+
 	TankInfo* mTank[4];			// 灰,红黄,绿
 	byte index_counter : 6;		// 下标索引变色
+	int hp;				// 这种坦克需要击中四次才会爆炸
 };

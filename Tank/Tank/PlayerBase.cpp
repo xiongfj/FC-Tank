@@ -204,8 +204,13 @@ void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 		return;
 
 	// 0-5不显示坦克. 6-11 显示.. 依次类推
-	if (mPause && mPauseCounter / 6 % 2 == 0)
+	if (mPause && mPauseCounter++ / 10 % 2 != 0)
+	{
+		//printf("adas3432\n");
+		if (mPauseCounter > 266)
+			mPause = false;
 		return;
+	}
 
 	IMAGE tank = mPlayerTank->GetTankImage(mPlayerTankLevel, mTankDir, mMoving);
 	TransparentBlt(canvas_hdc, (int)(mTankX - BOX_SIZE), (int)(mTankY - BOX_SIZE), BOX_SIZE * 2, BOX_SIZE * 2, GetImageHDC(&tank), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
@@ -537,13 +542,7 @@ void PlayerBase::Move(int new_dir)
 	// 如果玩家被另一个玩家击中暂停
 	if (mPause)
 	{
-		if ( mPauseCounter++ < 66)
-			return;
-		else
-		{
-			mPause = false;
-			mPauseCounter = 0;
-		}
+		return;
 	}
 
 	SignTank_8(mTankX, mTankY, _EMPTY);

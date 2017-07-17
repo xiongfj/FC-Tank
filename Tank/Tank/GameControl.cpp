@@ -485,14 +485,22 @@ bool GameControl::RefreshData()
 			mGameOverFlag = true;
 			break;
 
+		// 遍历被击中的玩家 然后暂停它
 		case BulletShootKind::Player_1:
-			if ((*itor)->GetID() + PLAYER_SIGN == (int)BulletShootKind::Player_1)
-				(*itor)->SetPause();
+			for (list<PlayerBase*>::iterator i = PlayerList.begin(); i != PlayerList.end(); i++)
+			{
+				if ((*i)->GetID() == 0)
+					(*i)->SetPause();
+			}
 			break;
 
+		// 遍历被击中的玩家 然后暂停它
 		case BulletShootKind::Player_2:
-			if ((*itor)->GetID() + PLAYER_SIGN == (int)BulletShootKind::Player_2)
-				(*itor)->SetPause();
+			for (list<PlayerBase*>::iterator i = PlayerList.begin(); i != PlayerList.end(); i++)
+			{
+				if ((*i)->GetID() == 1)
+					(*i)->SetPause();
+			}
 			break;
 		default:
 			break;
@@ -796,8 +804,10 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 			{
 				if ((*EnemyItor)->GetId() == bullet[i] % 100)		// 100xx 后两位是 id
 				{
-					(*EnemyItor)->BeKill();
-					mKillEnemyNum++;
+					// 如果消灭敌机
+					if((*EnemyItor)->BeKill())
+						mKillEnemyNum++;
+
 					if (mKillEnemyNum == 20)
 					{
 						mWinCounter = 0;

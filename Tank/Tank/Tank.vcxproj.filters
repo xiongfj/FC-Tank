@@ -42,9 +42,6 @@
     <ClInclude Include="EnemyBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="List.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TimeClock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
