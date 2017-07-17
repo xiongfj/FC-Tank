@@ -39,6 +39,7 @@ private:
 	void RefreshCenterPanel();						// 刷新中间游戏区域 208 * 208
 	void CheckKillEnemy(PlayerBase*);		// 检测玩家是否击中敌机, 击中则删除该敌机
 	void IsGameOver();					// 循环检测是否flag,  gameover
+	void IsWinOver();			// 消灭所有敌机胜利过关
 
 public:
 	static int mCurrentStage;						// [1-35] 当前关卡, SelectPanel 内使用, 本类内使用
@@ -96,4 +97,5 @@ private:
 	bool mShowScorePanel;		// 是否显示分数面板
 
 	bool mWin;			// 消灭完敌机,胜利
+	int mWinCounter;	// 消灭完后隔几秒才跳转
 };

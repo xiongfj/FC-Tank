@@ -62,7 +62,9 @@ void GameControl::Init()
 	// 关卡结束显示分数面板
 	mShowScorePanel = false;
 
+	// 胜利
 	mWin = false;
+	mWinCounter = 0;
 }
 
 // 存储玩家进链表
@@ -474,14 +476,31 @@ bool GameControl::RefreshData()
 	// 玩家, 不能包含绘图操作! 内含计时器
 	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
 	{
-		p->data->PlayerControl();
+		// 鸟巢被消灭玩家停止移动
+		if (!mGameOverFlag)
+			p->data->PlayerControl();
 
 		// 如果玩家击中大本营
-		if (p->data->BulletMoving(mCenter_hdc) == BulletShootKind::Camp)
+		BulletShootKind kind = p->data->BulletMoving(mCenter_hdc);
+		switch (kind)
 		{
+		case BulletShootKind::Camp:
 			mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
 			mGameOverY = CENTER_HEIGHT;
 			mGameOverFlag = true;
+			break;
+
+		case BulletShootKind::Player_1://printf("a322423rerer3\n");
+			if (p->data->GetID() == (int)BulletShootKind::Player_1)
+				p->data->SetPause();
+			break;
+
+		case BulletShootKind::Player_2://printf("a32243\n");
+			if (p->data->GetID() == (int)BulletShootKind::Player_2)
+				p->data->SetPause();
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -724,6 +743,7 @@ void GameControl::RefreshCenterPanel()
 				GetImageHDC(&mCamp[1]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 		}
 
+		IsWinOver();
 		IsGameOver();
 }
 
@@ -744,7 +764,10 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 					(*EnemyItor)->BeKill();
 					mKillEnemyNum++;
 					if (mKillEnemyNum == 20)
+					{
+						mWinCounter = 0;
 						mWin = true;
+					}
 					break;
 				}
 			}
@@ -762,6 +785,19 @@ void GameControl::IsGameOver()
 	if (mGameOverTimer.IsTimeOut() && mGameOverY >= CENTER_HEIGHT * 0.45)
 		mGameOverY -= 2;
 	else if (mGameOverY <= CENTER_HEIGHT * 0.45)
+	{
+		mShowScorePanel = true;
+		for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
+		{
+			p->data->SendKillNumToScorePanel();
+		}
+	}
+}
+
+// 如果敌机都被消灭, 隔 mWinCounter 后跳转到分数面板
+void GameControl::IsWinOver()
+{
+	if (mWin && mWinCounter++ > 210 && !mGameOverFlag)
 	{
 		mShowScorePanel = true;
 		for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)

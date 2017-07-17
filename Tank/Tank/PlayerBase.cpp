@@ -137,6 +137,9 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	// 杀敌数
 	for ( i = 0 ; i< 4; i++)
 		mKillEnemyNumber[i] = 0;
+
+	mPause = false;
+	mPauseCounter = 0;
 }
 
 PlayerBase::~PlayerBase()
@@ -198,6 +201,10 @@ bool PlayerBase::ShowStar(const HDC& center_hdc)
 void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 {
 	if (!mStar.mIsOuted || mDied)
+		return;
+
+	// 0-5不显示坦克. 6-11 显示.. 依次类推
+	if (mPause && mPauseCounter / 6 % 2 == 0)
 		return;
 
 	IMAGE tank = mPlayerTank->GetTankImage(mPlayerTankLevel, mTankDir, mMoving);
@@ -326,6 +333,8 @@ BulletShootKind PlayerBase::BulletMoving(const HDC& center_hdc)
 			BulletShootKind kind = CheckBomb(i);
 			if (kind == BulletShootKind::Camp)
 				return BulletShootKind::Camp;
+			else if (kind == BulletShootKind::Player_1 || kind == BulletShootKind::Player_2)
+				return kind;
 			else if (kind == BulletShootKind::Other )
 				continue;
 
@@ -458,6 +467,12 @@ void PlayerBase::SendKillNumToScorePanel()
 	mScorePanel->SetKillNum(mKillEnemyNumber);
 }
 
+void PlayerBase::SetPause()
+{
+	mPause = true;
+	mPauseCounter = 0;
+}
+
 /////////////////////////////////////////////////////////////
 
 
@@ -518,6 +533,18 @@ void PlayerBase::Move(int new_dir)
 {
 	if (!mTankTimer.IsTimeOut() || mDied)
 		return;
+
+	// 如果玩家被另一个玩家击中暂停
+	if (mPause)
+	{
+		if ( mPauseCounter++ < 66)
+			return;
+		else
+		{
+			mPause = false;
+			mPauseCounter = 0;
+		}
+	}
 
 	SignTank_8(mTankX, mTankY, _EMPTY);
 
@@ -786,9 +813,18 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_4[tempi][tempj];
-				mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000 ]++;	// 记录消灭敌机的种类的数量
+				mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000]++;	// 记录消灭敌机的种类的数量
 				mProp->StartShowProp(100, 100);
 				return BulletShootKind::Other;
+			}
+			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN && player_id != 0 || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1 && player_id != 1)
+			{
+				mBulletStruct[i].x = SHOOTABLE_X;
+				mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
+				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
+				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
+				mBombS[i].counter = 0;
+				return (BulletShootKind)bms->box_4[tempi][tempj];
 			}
 		}
 	}
@@ -841,6 +877,15 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 				mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000]++;		// 记录消灭敌机的种类的数量
 				mProp->StartShowProp(100, 100);
 				return BulletShootKind::Other;
+			}
+			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN && player_id != 0 || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1 && player_id != 1)
+			{
+				mBulletStruct[i].x = SHOOTABLE_X;
+				mBombS[i].canBomb = true;				// 指示 i bomb 爆炸
+				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
+				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
+				mBombS[i].counter = 0;
+				return (BulletShootKind)bms->box_4[tempi][tempj];
 			}
 		}
 	}

@@ -92,6 +92,10 @@ public:
 
 	/*GameControl 内 IsGameOver() 内调用*/
 	void SendKillNumToScorePanel();
+
+	/*GameControl 内检测子弹击中结果判断调用,
+	设置玩家暂停移动*/
+	void SetPause();
 private:
 
 	/*如果有生命重新出生*/
@@ -200,4 +204,7 @@ private:
 	ScorePanel* mScorePanel;		// 关卡结束后显示分数结果
 
 	int mKillEnemyNumber[4];		// 四种敌机类型,杀敌数量
+
+	bool mPause;			// 被另外一个玩家击中, 暂停一段时间
+	int mPauseCounter;		// Move() 内计数停止移动, DrawTank() 内取模计数,实现坦克闪烁
 };
