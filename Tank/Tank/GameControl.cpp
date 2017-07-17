@@ -399,9 +399,23 @@ void GameControl::AddEnemy()
 	if (EnemyList.size() >= 16 || TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber <= 0)
 		return;
 
-	int level, kind;
-	level = rand() % 4;
-	kind = rand() % 2;
+	int level;
+	TANK_KIND kind;
+	if (mOutedEnemyTankNumber < 8)
+		level = 0;
+	else if (mOutedEnemyTankNumber < 13)
+		level = 1;
+	else if (mOutedEnemyTankNumber < 17)
+		level = 2;
+	else
+		level = 3;
+
+	// 每个5架除一架道具坦克
+	if (mOutedEnemyTankNumber % 5 == 4)
+		kind = TANK_KIND::PROP;
+	else
+		kind = TANK_KIND::COMMON;
+
 	switch (level)
 	{
 	case 0:
@@ -410,8 +424,8 @@ void GameControl::AddEnemy()
 		mOutedEnemyTankNumber++;
 		switch (kind)
 		{
-			case 0: EnemyList.push_back((new CommonTank(level, mBoxMarkStruct))); break;
-			case 1: EnemyList.push_back((new PropTank(level, mBoxMarkStruct))); break;
+			case 0: EnemyList.push_back((new PropTank(level, mBoxMarkStruct))); break;
+			case 1: EnemyList.push_back((new CommonTank(level, mBoxMarkStruct))); break;
 			default: break;
 		}
 		break;
