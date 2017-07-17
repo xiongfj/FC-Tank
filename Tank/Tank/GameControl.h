@@ -29,16 +29,17 @@ public:
 	bool StartGame();								// 更新绘制游戏各种东西, 返回 false 结束游戏
 
 private:
+	void ShowStage();				// 开始每一关之前显示 STAGE 2 之类的字样
 	void ClearSignBox();
-	void InitSignBox();		// 初始化格子标记
+	void InitSignBox();				// 初始化格子标记
 	void AddEnemy();						// 游戏开始前 添加20 架敌机
 	void SignBox_4(int i, int j, int sign_val);	// 标记格子, LoadMap() 内调用
 	bool RefreshData();
 	void RefreshRightPanel();						// 刷新右边信息面板数据, 根据数据变化才调用更新
 	void RefreshCenterPanel();						// 刷新中间游戏区域 208 * 208
 	void CheckKillEnemy(PlayerBase*);		// 检测玩家是否击中敌机, 击中则删除该敌机
-	void IsGameOver();					// 循环检测是否flag,  gameover
-	void IsWinOver();			// 消灭所有敌机胜利过关
+	void IsGameOver();				// 循环检测是否flag,  gameover
+	void IsWinOver();				// 消灭所有敌机胜利过关
 
 public:
 	static int mCurrentStage;						// [1-35] 当前关卡, SelectPanel 内使用, 本类内使用
@@ -68,6 +69,7 @@ private:
 
 	IMAGE mEnemyTankIcoImage;		// 敌机坦克图标
 	IMAGE mFlagImage;				// 旗子
+	IMAGE mCurrentStageImage;		// STAGE 字样
 	IMAGE mBlackNumberImage;		// 0123456789 当前关卡数
 	IMAGE mGameOverImage;			//
 

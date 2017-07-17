@@ -175,6 +175,8 @@ class PropClass
 public:
 	PropClass();
 	void ShowProp(const HDC&);			// GameControl 内循环检测该函数
+
+	/*参数是左上角的坐标*/
 	void StartShowProp(int x, int y);	// 道具坦克被击中后调用该函数
 	void StopShowProp();			// 停止显示道具, 超时或者被玩家获得
 	void SetBoxMarkStruct(BoxMarkStruct*);

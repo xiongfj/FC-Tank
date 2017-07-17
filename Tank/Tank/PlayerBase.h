@@ -96,6 +96,12 @@ public:
 	/*GameControl 内检测子弹击中结果判断调用,
 	设置玩家暂停移动*/
 	void SetPause();
+
+	/*
+	* GameControl 内 CheckKillEnemy() 内调用
+	* 如果成功消灭道具敌机, 就显示道具
+	*/
+	static void ShowProp();
 private:
 
 	/*如果有生命重新出生*/

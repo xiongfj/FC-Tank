@@ -478,6 +478,11 @@ void PlayerBase::SetPause()
 	mPauseCounter = 0;
 }
 
+//
+void PlayerBase::ShowProp()
+{
+	mProp->StartShowProp(100, 100);
+}
 /////////////////////////////////////////////////////////////
 
 
@@ -812,8 +817,9 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_4[tempi][tempj];
-				mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000]++;	// 记录消灭敌机的种类的数量
-				mProp->StartShowProp(100, 100);
+				mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000]++;	// 记录消灭敌机的级别种类的数量
+
+				//	mProp->StartShowProp(100, 100);
 				return BulletShootKind::Other;
 			}
 			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN && player_id != 0 || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1 && player_id != 1)
@@ -874,7 +880,7 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_4[tempi][tempj];
 				mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000]++;		// 记录消灭敌机的种类的数量
-				mProp->StartShowProp(100, 100);
+				//mProp->StartShowProp(100, 100);
 				return BulletShootKind::Other;
 			}
 			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN && player_id != 0 || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1 && player_id != 1)

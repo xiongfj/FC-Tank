@@ -31,8 +31,9 @@ void GameControl::Init()
 	loadimage( &mCamp[1]			 , _T("./res/big/camp1.gif"			));		// 
 	loadimage( &mEnemyTankIcoImage	 , _T("./res/big/enemytank-ico.gif"	));		// 敌机图标
 	loadimage( &mFlagImage			 , _T("./res/big/flag.gif"			));		// 旗子
+	loadimage( &mCurrentStageImage	 , _T("./res/big/stage.gif"			));
 	loadimage( &mBlackNumberImage	 , _T("./res/big/black-number.gif"	));		// 0123456789 黑色数字
-	loadimage( &mGameOverImage		 , _T("./res/big/gameover.gif"	));		
+	loadimage( &mGameOverImage		 , _T("./res/big/gameover.gif"		));		
 
 	mOutedEnemyTankNumber = 0;													// 已经出现在地图上的敌机数量,最多显示6架
 	mRemainEnemyTankNumber = 20;												// 剩余未出现的敌机数量
@@ -282,6 +283,7 @@ bool GameControl::CreateMap()
 
 void GameControl::GameLoop()
 {
+	ShowStage();
 	while (StartGame())
 	{
 		Sleep(1);
@@ -293,6 +295,7 @@ bool GameControl::StartGame()
 	// 主绘图操作时间
 	if (mTimer.IsTimeOut())
 	{
+		// 胜利或者失败 显示分数面板
 		if (mShowScorePanel)
 		{
 			BitBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&ScorePanel::background), 0, 0, SRCCOPY);
@@ -332,6 +335,33 @@ bool GameControl::StartGame()
 /////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////// 私有函数,本类使用 //////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
+
+void GameControl::ShowStage()
+{
+	// 灰色背景
+	//mGraphics->DrawImage(mGrayBackgroundImage, 0, 0, CANVAS_WIDTH + 10, CANVAS_HEIGHT + 10);	// +10 去掉由于拉伸的边缘变色
+	StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT,
+		GetImageHDC(&mGrayBackgroundImage), 0, 0, 66, 66, SRCCOPY);
+
+	TransparentBlt(mImage_hdc, 97, 103, 39, 7, GetImageHDC(&mCurrentStageImage), 0, 0, 39, 7, 0xffffff);
+
+	// [1-9] 关卡，单个数字
+	if (mCurrentStage < 10)
+		TransparentBlt(mImage_hdc, 157, 103, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE,
+			GetImageHDC(&mBlackNumberImage), BLACK_NUMBER_SIZE * mCurrentStage, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0xffffff);
+	else	// 10,11,12 .. 双位数关卡
+	{
+		TransparentBlt(mImage_hdc, 157, 103, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE,
+			GetImageHDC(&mBlackNumberImage), BLACK_NUMBER_SIZE * (mCurrentStage / 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0xffffff);
+
+		TransparentBlt(mImage_hdc, 157, 103, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE,
+			GetImageHDC(&mBlackNumberImage), BLACK_NUMBER_SIZE * (mCurrentStage % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0xffffff);
+	}
+	StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
+	FlushBatchDraw();
+
+	Sleep(1300);
+}
 
 //
 void GameControl::ClearSignBox()
@@ -805,9 +835,13 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 				if ((*EnemyItor)->GetId() == bullet[i] % 100)		// 100xx 后两位是 id
 				{
 					// 如果消灭敌机
-					if((*EnemyItor)->BeKill())
+					if ((*EnemyItor)->BeKill())
+					{
 						mKillEnemyNum++;
-
+						//printf("%d---\n", mKillEnemyNum);
+						if ((int)TANK_KIND::PROP == bullet[i] % 1000 / 100)		// 获取百分位的敌机种类
+							PlayerBase::ShowProp();
+					}
 					if (mKillEnemyNum == 20)
 					{
 						mWinCounter = 0;

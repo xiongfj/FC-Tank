@@ -18,7 +18,7 @@ public:
 	void Init();
 	EnumSelectResult ShowSelectPanel();			// 显示玩家选择面板, 返回玩家选择0,1,2, -1出错
 private:
-	void ShowStage();
+	//void ShowStage();
 
 private:
 	//Graphics* mGraphics;
@@ -40,6 +40,6 @@ private:
 	//Image* mGrayBackgroundImage;	// 游戏灰色背景图
 	//Image* mCurrentStageImage;		// 选择完后显示当前关卡
 	IMAGE mGrayBackgroundImage;	// 游戏灰色背景图
-	IMAGE mCurrentStageImage;		// 选择完后显示当前关卡
+	//IMAGE mCurrentStageImage;		// 选择完后显示当前关卡
 	IMAGE mBlackNumberImage;		// 数字 1234567890 图片
 };

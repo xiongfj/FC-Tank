@@ -40,7 +40,7 @@ void SelectPanel::Init()
 	loadimage(&mGrayBackgroundImage, _T("./res/big/bg_gray.gif"));
 	// STAGE 字样
 	//mCurrentStageImage = Image::FromFile(L"./res/big/stage.gif");
-	loadimage(&mCurrentStageImage, _T("./res/big/stage.gif"));
+	//loadimage(&mCurrentStageImage, _T("./res/big/stage.gif"));
 	// 黑色 1234567890 数字
 	loadimage(&mBlackNumberImage, _T("./res/big/black-number.gif"));
 }
@@ -107,10 +107,10 @@ EnumSelectResult SelectPanel::ShowSelectPanel()
 	switch( mSelectIndex )
 	{
 	case 0:
-		ShowStage();
+		//ShowStage();
 		return OnePlayer;
 	case 1:
-		ShowStage();
+		//ShowStage();
 		return TwoPlayer;
 	case 2:
 		return Custom;
@@ -119,7 +119,7 @@ EnumSelectResult SelectPanel::ShowSelectPanel()
 	}
 	return Error;
 }
-
+/*
 void SelectPanel::ShowStage()
 {
 	// 灰色背景
@@ -146,4 +146,4 @@ void SelectPanel::ShowStage()
 	FlushBatchDraw();
 
 	Sleep(300);
-}
+}*/
