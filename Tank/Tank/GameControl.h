@@ -16,6 +16,8 @@ struct Map
 * 进行游戏循环
 */
 
+enum GameResult {Victory, Fail};		// 每一关胜利\失败
+
 class GameControl
 {
 public:
@@ -26,7 +28,7 @@ public:
 	void LoadMap();									// 读取 .map 地图文件|解析绘制地图
 	bool CreateMap();				// 玩家自定义地图
 	void GameLoop();
-	bool StartGame();								// 更新绘制游戏各种东西, 返回 false 结束游戏
+	GameResult StartGame();								// 更新绘制游戏各种东西, 返回 false 结束游戏
 
 private:
 	void ShowStage();				// 开始每一关之前显示 STAGE 2 之类的字样

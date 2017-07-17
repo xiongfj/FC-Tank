@@ -30,6 +30,7 @@ public:
 
 	int GetId();				// 返回敌机 id
 	TANK_KIND GetKind();		// 返回敌机类型, 是否是道具坦克
+	byte GetLevel();
 
 private:
 	void SignBox_8(int, int, int value);

@@ -201,7 +201,7 @@ class ScorePanel
 public:
 	ScorePanel(int player_id);
 	~ScorePanel();
-	void show(const HDC&);
+	void show(const HDC&, int* step);
 	void SetKillNum(const int *);
 
 	static IMAGE number;
@@ -210,7 +210,10 @@ public:
 	IMAGE pts;
 	static IMAGE bunds;		// bunds 1000pts 字样
 
-	byte counter : 3;		// 多少次刷新一次数据
+	static int player_num;		// 玩家数; 初始化一个本类对象 +1
+	static bool line_done_flag[2];	// 每一行数据两个玩家都显示完与否
+
+	byte player_id;
 	int player_x, player_y;
 	int pts_x, pts_y;
 	int kill_num[4], kill_num2[4];		// 4种敌机杀敌数, kill_num = -1 的项先不显示
@@ -218,4 +221,9 @@ public:
 	// x[..][0] 是分数, x[..][1] 是杀敌数
 	int x[4][2];	// 一个是分数, 一个是杀敌数, 分数等于 杀敌数*100,200,400...
 	int y[4][2];
+
+	static int cur_line;		// 当前正在更新显示的数据行索引
+
+	int total_kill_numm;		// 总杀敌数
+	int total_kill_x, total_kill_y;	// 坐标
 };

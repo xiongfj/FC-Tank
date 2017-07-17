@@ -147,11 +147,16 @@ void PropClass::SignPropBox(int val)
 IMAGE PropClass::image[6];
 int PropClass::prop_kind = ADD_PROP;
 */
+int ScorePanel::cur_line = 0;
+bool ScorePanel::line_done_flag[2] = {false, false};
+int ScorePanel::player_num = 0;
 IMAGE ScorePanel::number;
 IMAGE ScorePanel::bunds;
 IMAGE ScorePanel::background;
-ScorePanel::ScorePanel(int player_id)
+ScorePanel::ScorePanel(int id)
 {
+	player_num++;
+	player_id = id;
 	switch (player_id)
 	{
 	case 0:
@@ -173,6 +178,9 @@ ScorePanel::ScorePanel(int player_id)
 
 			y[i][0] = 88 + i * 24;
 			y[i][1] = 88 + i * 24;
+
+			total_kill_x = 103;
+			total_kill_y = 178;
 		}
 		break;
 
@@ -187,10 +195,13 @@ ScorePanel::ScorePanel(int player_id)
 		for (int i = 0; i < 4; i++)
 		{
 			x[i][0] = 177;
-			x[i][1] = 155;
+			x[i][1] = 154;
 			
 			y[i][0] = 88 + i * 24;
 			y[i][1] = 88 + i * 24;
+
+			total_kill_x = 154;
+			total_kill_y = 178;
 		}
 		break;
 	default:
@@ -202,35 +213,79 @@ ScorePanel::ScorePanel(int player_id)
 		kill_num[i] = 0;		// 接收 PlayerBase 传递过来的数据
 		kill_num2[i] = -1;		// 默认杀敌数 = -1 flag, 此时不显示
 	}
+
+	total_kill_numm = 0;
 }
 
 ScorePanel::~ScorePanel()
 {
 }
 
-void ScorePanel::show(const HDC& image_hdc)
+/*
+step 是一个 int step[2] 数据;
+* step[0]: 0,1,2,3,4,5 分 6 步, 0,1,2,3 显示杀敌数和的分数; 4 显示总杀敌数; 5 显示 bunds (两个玩家谁杀敌数多显示在哪一边)
+* step[1]: 是 step[0] 内的细分, 
+*/
+void ScorePanel::show(const HDC& image_hdc, int* step)
 {
-	//GameControl 内绘制BitBlt(image_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&background), 0, 0, SRCCOPY);
 	BitBlt(image_hdc, player_x, player_y, player.getwidth(), player.getheight(), GetImageHDC(&player), 0, 0, SRCCOPY);
 	BitBlt(image_hdc, pts_x, pts_y, pts.getwidth(), pts.getheight(), GetImageHDC(&pts), 0, 0, SRCCOPY);
 
+	// 控制每行杀敌数自加显示 ++ 显示完一行才显示下一行
 	for (int i = 0; i < 4; i++)
 	{
-		if (kill_num[i] < 10)
+		if (cur_line == i)
+		{
+			int temp = kill_num2[i] + 1;
+			if (temp <= kill_num[i])
+			{
+				kill_num2[i]++;
+				break;
+			}
+			else
+			{
+				line_done_flag[player_id] = true;
+				bool temp = true;
+				for (int m = 0; m < player_num; m++)
+				{
+					if (line_done_flag[m] == false)
+					{
+						temp = false;
+						break;
+					}
+				}
+				if (temp)
+				{
+					cur_line++; 
+					for (int m = 0; m < player_num; m++)
+						line_done_flag[m] = false;
+				}
+			}
+		}
+	}
+
+	Sleep(100);
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (kill_num2[i] == -1)
+			continue;
+
+		if (kill_num2[i] < 10)
 		{
 			TransparentBlt(image_hdc, x[i][1], y[i][1], BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
-				BLACK_NUMBER_SIZE * kill_num[i], 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+				BLACK_NUMBER_SIZE * kill_num2[i], 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
 		}
 		else
 		{
 			TransparentBlt(image_hdc, x[i][1]- 8, y[i][1], BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
-				BLACK_NUMBER_SIZE * (kill_num[i] / 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+				BLACK_NUMBER_SIZE * (kill_num2[i] / 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
 
 			TransparentBlt(image_hdc, x[i][1], y[i][1], BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
-				BLACK_NUMBER_SIZE * (kill_num[i] % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+				BLACK_NUMBER_SIZE * (kill_num2[i] % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
 		}
 
-		int score = (i + 1) * 100 * kill_num[i];	// 一级坦克一架100分, 依次类推
+		int score = (i + 1) * 100 * kill_num2[i];	// 一级坦克一架100分, 依次类推
 
 		// 计算分数是多少位数
 		int temp = score;
@@ -279,12 +334,31 @@ void ScorePanel::show(const HDC& image_hdc)
 			break;
 		}
 	}
+
+	if (cur_line == 4)
+	{
+		if (total_kill_numm < 10)
+		{
+			TransparentBlt(image_hdc, total_kill_x, total_kill_y, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+				BLACK_NUMBER_SIZE * total_kill_numm, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+		}
+		else
+		{
+			TransparentBlt(image_hdc, total_kill_x - 8, total_kill_y, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+				BLACK_NUMBER_SIZE * (total_kill_numm / 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+
+			TransparentBlt(image_hdc, total_kill_x, total_kill_y, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+				BLACK_NUMBER_SIZE * (total_kill_numm % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+		}
+	}
 }
 
+/*游戏结束时候, 获取每个玩家的杀敌数!! 只能调用一次!!! */
 void ScorePanel::SetKillNum(const int * nums)
 {
 	for (int i = 0; i < 4; i++)
 	{
 		kill_num[i] = nums[i];
+		total_kill_numm += nums[i];
 	}
 }

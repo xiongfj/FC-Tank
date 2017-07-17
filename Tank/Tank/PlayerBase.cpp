@@ -31,7 +31,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		mTankX = 4 * 16 + BOX_SIZE;							// 坦克首次出现时候的中心坐标
 		mTankY = 12 * 16 + BOX_SIZE;
 
-		mTankTimer.SetDrtTime(23);		// 坦克移动速度, 不同级别不同玩家 不一样
+		mTankTimer.SetDrtTime(15);		// 坦克移动速度, 不同级别不同玩家 不一样
 		mBulletTimer.SetDrtTime(13);
 	}
 	else
@@ -46,7 +46,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		mTankX = 8 * 16 + BOX_SIZE;
 		mTankY = 12 * 16 + BOX_SIZE;
 
-		mTankTimer.SetDrtTime(23);
+		mTankTimer.SetDrtTime(15);
 		mBulletTimer.SetDrtTime(13);
 	}
 
@@ -140,6 +140,9 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 
 	mPause = false;
 	mPauseCounter = 0;
+
+	// SendKillNumToScorePanel() 内使用
+	mHasSendKillNumToScorePanel = false;
 }
 
 PlayerBase::~PlayerBase()
@@ -462,14 +465,19 @@ void PlayerBase::ShowProp(const HDC& center_hdc)
 }
 
 //
-void PlayerBase::ShowScorePanel(const HDC& image_hdc)
+void PlayerBase::ShowScorePanel(const HDC& image_hdc, int* step)
 {
-	mScorePanel->show(image_hdc);// 整张画布缩放显示 image 到主窗口
+	mScorePanel->show(image_hdc, step);// 整张画布缩放显示 image 到主窗口
 }
 
 void PlayerBase::SendKillNumToScorePanel()
 {
-	mScorePanel->SetKillNum(mKillEnemyNumber);
+	//if (mHasSendKillNumToScorePanel == false)
+	{
+		//mHasSendKillNumToScorePanel = true;
+		mScorePanel->SetKillNum(mKillEnemyNumber);
+		printf("11111111111111asdas\n");
+	}
 }
 
 void PlayerBase::SetPause()
@@ -482,6 +490,11 @@ void PlayerBase::SetPause()
 void PlayerBase::ShowProp()
 {
 	mProp->StartShowProp(100, 100);
+}
+void PlayerBase::AddKillEnemyNum(byte enemy_level)
+{
+	mKillEnemyNumber[enemy_level]++;
+	//printf("%d , %d - %d\n", player_id, enemy_level, mKillEnemyNumber[enemy_level]);
 }
 /////////////////////////////////////////////////////////////
 
@@ -817,7 +830,7 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_4[tempi][tempj];
-				mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000]++;	// 记录消灭敌机的级别种类的数量
+				//mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000]++;	// 记录消灭敌机的级别种类的数量
 
 				//	mProp->StartShowProp(100, 100);
 				return BulletShootKind::Other;
@@ -879,7 +892,7 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 
 				// 标记击中了敌机的 id
 				mBulletStruct[i].mKillId = bms->box_4[tempi][tempj];
-				mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000]++;		// 记录消灭敌机的种类的数量
+				//mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000]++;		// 记录消灭敌机的种类的数量
 				//mProp->StartShowProp(100, 100);
 				return BulletShootKind::Other;
 			}

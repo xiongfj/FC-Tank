@@ -321,6 +321,11 @@ TANK_KIND EnemyBase::GetKind()
 	return mEnemyTankKind;
 }
 
+byte EnemyBase::GetLevel()
+{
+	return mEnemyTankLevel;
+}
+
 //----------------- Ë½ÓÐº¯Êý ------------------------
 /*
 void EnemyBase::SetPause(bool val)

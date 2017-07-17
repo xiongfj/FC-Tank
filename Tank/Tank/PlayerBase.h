@@ -88,7 +88,7 @@ public:
 	static void ShowProp(const HDC&);
 
 	/*GameCnotrol 内循环调用, 函数内调用成员ScorePanel 函数显示结果*/
-	void ShowScorePanel(const HDC&);
+	void ShowScorePanel(const HDC&, int *);
 
 	/*GameControl 内 IsGameOver() 内调用*/
 	void SendKillNumToScorePanel();
@@ -102,6 +102,10 @@ public:
 	* 如果成功消灭道具敌机, 就显示道具
 	*/
 	static void ShowProp();
+
+	/*GameControl 内CheckKillEnemy() 内调用,
+	记录玩家消灭不同级别类型的敌机的数量*/
+	void AddKillEnemyNum(byte enemy_level);
 private:
 
 	/*如果有生命重新出生*/
@@ -213,4 +217,6 @@ private:
 
 	bool mPause;			// 被另外一个玩家击中, 暂停一段时间
 	int mPauseCounter;		// Move() 内计数停止移动, DrawTank() 内取模计数,实现坦克闪烁
+
+	bool mHasSendKillNumToScorePanel;		// 放置 胜利后集中大本营或其它.多次发送数据到分数面板
 };

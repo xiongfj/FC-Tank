@@ -284,33 +284,35 @@ bool GameControl::CreateMap()
 void GameControl::GameLoop()
 {
 	ShowStage();
-	while (StartGame())
+	GameResult result = GameResult::Victory;
+
+	while (result != GameResult::Fail)
 	{
+		result = StartGame();
 		Sleep(1);
 	}
 }
 
-bool GameControl::StartGame()
+//
+GameResult GameControl::StartGame()
 {
 	// 主绘图操作时间
 	if (mTimer.IsTimeOut())
 	{
+		static int next_step[2] = {0,0};
+
 		// 胜利或者失败 显示分数面板
 		if (mShowScorePanel)
 		{
 			BitBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&ScorePanel::background), 0, 0, SRCCOPY);
-			/*for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
-			{
-				p->data->ShowScorePanel(mImage_hdc);
-			}*/
 			for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 			{
-				(*itor)->ShowScorePanel(mImage_hdc);
+				(*itor)->ShowScorePanel(mImage_hdc, next_step);
 			}
 			// 整张画布缩放显示 image 到主窗口
 			StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 			FlushBatchDraw();
-			return true;
+			return GameResult::Victory;
 		}
 
 		AddEnemy();
@@ -329,7 +331,9 @@ bool GameControl::StartGame()
 	}
 
 	// 数据变化, 不能涉及绘图操作
-	return RefreshData();
+	RefreshData();
+
+	return GameResult::Victory;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -828,7 +832,7 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 
 	for (int i = 0; i < 2; i++)
 	{
-		if (bullet[i] >= ENEMY_SIGN /*&& bullet[i] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER*/)
+		if (bullet[i] >= ENEMY_SIGN )
 		{
 			for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 			{
@@ -841,6 +845,9 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 						//printf("%d---\n", mKillEnemyNum);
 						if ((int)TANK_KIND::PROP == bullet[i] % 1000 / 100)		// 获取百分位的敌机种类
 							PlayerBase::ShowProp();
+
+						// 玩家记录消灭的敌机数量
+						pb->AddKillEnemyNum((*EnemyItor)->GetLevel());
 					}
 					if (mKillEnemyNum == 20)
 					{
@@ -855,7 +862,7 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 }
 void GameControl::IsGameOver()
 {
-	if (!mGameOverFlag && !mShowScorePanel )
+	if (!mGameOverFlag || !mShowScorePanel )
 		return;
 
 	TransparentBlt(mCenter_hdc, mGameOverX, mGameOverY, GAMEOVER_WIDTH, GAMEOVER_HEIGHT,
@@ -866,10 +873,6 @@ void GameControl::IsGameOver()
 	else if (mGameOverY <= CENTER_HEIGHT * 0.45)
 	{
 		mShowScorePanel = true;
-		/*for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
-		{
-			p->data->SendKillNumToScorePanel();
-		}*/
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
 			(*itor)->SendKillNumToScorePanel();
@@ -883,11 +886,6 @@ void GameControl::IsWinOver()
 	if (mWin && mWinCounter++ > 210 && !mGameOverFlag)
 	{
 		mShowScorePanel = true;
-		/*for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
-		{
-			p->data->SendKillNumToScorePanel();
-		}*/
-
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
 			(*itor)->SendKillNumToScorePanel();
