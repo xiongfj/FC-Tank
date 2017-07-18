@@ -13,6 +13,8 @@ class EnemyBase
 public:
 	EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct*);	// kind[0-1]; level [0-4]
 	virtual ~EnemyBase();
+	void Init();
+
 	bool ShowStar(const HDC& center_hdc, int& total );		// 显示闪烁四角星, true-正在显示, false-显示完毕
 	void TankMoving(const HDC& center_hdc);		// 敌机移动
 	virtual void DrawTank(const HDC&) {}			// 纯绘制坦克, 子类覆绘制

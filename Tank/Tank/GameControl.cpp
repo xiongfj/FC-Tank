@@ -10,15 +10,7 @@ GameControl::GameControl( HDC des_hdc, HDC image_hdc/*, BoxMarkStruct* bms*/)
 	mCenterImage.Resize( CENTER_WIDTH, CENTER_HEIGHT );
 	mCenter_hdc = GetImageHDC(&mCenterImage);
 	mBoxMarkStruct = new BoxMarkStruct();
-	Init();
-}
 
-GameControl::~GameControl()
-{
-}
-
-void GameControl::Init()
-{
 	loadimage( &mBlackBackgroundImage, _T("./res/big/bg_black.gif"		));		// 黑色背景
 	loadimage( &mGrayBackgroundImage , _T("./res/big/bg_gray.gif"		));		// 灰色背景
 	loadimage( &mStoneImage			 , _T("./res/big/stone.gif"			));		// 12*12的石头
@@ -33,8 +25,20 @@ void GameControl::Init()
 	loadimage( &mFlagImage			 , _T("./res/big/flag.gif"			));		// 旗子
 	loadimage( &mCurrentStageImage	 , _T("./res/big/stage.gif"			));
 	loadimage( &mBlackNumberImage	 , _T("./res/big/black-number.gif"	));		// 0123456789 黑色数字
-	loadimage( &mGameOverImage		 , _T("./res/big/gameover.gif"		));		
+	loadimage( &mGameOverImage		 , _T("./res/big/gameover.gif"		));
 
+	// 自定义绘制地图
+	loadimage(&mCreateMapTankImage, _T("./res/big/0Player/m0-1-2.gif"));
+
+	Init();
+}
+
+GameControl::~GameControl()
+{
+}
+
+void GameControl::Init()
+{
 	mOutedEnemyTankNumber = 0;													// 已经出现在地图上的敌机数量,最多显示6架
 	mRemainEnemyTankNumber = 20;												// 剩余未出现的敌机数量
 	mKillEnemyNum = 0;
@@ -52,8 +56,7 @@ void GameControl::Init()
 	mGameOverFlag = false;
 	mGameOverTimer.SetDrtTime(10);
 
-	// 自定义绘制地图
-	loadimage(&mCreateMapTankImage, _T("./res/big/0Player/m0-1-2.gif"));
+	// 绘制地图坦克游标的坐标
 	mCMTImageX = BOX_SIZE;
 	mCMTImageY = BOX_SIZE;
 
@@ -299,16 +302,29 @@ GameResult GameControl::StartGame()
 	// 主绘图操作时间
 	if (mTimer.IsTimeOut())
 	{
-		static int next_step[2] = {0,0};
-
 		// 胜利或者失败 显示分数面板
 		if (mShowScorePanel)
 		{
 			BitBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&ScorePanel::background), 0, 0, SRCCOPY);
 			for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 			{
-				(*itor)->ShowScorePanel(mImage_hdc, next_step);
+				if (!(*itor)->ShowScorePanel(mImage_hdc))
+				{
+					Init();
+					//mGameOverFlag = false;
+					//mShowScorePanel = false;
+
+					for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+						(*itor)->Init();
+					EnemyList.clear();
+
+					mCurrentStage++;
+					LoadMap();
+
+					break;
+				}
 			}
+
 			// 整张画布缩放显示 image 到主窗口
 			StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 			FlushBatchDraw();
@@ -844,7 +860,7 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 						mKillEnemyNum++;
 						//printf("%d---\n", mKillEnemyNum);
 						if ((int)TANK_KIND::PROP == bullet[i] % 1000 / 100)		// 获取百分位的敌机种类
-							PlayerBase::ShowProp();
+							PlayerBase::SetShowProp();
 
 						// 玩家记录消灭的敌机数量
 						pb->AddKillEnemyNum((*EnemyItor)->GetLevel());

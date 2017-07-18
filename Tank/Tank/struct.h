@@ -173,13 +173,13 @@ class PropClass
 	void SignPropBox(int val);			// 标记 prop_8 格子
 
 public:
-	PropClass();
+	PropClass(BoxMarkStruct * b);
+	void Init();
 	void ShowProp(const HDC&);			// GameControl 内循环检测该函数
 
 	/*参数是左上角的坐标*/
 	void StartShowProp(int x, int y);	// 道具坦克被击中后调用该函数
 	void StopShowProp();			// 停止显示道具, 超时或者被玩家获得
-	void SetBoxMarkStruct(BoxMarkStruct*);
 
 private:
 	BoxMarkStruct* bms;
@@ -201,7 +201,7 @@ class ScorePanel
 public:
 	ScorePanel(int player_id);
 	~ScorePanel();
-	void show(const HDC&, int* step);
+	bool show(const HDC&);
 	void SetKillNum(const int *);
 
 	static IMAGE number;
@@ -226,4 +226,6 @@ public:
 
 	int total_kill_numm;		// 总杀敌数
 	int total_kill_x, total_kill_y;	// 坐标
+
+	int end_counter;		// 分数面板显示完全后多久跳转
 };

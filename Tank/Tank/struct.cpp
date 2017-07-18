@@ -73,13 +73,10 @@ void RingClass::SetShowable()
 
 /////////////////////////////////////////////////////
 
-PropClass::PropClass()
+PropClass::PropClass(BoxMarkStruct * b)
 {
-	//bms = _bms;
-	leftx = -100;
-	topy = -100;
-	index_counter = 0;
-	can_show = false;
+	Init();
+	bms = b;
 
 	TCHAR buf[100];
 	for (int i = 0; i < 6; i++)
@@ -89,6 +86,15 @@ PropClass::PropClass()
 	}
 
 	//mTimer.SetDrtTime(10);
+}
+
+//
+void PropClass::Init()
+{
+	leftx = -100;
+	topy = -100;
+	index_counter = 0;
+	can_show = false;
 }
 
 // GameControl 内循环检测该函数
@@ -112,7 +118,7 @@ void PropClass::StartShowProp(int _x, int _y)
 	leftx = 12 * BOX_SIZE;// (rand() % 25 + 1) * BOX_SIZE;
 	topy = 12 * BOX_SIZE; //(rand() % 25 + 1) * BOX_SIZE;
 	can_show = true;
-	prop_kind = 2;// rand() % 6;		// 随机出现一个道具
+	prop_kind = rand() % 6;		// 随机出现一个道具
 	index_counter = 0;
 	SignPropBox(PROP_SIGN + prop_kind);
 }
@@ -122,11 +128,6 @@ void PropClass::StopShowProp()
 {
 	can_show = false;
 	SignPropBox(_EMPTY);
-}
-
-void PropClass::SetBoxMarkStruct(BoxMarkStruct * b)
-{
-	bms = b;
 }
 
 //
@@ -215,6 +216,7 @@ ScorePanel::ScorePanel(int id)
 	}
 
 	total_kill_numm = 0;
+	end_counter = 0;
 }
 
 ScorePanel::~ScorePanel()
@@ -222,11 +224,8 @@ ScorePanel::~ScorePanel()
 }
 
 /*
-step 是一个 int step[2] 数据;
-* step[0]: 0,1,2,3,4,5 分 6 步, 0,1,2,3 显示杀敌数和的分数; 4 显示总杀敌数; 5 显示 bunds (两个玩家谁杀敌数多显示在哪一边)
-* step[1]: 是 step[0] 内的细分, 
 */
-void ScorePanel::show(const HDC& image_hdc, int* step)
+bool ScorePanel::show(const HDC& image_hdc)
 {
 	BitBlt(image_hdc, player_x, player_y, player.getwidth(), player.getheight(), GetImageHDC(&player), 0, 0, SRCCOPY);
 	BitBlt(image_hdc, pts_x, pts_y, pts.getwidth(), pts.getheight(), GetImageHDC(&pts), 0, 0, SRCCOPY);
@@ -350,7 +349,13 @@ void ScorePanel::show(const HDC& image_hdc, int* step)
 			TransparentBlt(image_hdc, total_kill_x, total_kill_y, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
 				BLACK_NUMBER_SIZE * (total_kill_numm % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
 		}
+
+		//printf("asdasd  %d\n", end_counter);
+		if (end_counter++ > 10)
+			return false;			// 返回结束标志
 	}
+
+	return true;
 }
 
 /*游戏结束时候, 获取每个玩家的杀敌数!! 只能调用一次!!! */

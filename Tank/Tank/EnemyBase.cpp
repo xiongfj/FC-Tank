@@ -74,6 +74,10 @@ EnemyBase::~EnemyBase()
 		//delete mEnemyTank;
 }
 
+void EnemyBase::Init()
+{
+}
+
 // ÏÔÊ¾Ì¹¿Ë
 bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 {

@@ -4,63 +4,37 @@
 //----------------- PlayerBase 类静态数据
 
 int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 依次左上右下
-PropClass* PlayerBase::mProp = new PropClass();
+PropClass* PlayerBase::mProp = NULL;
 bool PlayerBase::mTimeProp = false;
 bool PlayerBase::mBombProp = false;
 
 PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 {
-	mDied = false;
 	int i = 0;
 	player_id = player;
 	mPlayerTank = new PlayerTank(player_id);
 	bms = b;
-	mProp->SetBoxMarkStruct(b);
-	//mProp = pc;
+	mProp = new PropClass(b);
+
+	mPlayerLife = 2;		// 玩家 HP
+	mPlayerTankLevel = 3;
+
+	// 不同级别坦克移动速度系数
+	int temp[4] = { 1, 1, 1, 1 };
+	for (i = 0; i < 4; i++)
+		mSpeed[i] = temp[i];
+
+	Init();
 
 	// 不同玩家数据不同
 	if (player_id == 0)
-	{
 		loadimage(&m12PImage, _T("./res/big/1P.gif"));		// 1P\2P图标
-		m12PImage_x = 233;									// 1P\2P 坐标
-		m12PImage_y = 129;
-		mPlayerTankIcoImage_x = 232;						// 玩家坦克图标坐标
-		mPlayerTankIcoImage_y = 137;
-		mPlayerLife_x = 240;								// 玩家生命值坐标
-		mPlayerLife_y = 137;
-		mTankX = 4 * 16 + BOX_SIZE;							// 坦克首次出现时候的中心坐标
-		mTankY = 12 * 16 + BOX_SIZE;
-
-		mTankTimer.SetDrtTime(15);		// 坦克移动速度, 不同级别不同玩家 不一样
-		mBulletTimer.SetDrtTime(13);
-	}
 	else
-	{
 		loadimage(&m12PImage, _T("./res/big/2P.gif"));
-		m12PImage_x = 233;
-		m12PImage_y = 153;
-		mPlayerTankIcoImage_x = 232;
-		mPlayerTankIcoImage_y = 161;
-		mPlayerLife_x = 240;
-		mPlayerLife_y = 161;
-		mTankX = 8 * 16 + BOX_SIZE;
-		mTankY = 12 * 16 + BOX_SIZE;
-
-		mTankTimer.SetDrtTime(15);
-		mBulletTimer.SetDrtTime(13);
-	}
 
 	// 共同的数据
 	loadimage(&mPlayerTankIcoImage, _T("./res/big/playertank-ico.gif"	));	// 玩家坦克图标
 	loadimage(&mBlackNumberImage,	_T("./res/big/black-number.gif"		));	// 黑色数字
-	mPlayerLife = 52;		// 玩家 HP
-	mPlayerTankLevel = 3;													// 坦克级别 [0-3]
-	mTankDir = DIR_UP;		// 坦克方向
-
-	// 不同级别坦克移动速度系数
-	int temp[4] = {1, 1, 1, 1};
-	for ( i = 0; i < 4; i++ )
-		mSpeed[i] = temp[i];
 		
 	/*********************************
 	* BulletStruct 数据初始化
@@ -73,35 +47,11 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		loadimage(&BulletStruct::mBulletImage[i], buf);
 	}
 
-	// 子弹结构数据
-	int temp_speed[4] = {3, 3, 4, 4};			// 不能超过 4 !! 会跳跃格子判断.根据坦克级别分配子弹速度系数
-	for (i = 0; i < 2; i++)
-	{
-		mBulletStruct[i].x = SHOOTABLE_X;		// x 坐标用于判断是否可以发射
-		mBulletStruct[i].y = -1000;
-		mBulletStruct[i].dir = DIR_UP;
-		mBulletStruct[i].mKillId = 0;			// 记录击中的敌机 id
-
-		// 根据坦克级别分配子弹速度系数
-		for (int j = 0; j < 4; j++)
-			mBulletStruct[i].speed[j] = temp_speed[j];
-	}
-
-	mBullet_1_counter = 9;				// 子弹 1 运动 N 个循环后才可以发射子弹 2 
-	mMoving = false;
-
 	// 爆炸图片
 	for (i = 0; i < 3; i++)
 	{
 		_stprintf_s(buf, _T("./res/big/bumb%d.gif"), i);
 		loadimage(&BombStruct::mBombImage[i], buf);
-	}
-	for (i = 0; i < 2; i++)
-	{
-		mBombS[i].mBombX = -100;
-		mBombS[i].mBombY = -100;
-		mBombS[i].canBomb = false;
-		mBombS[i].counter = 0;
 	}
 
 	// 坦克爆炸图片结构
@@ -110,9 +60,6 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		_stprintf_s(buf, _T("./res/big/blast/%d.gif"), i);
 		loadimage(&BlastStruct::image[i], buf);
 	}
-
-	// 是否击中大本营
-	mIsShootCamp = false;
 
 	// 出生四角星闪烁
 	for (int i = 0; i < 4; i++)
@@ -133,20 +80,90 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 
 	// 显示分数面板
 	mScorePanel = new ScorePanel(player_id);
-
-	// 杀敌数
-	for ( i = 0 ; i< 4; i++)
-		mKillEnemyNumber[i] = 0;
-
-	mPause = false;
-	mPauseCounter = 0;
-
-	// SendKillNumToScorePanel() 内使用
-	mHasSendKillNumToScorePanel = false;
 }
 
 PlayerBase::~PlayerBase()
 {
+}
+
+void PlayerBase::Init()
+{
+	mProp->Init();
+	mTimeProp = false;
+	mBombProp = false;
+
+	// 不同玩家数据不同
+	if (player_id == 0)
+	{
+		m12PImage_x = 233;									// 1P\2P 坐标
+		m12PImage_y = 129;
+		mPlayerTankIcoImage_x = 232;						// 玩家坦克图标坐标
+		mPlayerTankIcoImage_y = 137;
+		mPlayerLife_x = 240;								// 玩家生命值坐标
+		mPlayerLife_y = 137;
+		mTankX = 4 * 16 + BOX_SIZE;							// 坦克首次出现时候的中心坐标
+		mTankY = 12 * 16 + BOX_SIZE;
+
+		mTankTimer.SetDrtTime(15);		// 坦克移动速度, 不同级别不同玩家 不一样
+		mBulletTimer.SetDrtTime(13);
+	}
+	else
+	{
+		m12PImage_x = 233;
+		m12PImage_y = 153;
+		mPlayerTankIcoImage_x = 232;
+		mPlayerTankIcoImage_y = 161;
+		mPlayerLife_x = 240;
+		mPlayerLife_y = 161;
+		mTankX = 8 * 16 + BOX_SIZE;
+		mTankY = 12 * 16 + BOX_SIZE;
+
+		mTankTimer.SetDrtTime(15);
+		mBulletTimer.SetDrtTime(13);
+	}
+
+	int i = 0;
+	mDied = false;										// 坦克级别 [0-3]
+	mTankDir = DIR_UP;		// 坦克方向
+
+	// 子弹结构数据
+	int temp_speed[4] = { 3, 3, 4, 4 };			// 不能超过 4 !! 会跳跃格子判断.根据坦克级别分配子弹速度系数
+	for (i = 0; i < 2; i++)
+	{
+		mBulletStruct[i].x = SHOOTABLE_X;		// x 坐标用于判断是否可以发射
+		mBulletStruct[i].y = -1000;
+		mBulletStruct[i].dir = DIR_UP;
+		mBulletStruct[i].mKillId = 0;			// 记录击中的敌机 id
+
+												// 根据坦克级别分配子弹速度系数
+		for (int j = 0; j < 4; j++)
+			mBulletStruct[i].speed[j] = temp_speed[j];
+	}
+
+	mBullet_1_counter = 9;				// 子弹 1 运动 N 个循环后才可以发射子弹 2 
+	mMoving = false;
+
+	// 爆炸图片
+	for (i = 0; i < 2; i++)
+	{
+		mBombS[i].mBombX = -100;
+		mBombS[i].mBombY = -100;
+		mBombS[i].canBomb = false;
+		mBombS[i].counter = 0;
+	}
+
+	// SendKillNumToScorePanel() 内使用
+	mHasSendKillNumToScorePanel = false;
+
+	// 是否击中大本营
+	mIsShootCamp = false;
+
+	// 杀敌数
+	for (i = 0; i< 4; i++)
+		mKillEnemyNumber[i] = 0;
+
+	mPause = false;
+	mPauseCounter = 0;
 }
 
 // 绘制玩家的一些数据: 1P\2P 坦克图标 生命
@@ -465,11 +482,12 @@ void PlayerBase::ShowProp(const HDC& center_hdc)
 }
 
 //
-void PlayerBase::ShowScorePanel(const HDC& image_hdc, int* step)
+bool PlayerBase::ShowScorePanel(const HDC& image_hdc)
 {
-	mScorePanel->show(image_hdc, step);// 整张画布缩放显示 image 到主窗口
+	return mScorePanel->show(image_hdc);// 整张画布缩放显示 image 到主窗口
 }
 
+//
 void PlayerBase::SendKillNumToScorePanel()
 {
 	//if (mHasSendKillNumToScorePanel == false)
@@ -480,6 +498,7 @@ void PlayerBase::SendKillNumToScorePanel()
 	}
 }
 
+//
 void PlayerBase::SetPause()
 {
 	mPause = true;
@@ -487,7 +506,7 @@ void PlayerBase::SetPause()
 }
 
 //
-void PlayerBase::ShowProp()
+void PlayerBase::SetShowProp()
 {
 	mProp->StartShowProp(100, 100);
 }

@@ -14,6 +14,8 @@ public:
 	PlayerBase(byte player, BoxMarkStruct* /*, PropClass**/);						// player [0-1]
 	~PlayerBase();
 
+	void Init();
+
 	/*
 	* GameControl 内循环调用
 	*/
@@ -88,7 +90,7 @@ public:
 	static void ShowProp(const HDC&);
 
 	/*GameCnotrol 内循环调用, 函数内调用成员ScorePanel 函数显示结果*/
-	void ShowScorePanel(const HDC&, int *);
+	bool ShowScorePanel(const HDC&);
 
 	/*GameControl 内 IsGameOver() 内调用*/
 	void SendKillNumToScorePanel();
@@ -101,7 +103,7 @@ public:
 	* GameControl 内 CheckKillEnemy() 内调用
 	* 如果成功消灭道具敌机, 就显示道具
 	*/
-	static void ShowProp();
+	static void SetShowProp();
 
 	/*GameControl 内CheckKillEnemy() 内调用,
 	记录玩家消灭不同级别类型的敌机的数量*/
