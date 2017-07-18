@@ -84,6 +84,15 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 PlayerBase::~PlayerBase()
 {
 	delete mPlayerTank;
+	delete mScorePanel;
+
+	// 静态数据放置多次 delete
+	if (mProp != NULL)
+	{
+		delete mProp;
+		mProp = NULL;
+	}
+
 	printf("PLayerBase:: ~PlayerBase()\n");
 }
 

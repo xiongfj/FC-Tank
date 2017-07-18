@@ -35,6 +35,15 @@ GameControl::GameControl( HDC des_hdc, HDC image_hdc/*, BoxMarkStruct* bms*/)
 
 GameControl::~GameControl()
 {
+	for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+		delete *itor;
+
+	for (list<EnemyBase*>::iterator itor = EnemyList.begin(); itor != EnemyList.end(); itor++)
+		delete *itor;
+
+	delete mBoxMarkStruct;
+
+	printf("~GameControl::GameControl()\n");
 }
 
 void GameControl::Init()
