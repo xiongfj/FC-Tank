@@ -825,7 +825,9 @@ void GameControl::RefreshCenterPanel()
 			(*itor)->Bombing(mCenter_hdc);
 			if ((*itor)->Blasting(mCenter_hdc))
 			{
-
+				//delete *itor;
+				//bug PlayerList.erase(itor);
+				break;
 			}
 		}
 

@@ -133,7 +133,7 @@ void PlayerBase::Init()
 	}
 
 	int i = 0;
-	mDied = false;										// 坦克级别 [0-3]
+	mDied = false;		
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 子弹结构数据
@@ -216,7 +216,7 @@ bool PlayerBase::ShowStar(const HDC& center_hdc)
 		if (mStar.mStarCounter == 25)
 		{
 			mStar.mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
-			SignBox_8(mTankX, mTankY, PLAYER_SIGN + player_id);		// 防止玩家绘制地图把坦克出现的位置遮挡住
+			SignBox_8(mTankX, mTankY, _EMPTY);		// 防止玩家绘制地图把坦克出现的位置遮挡住
 			SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);
 			return STOP_SHOW_STAR;
 		}
@@ -440,14 +440,14 @@ void PlayerBase::BeKill()
 // 玩家被击中爆炸
 bool PlayerBase::Blasting(const HDC & center_hdc)
 {
-	int index[6] = { 0,1,2,3,4,2 };
+	int index[8] = { 0,1,2,3,4,3,2,1 };
 	if (mBlast.canBlast)
 	{
 		TransparentBlt(center_hdc, mBlast.blastx - BOX_SIZE * 2, mBlast.blasty - BOX_SIZE * 2, BOX_SIZE * 4, BOX_SIZE * 4,
-			GetImageHDC(&BlastStruct::image[index[mBlast.counter % 6]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+			GetImageHDC(&BlastStruct::image[index[mBlast.counter % 8]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
 		if (mBlastTimer.IsTimeOut())
 		{
-			if (mBlast.counter++ >= 5)
+			if (mBlast.counter++ >= 7)
 			{
 				mBlast.counter = 0;
 				mBlast.canBlast = false;
@@ -804,7 +804,6 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 	// 将坐标转换成 4*4 格子索引
 	int b4i = bomby / SMALL_BOX_SIZE;
 	int b4j = bombx / SMALL_BOX_SIZE;
-
 
 	switch (mBulletStruct[i].dir)
 	{

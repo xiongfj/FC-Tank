@@ -27,6 +27,9 @@
 #define PLAYER_SIGN	100
 #define CAMP_SIGN	200			// 大本营标记
 
+#define E_B_SIGN	300			//敌机子弹标记
+#define P_B_SIGN	400			// 玩家子弹标记
+
 /*重新定义规则: 规定标记是 10000 + 1000*mEnemyTankLevel + 100*menemyKind + enemy_id */
 #define ENEMY_SIGN	10000		// 4*4 或 8*8 格子标记, 加上敌机自身 id再标记
 #define STAR_SIGN	2000		// 敌机出现四角星标记, 此时敌机不能进来
@@ -94,7 +97,7 @@ enum TANK_KIND { PROP, COMMON };
 
 struct BulletStruct
 {
-	int x, y;					// 子弹坐标, 根据不同方向指定不同的位置代表 x,y, 指定 x=SHOOTABLE_X 的时候可以发射子弹
+	int x, y;					// 子弹图片左上角坐标, 根据不同方向指定不同的位置代表 x,y, 指定 x=SHOOTABLE_X 的时候可以发射子弹
 	int dir;					// 子弹方向
 	int speed[4];				// 子弹速度, 根据坦克级别给予不同速度系数. 每次移动不能超过4个像素点!! 不然会跨越 4*4 的格子!!检测bug
 

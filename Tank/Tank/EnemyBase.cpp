@@ -504,7 +504,7 @@ void EnemyBase::RejustDirPosition()
 
 //
 BulletShootKind EnemyBase::CheckBomb()
-{/*
+{
 	int dir = mBulletStruct.dir;
 
 	// 子弹头接触到障碍物的那个点, 左右方向点在上, 上下方向点在右
@@ -656,7 +656,6 @@ BulletShootKind EnemyBase::CheckBomb()
 	default:
 		break;
 	}
-	*/
 	return BulletShootKind::None;
 }
 
@@ -904,6 +903,9 @@ void BigestTank::DrawTank(const HDC & center_hdc)
 
 bool BigestTank::BeKill(bool killanyway)
 {
+	if (mStar.mIsOuted == false || mBlast.canBlast == true || mDied == true)
+		return false;
+
 	if (--hp <= 0 || killanyway)
 	{
 		hp = 0;
