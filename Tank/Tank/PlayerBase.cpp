@@ -216,7 +216,6 @@ bool PlayerBase::ShowStar(const HDC& center_hdc)
 		if (mStar.mStarCounter == 25)
 		{
 			mStar.mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
-			//SignTank_8(mTankX, mTankY, PLAYER_SIGN + player_id);		// 坦克出现, 将四角星标记改为坦克标记
 			SignBox_8(mTankX, mTankY, PLAYER_SIGN + player_id);		// 防止玩家绘制地图把坦克出现的位置遮挡住
 			SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);
 			return STOP_SHOW_STAR;
@@ -429,7 +428,7 @@ bool PlayerBase::IsShootCamp()
 
 void PlayerBase::BeKill()
 {
-	SignTank_8(mTankX, mTankY, _EMPTY);
+	SignBox_4(mTankX, mTankY, _EMPTY);
 	mDied = true;
 
 	// 设置爆炸坐标
@@ -528,7 +527,7 @@ void PlayerBase::Reborn()
 	mDied = false;
 	mTankX = (4 + 4 * player_id) * 16 + BOX_SIZE;				// 坦克首次出现时候的中心坐标
 	mTankY = 12 * 16 + BOX_SIZE;
-	SignTank_8(mTankX, mTankY, PLAYER_SIGN + player_id);		// 坦克出现, 将四角星标记改为坦克标记
+	SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);		// 坦克出现, 将四角星标记改为坦克标记
 
 	mPlayerTankLevel = 0;				// 坦克级别 [0-3]
 	mTankDir = DIR_UP;		// 坦克方向
@@ -586,7 +585,7 @@ void PlayerBase::Move(int new_dir)
 		return;
 	}
 
-	SignTank_8(mTankX, mTankY, _EMPTY);
+	SignBox_4(mTankX, mTankY, _EMPTY);
 
 	if (mTankDir != new_dir)
 	{
@@ -618,7 +617,7 @@ void PlayerBase::Move(int new_dir)
 			mTankY += mDevXY[mTankDir][1] * mSpeed[mPlayerTankLevel];
 		}
 	}
-	SignTank_8(mTankX, mTankY, PLAYER_SIGN + player_id);
+	SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);
 }
 
 /* 判断当前方向可否移动
@@ -1031,23 +1030,6 @@ void PlayerBase::SignBox_8(int x, int y, int val)
 			bms->box_8[i][j] = val;
 		}
 	}
-}
-
-//
-void PlayerBase::SignTank_8(int cx, int cy, int val)
-{/*
-	// 右坦克中心索引转到左上角那个的 格子索引
-	int iy = cy / BOX_SIZE - 1;
-	int jx = cx / BOX_SIZE - 1;
-	for (int i = iy; i < iy + 2; i++)
-	{
-		for (int j = jx; j < jx + 2; j++)
-		{
-			bms->tank_8[i][j] = val;
-		}
-	}
-	*/
-	SignBox_4(cx, cy, val);
 }
 
 // 根据坦克中心坐标, 标记16个 4*4 格子
