@@ -101,7 +101,7 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 		mTankNumberReduce = false;
 
 		// 标记为 STAR_SIGN = 2000, 2000 属于坦克不能穿行的标志
-		SignTank_8(mTankX, mTankY, STAR_SIGN);
+		SignBox_4(mTankX, mTankY, STAR_SIGN);
 	}
 
 	// 开始闪烁四角星
@@ -124,7 +124,7 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 		if (mStar.mStarCounter == 35)
 		{
 			mStar.mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
-			SignTank_8(mTankX, mTankY, ENEMY_SIGN + 1000 * mEnemyTankLevel + 100 * mEnemyTankKind + mEnemyId);		// 坦克出现, 将四角星标记改为坦克标记
+			SignBox_4(mTankX, mTankY, ENEMY_SIGN + 1000 * mEnemyTankLevel + 100 * mEnemyTankKind + mEnemyId);		// 坦克出现, 将四角星标记改为坦克标记
 			return STOP_SHOW_STAR;
 		}
 	}
@@ -141,7 +141,7 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 		return;
 	
 	// 移动前取消标记
-	SignTank_8(mTankX, mTankY, _EMPTY);
+	SignBox_4(mTankX, mTankY, _EMPTY);
 
 	// 内部计时, 一定时差后回头射击
 	ShootBack();
@@ -164,7 +164,7 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 	}
 
 	// 在新位置重新标记
-	SignTank_8(mTankX, mTankY, ENEMY_SIGN + mEnemyTankLevel * 1000 + mEnemyTankKind * 100 + mEnemyId);
+	SignBox_4(mTankX, mTankY, ENEMY_SIGN + mEnemyTankLevel * 1000 + mEnemyTankKind * 100 + mEnemyId);
 }
 
 // 
@@ -262,7 +262,7 @@ bool EnemyBase::BeKill(bool killanyway)
 		return false;
 
 	mDied = true;
-	SignTank_8(mTankX, mTankY, _EMPTY);
+	SignBox_4(mTankX, mTankY, _EMPTY);
 
 	// 设置爆炸坐标
 	mBlast.blastx = mTankX;
@@ -347,22 +347,6 @@ void EnemyBase::SignBox_8(int x, int y, int value)
 			bms->box_8[i][j] = value;
 		}
 	}
-}
-
-// 
-void EnemyBase::SignTank_8(int x, int y, int val)
-{/*
-	// 右坦克中心索引转到左上角那个的 格子索引
-	int iy = y / BOX_SIZE - 1;
-	int jx = x / BOX_SIZE - 1;
-	for (int i = iy; i < iy + 2; i++)
-	{
-		for (int j = jx; j < jx + 2; j++)
-		{
-			bms->tank_8[i][j] = val;
-		}
-	}*/
-	SignBox_4(x, y, val);
 }
 
 // 标记或取消坦克所在的 4*4 = 16 个格子
