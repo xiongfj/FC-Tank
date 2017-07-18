@@ -504,9 +504,9 @@ void PlayerBase::AddKillEnemyNum(byte enemy_level)
 {
 	mKillEnemyNumber[enemy_level]++;
 }
-void PlayerBase::ResetScorePanelData(int player_num)
+void PlayerBase::ResetScorePanelData(const int& player_num, const int& stage)
 {
-	mScorePanel->ResetData(mKillEnemyNumber, player_num);
+	mScorePanel->ResetData(mKillEnemyNumber, player_num, stage);
 }
 /////////////////////////////////////////////////////////////
 

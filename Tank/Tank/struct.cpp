@@ -227,6 +227,7 @@ ScorePanel::ScorePanel(int id)
 	total_kill_numm = 0;
 	end_counter = 0;
 	total_score = 0;
+	stage = 1;
 }
 
 ScorePanel::~ScorePanel()
@@ -278,6 +279,13 @@ bool ScorePanel::show(const HDC& image_hdc)
 	}
 
 	Sleep(100);
+
+	//STAGE
+	TransparentBlt(image_hdc, 154, 32, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+		BLACK_NUMBER_SIZE * stage % 10, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+	if ( stage > 10)
+		TransparentBlt(image_hdc, 154, 32, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+			BLACK_NUMBER_SIZE * stage / 10, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
 
 	// 0分
 	TransparentBlt(image_hdc, total_score_x, total_score_y, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&yellow_number),
@@ -382,7 +390,7 @@ bool ScorePanel::show(const HDC& image_hdc)
 				BLACK_NUMBER_SIZE * (total_kill_numm % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
 		}
 
-		if (end_counter++ > 30)
+		if (end_counter++ > 130)
 		{
 			return false;			// 返回结束标志
 		}
@@ -392,7 +400,7 @@ bool ScorePanel::show(const HDC& image_hdc)
 }
 
 /*游戏结束时候, 获取每个玩家的杀敌数!! 只能调用一次!!! */
-void ScorePanel::ResetData(const int * nums, int players)
+void ScorePanel::ResetData(const int * nums, const int& players, const int& sta)
 {
 	// 数据要重置, 避免下次显示的时候保留原先的数据
 	player_num = players;
@@ -402,6 +410,7 @@ void ScorePanel::ResetData(const int * nums, int players)
 	line_done_flag[1] = false;
 	total_kill_numm = 0;
 	total_score = 0;
+	stage = sta;
 
 	for (int i = 0; i < 4; i++)
 	{

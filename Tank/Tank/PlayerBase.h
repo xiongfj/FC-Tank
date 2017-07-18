@@ -107,7 +107,8 @@ public:
 	void AddKillEnemyNum(byte enemy_level);
 
 	/*GameControl 内每一关结束显示分数面板的时候调用*/
-	void ResetScorePanelData(int player_num);
+	void ResetScorePanelData(const int& player_num, const int& stage);
+
 private:
 
 	/*如果有生命重新出生*/

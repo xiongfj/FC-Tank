@@ -206,7 +206,7 @@ public:
 	/*在PlayerBase 内调用, PlayerBase又在GameControl 内调用
 	* 传递杀敌数, 玩家数
 	*/
-	void ResetData(const int * nums, int);				// 每次显示前需要重置
+	void ResetData(const int * nums, const int&, const int& stage);				// 每次显示前需要重置
 
 	static IMAGE background;
 
@@ -239,4 +239,5 @@ private:
 
 	int total_score_x, total_score_y;
 	int total_score;			// 总分
+	int stage;
 };

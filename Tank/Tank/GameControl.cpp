@@ -873,7 +873,7 @@ void GameControl::IsGameOver()
 		mWin = false;
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
-			(*itor)->ResetScorePanelData(PlayerList.size());
+			(*itor)->ResetScorePanelData(PlayerList.size(), mCurrentStage);
 		}
 	}
 }
@@ -886,7 +886,7 @@ void GameControl::IsWinOver()
 		mShowScorePanel = true;
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
-			(*itor)->ResetScorePanelData(PlayerList.size());
+			(*itor)->ResetScorePanelData(PlayerList.size(), mCurrentStage);
 		}
 	}
 }
