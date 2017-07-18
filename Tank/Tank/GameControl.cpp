@@ -113,7 +113,7 @@ void GameControl::LoadMap()
 }
 
 // 玩家自己创建地图
-bool GameControl::CreateMap()
+bool GameControl::CreateMap(bool* isCreate)
 {
 	int i, j, x = 0, y = 0;
 	int tempx, tempy;
@@ -211,10 +211,34 @@ bool GameControl::CreateMap()
 				{
 					for (j = 0; j < 26; j++)
 					{
+						// 根据 8*8 标记 4*4 格子
 						if (mBoxMarkStruct->box_8[i][j] != _EMPTY)
 							SignBox_4(i, j, mBoxMarkStruct->box_8[i][j]);
+
+						// 清空敌机出现的三个位置
+						if (i <= 1 && j <= 1 || j >= 12 && j <= 13 && i <= 1 || j >= 24 && i <= 1)
+						{
+							mBoxMarkStruct->box_8[i][j] = _EMPTY;
+							SignBox_4(i, j, _EMPTY);
+						}
+						
+						// 鸟巢位置不能绘制
+						if (i >= 24 && j >= 12 && j <= 13)
+						{
+							mBoxMarkStruct->box_8[i][j] = CAMP_SIGN;
+							SignBox_4(i, j, CAMP_SIGN);
+						}
+
+						// 两个玩家出现的地方
+						if (i >= 24 && (j >= 8 && j <= 9 || j >= 16 && j <= 17) )
+						{
+							mBoxMarkStruct->box_8[i][j] = _EMPTY;
+							SignBox_4(i, j, _EMPTY);
+
+						}
 					}
 				}
+
 				break;
 			}
 
@@ -293,6 +317,7 @@ bool GameControl::CreateMap()
 		StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 		FlushBatchDraw();
 	}
+	*isCreate = true;
 	mHasCustomMap = true;
 	return true;
 }
@@ -502,7 +527,7 @@ void GameControl::AddEnemy()
 	}
 }
 
-// 提供8*8 的索引, 标记里面4个 4*4 的格子
+// 提供8*8 的左上角索引, 标记里面4个 4*4 的格子
 void GameControl::SignBox_4(int i, int j, int sign_val)
 {
 	int temp_i[4] = { 2 * i, 2 * i + 1, 2 * i, 2 * i + 1 };

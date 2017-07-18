@@ -26,7 +26,7 @@ public:
 	void Init();
 	void AddPlayer(int player_num);					// 加载玩家进该类控制
 	void LoadMap();									// 读取 .map 地图文件|解析绘制地图
-	bool CreateMap();				// 玩家自定义地图
+	bool CreateMap(bool* out);				// 玩家自定义地图
 	void GameLoop();
 	GameResult StartGame();								// 更新绘制游戏各种东西, 返回 false 结束游戏
 

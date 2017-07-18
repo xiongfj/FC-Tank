@@ -54,9 +54,12 @@ void main()
 	{
 		result = selecter->ShowSelectPanel();		// 获取玩家选择结果
 
-		if (control != NULL)
-			delete control;
-		control = new GameControl(des_hdc, canvas_hdc);
+		if (!isCustomMap)
+		{
+			if (control != NULL)
+				delete control;
+			control = new GameControl(des_hdc, canvas_hdc);
+		}
 
 		switch (result)
 		{
@@ -69,6 +72,7 @@ void main()
 					control->LoadMap();
 					control->GameLoop();
 				}
+				isCustomMap = false;		// 自定义地图关卡过后自动进行后面的关卡
 				break;
 
 			case TwoPlayer:
@@ -80,10 +84,11 @@ void main()
 					control->LoadMap();
 					control->GameLoop();
 				}
+				isCustomMap = false;
 				break;
 
 			case Custom:							// 玩家自定义地图
-				isCustomMap = control->CreateMap();
+				control->CreateMap(&isCustomMap);
 				break;
 
 			default:
