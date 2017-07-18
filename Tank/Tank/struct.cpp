@@ -284,7 +284,7 @@ bool ScorePanel::show(const HDC& image_hdc)
 	TransparentBlt(image_hdc, 154, 32, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
 		BLACK_NUMBER_SIZE * stage % 10, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
 	if ( stage > 10)
-		TransparentBlt(image_hdc, 154, 32, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
+		TransparentBlt(image_hdc, 154 - 8, 32, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&number),
 			BLACK_NUMBER_SIZE * stage / 10, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
 
 	// 0分
@@ -390,7 +390,7 @@ bool ScorePanel::show(const HDC& image_hdc)
 				BLACK_NUMBER_SIZE * (total_kill_numm % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
 		}
 
-		if (end_counter++ > 130)
+		if (end_counter++ > 30)
 		{
 			return false;			// 返回结束标志
 		}
