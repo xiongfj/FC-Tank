@@ -84,7 +84,7 @@ public:
 
 	/*GameControl 内调用, 检测玩家是否获得时间道具*/
 	static bool IsGetTimeProp();
-	static bool IsGetBombProp();
+	bool IsGetBombProp();
 
 	/*在 gameControl 内循环调用 检测并显示闪烁道具*/
 	static void ShowProp(const HDC&);
@@ -206,8 +206,8 @@ private:
 
 	/*GameControl 内循环检测该值, 然后在设置 EnemyBase 停止移动*/
 	static bool mTimeProp;			// 记录是否获得 时钟道具
-	static bool mBombProp;			// 地雷道具, 逻辑与 mTimeProp 相同
-
+	bool mBombProp;				// 地雷道具, 逻辑与 mTimeProp 相同
+		
 	TimeClock mTankTimer;			// 坦克移动计时器
 	TimeClock mBulletTimer;			// 子弹移动速度
 	TimeClock mBombTimer;	//bug?		// 子弹爆炸速度

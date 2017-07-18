@@ -6,7 +6,6 @@
 int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// рю╢нвСиосроб
 PropClass* PlayerBase::mProp = NULL;
 bool PlayerBase::mTimeProp = false;
-bool PlayerBase::mBombProp = false;
 
 PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 {

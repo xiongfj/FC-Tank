@@ -22,7 +22,7 @@ public:
 	bool ShootBullet();			// 发射子弹
 	BulletShootKind BulletMoving( );			// 子弹移动
 	void Bombing(const HDC&);
-	virtual bool BeKill();			// 敌机被消灭, 清除 SignBox 标记
+	virtual bool BeKill(bool killanyway);			// 敌机被消灭, 清除 SignBox 标记, 参数表示玩家获得地雷直接kill掉BigestTank
 	bool Blasting(const HDC& );		// 显示坦克爆炸图, true 标识爆炸完,GameControl 获取返回值然后将该敌机删除
 	//.bool IsShootCamp();				// 是否击中大本营, GeamControl 内循环检测
 	//int  IsShootToPlayer();			// 获取被击中的玩家 id
@@ -105,7 +105,7 @@ class BigestTank : public EnemyBase
 public:
 	BigestTank(TANK_KIND kind, BoxMarkStruct* bm);
 	void DrawTank(const HDC&);	// 纯绘制坦克
-	bool BeKill();
+	bool BeKill(bool killanyway);
 
 	TankInfo* mTank[4];			// 灰,红黄,绿
 	byte index_counter : 6;		// 下标索引变色

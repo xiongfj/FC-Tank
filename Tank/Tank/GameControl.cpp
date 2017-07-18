@@ -310,17 +310,18 @@ GameResult GameControl::StartGame()
 			{
 				if (!(*itor)->ShowScorePanel(mImage_hdc))
 				{
-					Init();
-					//mGameOverFlag = false;
-					//mShowScorePanel = false;
+					if (mWin)
+					{
+						Init();
 
-					for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
-						(*itor)->Init();
-					EnemyList.clear();
+						for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+							(*itor)->Init();
+						EnemyList.clear();
 
-					mCurrentStage++;
-					LoadMap();
-
+						mCurrentStage++;
+						LoadMap();
+						ShowStage();
+					}
 					break;
 				}
 			}
@@ -380,7 +381,7 @@ void GameControl::ShowStage()
 	StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 	FlushBatchDraw();
 
-	Sleep(1300);
+	Sleep(300);
 }
 
 //
@@ -510,11 +511,28 @@ bool GameControl::RefreshData()
 	}
 
 	// 玩家获得地雷道具
-	if (PlayerBase::IsGetBombProp())
+	for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 	{
-		for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+		if ((*itor)->IsGetBombProp())
 		{
-			(*EnemyItor)->BeKill();
+			for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+			{
+				if ((*EnemyItor)->BeKill(true))
+				{
+					mKillEnemyNum++;
+
+					printf("%d \n", mKillEnemyNum);
+
+					// 玩家记录消灭的敌机数量
+					(*itor)->AddKillEnemyNum((*EnemyItor)->GetLevel());
+
+					if (mKillEnemyNum == 20)
+					{
+						mWinCounter = 0;
+						mWin = true;
+					}
+				}
+			}
 		}
 	}
 
@@ -567,14 +585,6 @@ bool GameControl::RefreshData()
 		{
 		case BulletShootKind::Player_1:
 		case BulletShootKind::Player_2:
-			/*for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
-			{
-				if (p->data->GetID() + PLAYER_SIGN == result)
-				{
-					p->data->BeKill();
-					break;
-				}
-			}*/
 
 			for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 			{
@@ -855,7 +865,7 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 				if ((*EnemyItor)->GetId() == bullet[i] % 100)		// 100xx 后两位是 id
 				{
 					// 如果消灭敌机
-					if ((*EnemyItor)->BeKill())
+					if ((*EnemyItor)->BeKill(false))
 					{
 						mKillEnemyNum++;
 						//printf("%d---\n", mKillEnemyNum);
@@ -890,6 +900,7 @@ void GameControl::IsGameOver()
 	{
 		//mGameOverFlag = false;
 		mShowScorePanel = true;
+		mWin = false;
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
 			(*itor)->SendKillNumToScorePanel();

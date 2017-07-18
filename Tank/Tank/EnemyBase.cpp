@@ -258,10 +258,10 @@ void EnemyBase::Bombing(const HDC & center_hdc)
 * BigestTank.class 需要覆盖这个方法, 
 * 因为它需要射击四次才能杀死
 */
-bool EnemyBase::BeKill()
+bool EnemyBase::BeKill(bool killanyway)
 {
 	// 如果敌机还没有出现
-	if (mStar.mIsOuted == false)
+	if (mStar.mIsOuted == false || mBlast.canBlast == true || mDied == true)
 		return false;
 
 	mDied = true;
@@ -899,9 +899,12 @@ void BigestTank::DrawTank(const HDC & center_hdc)
 		GetImageHDC(&temp[index_counter++ / 3 % 2]->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }
 
-bool BigestTank::BeKill()
+bool BigestTank::BeKill(bool killanyway)
 {
-	if (--hp <= 0)
-		return this->EnemyBase::BeKill();
+	if (--hp <= 0 || killanyway)
+	{
+		hp = 0;
+		return this->EnemyBase::BeKill(killanyway);
+	}
 	return false;
 }
