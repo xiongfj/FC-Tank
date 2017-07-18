@@ -53,6 +53,11 @@ void main()
 	while (_kbhit() != 27)
 	{
 		result = selecter->ShowSelectPanel();		// 获取玩家选择结果
+
+		//if (control != NULL)
+		//	delete control;
+		//control = new GameControl(des_hdc, canvas_hdc);
+
 		switch (result)
 		{
 			case OnePlayer:

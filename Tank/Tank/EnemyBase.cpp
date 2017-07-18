@@ -797,6 +797,12 @@ CommonTank::CommonTank( byte level, BoxMarkStruct* bms) :
 	mTank = new TankInfo(GRAY_TANK, level, true);
 }
 
+CommonTank::~CommonTank()
+{
+	delete mTank;
+	printf("~CommonTank::CommonTank() .. \n");
+}
+
 // 
 void CommonTank::DrawTank(const HDC& center_hdc)
 {
@@ -814,6 +820,14 @@ PropTank::PropTank(byte level, BoxMarkStruct* bms) :
 {
 	mTank[0] = new TankInfo(GRAY_TANK, level, true);
 	mTank[1] = new TankInfo(RED_TANK, level, true);
+}
+
+PropTank::~PropTank()
+{
+	// 不能直接 delete[] mTank??
+	for (int i = 0; i < 2; i++)
+		delete mTank[i];
+	printf("~PropTank::PropTank()..\n");
 }
 
 // 
@@ -836,6 +850,13 @@ BigestTank::BigestTank(TANK_KIND kind, BoxMarkStruct * bms):
 	mTank[GREEN_TANK] = new TankInfo(GREEN_TANK, 3, true);
 
 	hp = 4;
+}
+
+BigestTank::~BigestTank()
+{
+	for (int i = 0; i < 4; i++)
+		delete mTank[i];
+	printf("~BigestTank::BigestTank()\n");
 }
 
 void BigestTank::DrawTank(const HDC & center_hdc)

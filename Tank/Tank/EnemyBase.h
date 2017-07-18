@@ -83,6 +83,7 @@ class CommonTank : public EnemyBase
 {
 public:
 	CommonTank(byte level, BoxMarkStruct* bm);
+	~CommonTank();
 	void DrawTank(const HDC&);				// 纯绘制坦克
 
 	TankInfo* mTank;			// 灰色坦克
@@ -93,6 +94,7 @@ class PropTank : public EnemyBase
 {
 public:
 	PropTank(byte level, BoxMarkStruct* bm);
+	~PropTank();
 	void DrawTank(const HDC&);		// 纯绘制坦克
 
 	TankInfo* mTank[2];				// 存储灰色和红色的坦克
@@ -104,6 +106,7 @@ class BigestTank : public EnemyBase
 {
 public:
 	BigestTank(TANK_KIND kind, BoxMarkStruct* bm);
+	~BigestTank();
 	void DrawTank(const HDC&);	// 纯绘制坦克
 	bool BeKill(bool killanyway);
 

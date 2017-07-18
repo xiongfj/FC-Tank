@@ -97,6 +97,11 @@ PlayerTank::PlayerTank( byte player )
 
 PlayerTank::~PlayerTank()
 {
+	for (int i = 0; i < 4; i++)
+		delete mTankInfo[i];
+
+	//delete[] mTankInfo;
+	printf("PlayerTank::~PlayerTank() \n");
 }
 
 // 定义随机索引, 每三次跟换一个动作

@@ -83,6 +83,8 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 
 PlayerBase::~PlayerBase()
 {
+	delete mPlayerTank;
+	printf("PLayerBase:: ~PlayerBase()\n");
 }
 
 void PlayerBase::Init()

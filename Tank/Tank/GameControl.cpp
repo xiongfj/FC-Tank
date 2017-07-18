@@ -74,6 +74,11 @@ void GameControl::Init()
 // 存储玩家进链表
 void GameControl::AddPlayer(int player_num)
 {
+	for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+	{
+		delete *itor;
+	}
+
 	// 清空原来数据
 	PlayerList.clear();
 
@@ -321,6 +326,10 @@ GameResult GameControl::StartGame()
 						mCurrentStage++;
 						LoadMap();
 						ShowStage();
+					}
+					else
+					{
+						return GameResult::Fail;
 					}
 					break;
 				}
@@ -725,27 +734,6 @@ void GameControl::RefreshCenterPanel()
 			}
 		}
 
-		// 玩家
-		/*for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
-		{
-			p->data->ShowStar(mCenter_hdc);
-			p->data->DrawPlayerTank(mCenter_hdc);		// 坦克
-			p->data->DrawBullet(mCenter_hdc);
-			CheckKillEnemy(p->data);
-
-			if (p->data->IsShootCamp())
-			{
-				if (mBlast.canBlast == false )
-				{
-					int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
-					TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
-						GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
-					if (mCampTimer.IsTimeOut()  && mBlast.counter++ == 17)
-						mBlast.canBlast = true;
-					mCampDie = true;
-				}
-			}
-		}*/
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
 			(*itor) ->ShowStar(mCenter_hdc);
@@ -793,6 +781,7 @@ void GameControl::RefreshCenterPanel()
 			// 爆炸完毕, 移除敌机
 			if ((*EnemyItor)->Blasting(mCenter_hdc))
 			{
+				delete *EnemyItor;
 				EnemyList.erase(EnemyItor);
 				break;
 			}
