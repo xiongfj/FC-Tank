@@ -228,14 +228,6 @@ bool GameControl::CreateMap(bool* isCreate)
 							mBoxMarkStruct->box_8[i][j] = CAMP_SIGN;
 							SignBox_4(i, j, CAMP_SIGN);
 						}
-
-						// 两个玩家出现的地方
-						if (i >= 24 && (j >= 8 && j <= 9 || j >= 16 && j <= 17) )
-						{
-							mBoxMarkStruct->box_8[i][j] = _EMPTY;
-							SignBox_4(i, j, _EMPTY);
-
-						}
 					}
 				}
 

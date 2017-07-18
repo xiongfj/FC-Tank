@@ -216,7 +216,9 @@ bool PlayerBase::ShowStar(const HDC& center_hdc)
 		if (mStar.mStarCounter == 25)
 		{
 			mStar.mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
-			SignTank_8(mTankX, mTankY, PLAYER_SIGN + player_id);		// 坦克出现, 将四角星标记改为坦克标记
+			//SignTank_8(mTankX, mTankY, PLAYER_SIGN + player_id);		// 坦克出现, 将四角星标记改为坦克标记
+			SignBox_8(mTankX, mTankY, PLAYER_SIGN + player_id);		// 防止玩家绘制地图把坦克出现的位置遮挡住
+			SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);
 			return STOP_SHOW_STAR;
 		}
 	}
