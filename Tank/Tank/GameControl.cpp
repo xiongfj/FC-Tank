@@ -318,11 +318,10 @@ GameResult GameControl::StartGame()
 					if (mWin)
 					{
 						Init();
-
 						for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 							(*itor)->Init();
-						EnemyList.clear();
 
+						EnemyList.clear();
 						mCurrentStage++;
 						LoadMap();
 						ShowStage();
@@ -452,7 +451,7 @@ void GameControl::InitSignBox()
 // 待修改, 添加的敌机种类需要修改
 void GameControl::AddEnemy()
 {
-	if (EnemyList.size() >= 6 || TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber <= 0)
+	if (EnemyList.size() >= 16 || TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber <= 0)
 		return;
 
 	int level;
@@ -885,14 +884,15 @@ void GameControl::IsGameOver()
 
 	if (mGameOverTimer.IsTimeOut() && mGameOverY >= CENTER_HEIGHT * 0.45)
 		mGameOverY -= 2;
-	else if (mGameOverY <= CENTER_HEIGHT * 0.45)
+	else if (mGameOverY <= CENTER_HEIGHT * 0.45 && mShowScorePanel == false)
 	{
 		//mGameOverFlag = false;
 		mShowScorePanel = true;
 		mWin = false;
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
-			(*itor)->SendKillNumToScorePanel();
+			(*itor)->ResetScorePanelData();
+			//(*itor)->SendKillNumToScorePanel();
 		}
 	}
 }
@@ -905,7 +905,8 @@ void GameControl::IsWinOver()
 		mShowScorePanel = true;
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
-			(*itor)->SendKillNumToScorePanel();
+			(*itor)->ResetScorePanelData();
+			//(*itor)->SendKillNumToScorePanel();
 		}
 	}
 }

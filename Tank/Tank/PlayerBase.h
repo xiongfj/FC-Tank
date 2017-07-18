@@ -93,7 +93,7 @@ public:
 	bool ShowScorePanel(const HDC&);
 
 	/*GameControl 内 IsGameOver() 内调用*/
-	void SendKillNumToScorePanel();
+	//void SendKillNumToScorePanel();
 
 	/*GameControl 内检测子弹击中结果判断调用,
 	设置玩家暂停移动*/
@@ -108,6 +108,9 @@ public:
 	/*GameControl 内CheckKillEnemy() 内调用,
 	记录玩家消灭不同级别类型的敌机的数量*/
 	void AddKillEnemyNum(byte enemy_level);
+
+	/*GameControl 内每一关结束显示分数面板的时候调用*/
+	void ResetScorePanelData();
 private:
 
 	/*如果有生命重新出生*/

@@ -202,10 +202,15 @@ public:
 	ScorePanel(int player_id);
 	~ScorePanel();
 	bool show(const HDC&);
-	void SetKillNum(const int *);
+
+	/*在PlayerBase 内调用, PlayerBase又在GameControl 内调用*/
+	void ResetData(const int * nums);				// 每次显示前需要重置
+
+	static IMAGE background;
+
+private:
 
 	static IMAGE number;
-	static IMAGE background;
 	IMAGE player;
 	IMAGE pts;
 	static IMAGE bunds;		// bunds 1000pts 字样
@@ -227,5 +232,5 @@ public:
 	int total_kill_numm;		// 总杀敌数
 	int total_kill_x, total_kill_y;	// 坐标
 
-	int end_counter;		// 分数面板显示完全后多久跳转
+	static int end_counter;		// 分数面板显示完全后多久跳转
 };

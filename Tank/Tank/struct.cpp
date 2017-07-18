@@ -148,6 +148,7 @@ void PropClass::SignPropBox(int val)
 IMAGE PropClass::image[6];
 int PropClass::prop_kind = ADD_PROP;
 */
+int ScorePanel::end_counter = 0;
 int ScorePanel::cur_line = 0;
 bool ScorePanel::line_done_flag[2] = {false, false};
 int ScorePanel::player_num = 0;
@@ -351,16 +352,33 @@ bool ScorePanel::show(const HDC& image_hdc)
 		}
 
 		//printf("asdasd  %d\n", end_counter);
-		if (end_counter++ > 10)
+		if (end_counter++ > 30)
+		{
+			//ResetData();
 			return false;			// 返回结束标志
+		}
 	}
 
 	return true;
 }
 
 /*游戏结束时候, 获取每个玩家的杀敌数!! 只能调用一次!!! */
-void ScorePanel::SetKillNum(const int * nums)
+void ScorePanel::ResetData(const int * nums)
 {
+	// 数据要重置, 避免下次显示的时候保留原先的数据
+	cur_line = 0;
+	end_counter = 0;
+	line_done_flag[0] = false;
+	line_done_flag[1] = false;
+	total_kill_numm = 0;
+
+	for (int i = 0; i < 4; i++)
+	{
+		kill_num[i] = 0;		// 接收 PlayerBase 传递过来的数据
+		kill_num2[i] = -1;		// 默认杀敌数 = -1 flag, 此时不显示
+	}
+
+	// 获取新数据
 	for (int i = 0; i < 4; i++)
 	{
 		kill_num[i] = nums[i];

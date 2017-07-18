@@ -54,7 +54,6 @@ private:
 		mCenter_hdc;				// 208*208 的 hdc, 本类产生, 是游戏区域,分开,经常更新,坐标也容易设定
 
 	BoxMarkStruct* mBoxMarkStruct;			// 存储格子标记
-	//ListTable<PlayerBase*> PlayerList;
 	list<PlayerBase*> PlayerList;
 	list<EnemyBase*> EnemyList;				// 敌机列表
 
