@@ -155,6 +155,7 @@ int ScorePanel::player_num = 0;
 IMAGE ScorePanel::number;
 IMAGE ScorePanel::bunds;
 IMAGE ScorePanel::background;
+IMAGE ScorePanel::yellow_number;
 ScorePanel::ScorePanel(int id)
 {
 	//不能, gameover 再次进行游戏可能会大于 2 player_num++;
@@ -169,6 +170,7 @@ ScorePanel::ScorePanel(int id)
 		loadimage(&player, _T("./res/big/scorepanel/player-0.gif") );
 		loadimage(&pts, _T("./res/big/scorepanel/pts-0.gif"));
 
+		loadimage(&yellow_number, _T("./res/big/yellow-number.gif"));
 		loadimage(&number, _T("./res/big/white-number.gif"));
 		loadimage(&background, _T("./res/big/scorepanel/background.gif"));
 		loadimage(&bunds, _T("./res/big/scorepanel/bunds.gif"));
@@ -184,6 +186,9 @@ ScorePanel::ScorePanel(int id)
 			total_kill_x = 103;
 			total_kill_y = 178;
 		}
+
+		total_score_x = 78;
+		total_score_y = 58;
 		break;
 
 	case 1:
@@ -205,6 +210,9 @@ ScorePanel::ScorePanel(int id)
 			total_kill_x = 154;
 			total_kill_y = 178;
 		}
+
+		total_score_x = 224;
+		total_score_y = 58;
 		break;
 	default:
 		break;
@@ -218,6 +226,7 @@ ScorePanel::ScorePanel(int id)
 
 	total_kill_numm = 0;
 	end_counter = 0;
+	total_score = 0;
 }
 
 ScorePanel::~ScorePanel()
@@ -252,7 +261,6 @@ bool ScorePanel::show(const HDC& image_hdc)
 				bool temp = true;
 				for (int m = 0; m < player_num; m++)
 				{
-					printf("%d -- %d\n", player_id, player_num);
 					if (line_done_flag[m] == false)
 					{
 						temp = false;
@@ -261,7 +269,6 @@ bool ScorePanel::show(const HDC& image_hdc)
 				}
 				if (temp)
 				{
-					printf("%d, %d\n", player_num, i);
 					cur_line++; 
 					for (int m = 0; m < player_num; m++)
 						line_done_flag[m] = false;
@@ -271,6 +278,24 @@ bool ScorePanel::show(const HDC& image_hdc)
 	}
 
 	Sleep(100);
+
+	// 0分
+	TransparentBlt(image_hdc, total_score_x, total_score_y, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&yellow_number),
+		BLACK_NUMBER_SIZE * 0, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+
+	//  三位数
+	if (total_score > 90)
+	{
+		TransparentBlt(image_hdc, total_score_x - 8, total_score_y, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&yellow_number),
+			BLACK_NUMBER_SIZE * 0, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+
+		TransparentBlt(image_hdc, total_score_x - 16, total_score_y, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&yellow_number),
+			BLACK_NUMBER_SIZE * (total_score % 1000 / 100), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
+	}
+	// 四位数
+	if (total_score > 900)	
+		TransparentBlt(image_hdc, total_score_x - 24, total_score_y, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, GetImageHDC(&yellow_number),
+			BLACK_NUMBER_SIZE * (total_score / 1000), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -376,6 +401,7 @@ void ScorePanel::ResetData(const int * nums, int players)
 	line_done_flag[0] = false;
 	line_done_flag[1] = false;
 	total_kill_numm = 0;
+	total_score = 0;
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -389,4 +415,6 @@ void ScorePanel::ResetData(const int * nums, int players)
 		kill_num[i] = nums[i];
 		total_kill_numm += nums[i];
 	}
+
+	total_score = nums[0] * 100 + nums[1] * 200 + nums[2] * 300 + nums[3] * 400;
 }

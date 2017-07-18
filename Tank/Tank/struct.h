@@ -212,6 +212,7 @@ public:
 
 private:
 
+	static IMAGE yellow_number;
 	static IMAGE number;
 	IMAGE player;
 	IMAGE pts;
@@ -235,4 +236,7 @@ private:
 	int total_kill_x, total_kill_y;	// 坐标
 
 	static int end_counter;		// 分数面板显示完全后多久跳转
+
+	int total_score_x, total_score_y;
+	int total_score;			// 总分
 };
