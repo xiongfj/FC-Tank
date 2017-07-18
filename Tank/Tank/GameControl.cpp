@@ -521,7 +521,7 @@ bool GameControl::RefreshData()
 				{
 					mKillEnemyNum++;
 
-					printf("%d \n", mKillEnemyNum);
+					//printf("%d \n", mKillEnemyNum);
 
 					// 玩家记录消灭的敌机数量
 					(*itor)->AddKillEnemyNum((*EnemyItor)->GetLevel());

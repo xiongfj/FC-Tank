@@ -56,7 +56,7 @@ protected:
 
 	int mTankX, mTankY;			// 坦克坐标, 坦克的中心点
 	byte mTankDir : 2;			// 坦克方向
-	byte mTankImageIndex : 1;	// 坦克移动切换图片
+	byte mTankImageIndex : 6;	// 坦克移动切换图片
 	int mStep;					// 当前方向移动的步数, 一定步数后或者遇到障碍物变换方向并重新计算;
 	static int mDevXY[4][2];	// 四个方向的偏移量
 	int mSpeed[4];					// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样

@@ -6,9 +6,6 @@
 
 bool EnemyBase::mPause = false;
 int EnemyBase::mDevXY[4][2] = { { -1, 0 },{ 0, -1 },{ 1, 0 },{ 0, 1 } };	// 依次左上右下
-//bool EnemyBase::isOuting = false;
-//bool EnemyBase::mIsPause = false;
-//int EnemyBase::mPauseCounter = 0;
 
 // 生成某个类别级别的敌机
 EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
@@ -50,7 +47,7 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 	mBombS.counter = 0;
 
 	// 敌机移动时间间隔
-	mTankTimer.SetDrtTime(20);
+	mTankTimer.SetDrtTime(30);
 
 	// 子弹移动时间间隔
 	mBulletTimer.SetDrtTime(30);
@@ -792,6 +789,7 @@ void EnemyBase::ShootBack()
 	mTankDir = back_dir[mTankDir];
 }
 
+////////////////////////////////////////////////////////
 
 CommonTank::CommonTank( byte level, BoxMarkStruct* bms) :
 	EnemyBase(TANK_KIND::COMMON, level, bms)
@@ -805,7 +803,7 @@ void CommonTank::DrawTank(const HDC& center_hdc)
 	if (!mStar.mIsOuted || mDied)
 		return;
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
-		GetImageHDC(&mTank->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+		GetImageHDC(&mTank->GetTankImage(mTankDir, mTankImageIndex++ / 3 % 2)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -822,9 +820,9 @@ PropTank::PropTank(byte level, BoxMarkStruct* bms) :
 void PropTank::DrawTank(const HDC& center_hdc)
 {
 	if (!mStar.mIsOuted || mDied)
-		return;
+		return; //printf("%d..\n", mTankImageIndex);
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
-		GetImageHDC(&mTank[ index_counter++ % 2 ]->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+		GetImageHDC(&mTank[ index_counter++ / 6 % 2 ]->GetTankImage(mTankDir, mTankImageIndex++ / 3 % 2)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }
 
 //////////////////////////////////////////////////////////////
@@ -896,7 +894,7 @@ void BigestTank::DrawTank(const HDC & center_hdc)
 		return;
 	}
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
-		GetImageHDC(&temp[index_counter++ / 3 % 2]->GetTankImage(mTankDir, mTankImageIndex++)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+		GetImageHDC(&temp[index_counter++ / 3 % 2]->GetTankImage(mTankDir, mTankImageIndex++ / 3 % 2)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }
 
 bool BigestTank::BeKill(bool killanyway)
