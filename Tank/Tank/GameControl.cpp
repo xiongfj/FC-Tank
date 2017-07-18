@@ -83,7 +83,6 @@ void GameControl::AddPlayer(int player_num)
 	PlayerList.clear();
 
 	for (int i = 0; i < player_num; i++)
-		//PlayerList.Add(new PlayerBase(i, mBoxMarkStruct/*, &mProp*/) );
 		PlayerList.push_back(new PlayerBase(i, mBoxMarkStruct));
 }
 
@@ -646,11 +645,6 @@ void GameControl::RefreshRightPanel()
 			GetImageHDC(&mEnemyTankIcoImage), 0, 0, ENEMY_TANK_ICO_SIZE, ENEMY_TANK_ICO_SIZE, 0xffffff );	// 注意这个图标有黑色部分
 	}
 	
-	// 玩家1P\2P\坦克图标\生命数
-	/*for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
-	{
-		p->data->DrawPlayerTankIco(mImage_hdc);
-	}*/
 	for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 	{
 		(*itor)->DrawPlayerTankIco(mImage_hdc);
@@ -786,7 +780,7 @@ void GameControl::RefreshCenterPanel()
 			}
 
 			// 如果该敌机击中大本营
-			if (/*(*EnemyItor)->IsShootCamp()*/mGameOverFlag)
+			if (mGameOverFlag)
 			{
 				if (mBlast.canBlast == false)
 				{
@@ -800,16 +794,6 @@ void GameControl::RefreshCenterPanel()
 			}
 		}
 
-		// 玩家子弹
-		/*for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
-		{
-			p->data->Bombing(mCenter_hdc);
-
-			// 爆炸完成后
-			if (p->data->Blasting(mCenter_hdc))
-			{
-			}
-		}*/
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
 			(*itor)->Bombing(mCenter_hdc);
@@ -856,7 +840,6 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 					if ((*EnemyItor)->BeKill(false))
 					{
 						mKillEnemyNum++;
-						//printf("%d---\n", mKillEnemyNum);
 						if ((int)TANK_KIND::PROP == bullet[i] % 1000 / 100)		// 获取百分位的敌机种类
 							PlayerBase::SetShowProp();
 
@@ -886,13 +869,11 @@ void GameControl::IsGameOver()
 		mGameOverY -= 2;
 	else if (mGameOverY <= CENTER_HEIGHT * 0.45 && mShowScorePanel == false)
 	{
-		//mGameOverFlag = false;
 		mShowScorePanel = true;
 		mWin = false;
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
-			(*itor)->ResetScorePanelData();
-			//(*itor)->SendKillNumToScorePanel();
+			(*itor)->ResetScorePanelData(PlayerList.size());
 		}
 	}
 }
@@ -905,25 +886,7 @@ void GameControl::IsWinOver()
 		mShowScorePanel = true;
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
-			(*itor)->ResetScorePanelData();
-			//(*itor)->SendKillNumToScorePanel();
+			(*itor)->ResetScorePanelData(PlayerList.size());
 		}
 	}
 }
-/*.
-void GameControl::CheckKillPlayer(list<EnemyBase*>::iterator enemyItor)
-{
-	int id = (*enemyItor)->IsShootToPlayer();
-	if (id == -1)
-		return;
-
-	for (ListNode<PlayerBase*>* p = PlayerList.First(); p != NULL; p = p->pnext)
-	{
-		if (p->data->GetID() + PLAYER_SIGN == id)
-		{
-			//printf("ads121 -   %d\n", id);
-			p->data->BeKill();
-			break;
-		}
-	}
-}*/

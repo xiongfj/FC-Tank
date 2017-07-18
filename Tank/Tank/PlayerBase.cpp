@@ -489,17 +489,6 @@ bool PlayerBase::ShowScorePanel(const HDC& image_hdc)
 }
 
 //
-/*void PlayerBase::SendKillNumToScorePanel()
-{
-	//if (mHasSendKillNumToScorePanel == false)
-	{
-		//mHasSendKillNumToScorePanel = true;
-		//mScorePanel->SetKillNum(mKillEnemyNumber);
-		//printf("11111111111111asdas\n");
-	}
-}*/
-
-//
 void PlayerBase::SetPause()
 {
 	mPause = true;
@@ -514,12 +503,10 @@ void PlayerBase::SetShowProp()
 void PlayerBase::AddKillEnemyNum(byte enemy_level)
 {
 	mKillEnemyNumber[enemy_level]++;
-	//printf("%d , %d - %d\n", player_id, enemy_level, mKillEnemyNumber[enemy_level]);
 }
-void PlayerBase::ResetScorePanelData()
+void PlayerBase::ResetScorePanelData(int player_num)
 {
-	mScorePanel->ResetData(mKillEnemyNumber);
-	//mScorePanel->SetKillNum(mKillEnemyNumber);
+	mScorePanel->ResetData(mKillEnemyNumber, player_num);
 }
 /////////////////////////////////////////////////////////////
 

@@ -915,7 +915,7 @@ void BigestTank::DrawTank(const HDC & center_hdc)
 		return;
 	}
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
-		GetImageHDC(&temp[index_counter++ / 3 % 2]->GetTankImage(mTankDir, mTankImageIndex++ / 3 % 2)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+		GetImageHDC(&temp[index_counter++ % 2]->GetTankImage(mTankDir, mTankImageIndex++ / 3 % 2)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }
 
 bool BigestTank::BeKill(bool killanyway)

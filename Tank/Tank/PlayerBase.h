@@ -92,9 +92,6 @@ public:
 	/*GameCnotrol 内循环调用, 函数内调用成员ScorePanel 函数显示结果*/
 	bool ShowScorePanel(const HDC&);
 
-	/*GameControl 内 IsGameOver() 内调用*/
-	//void SendKillNumToScorePanel();
-
 	/*GameControl 内检测子弹击中结果判断调用,
 	设置玩家暂停移动*/
 	void SetPause();
@@ -110,7 +107,7 @@ public:
 	void AddKillEnemyNum(byte enemy_level);
 
 	/*GameControl 内每一关结束显示分数面板的时候调用*/
-	void ResetScorePanelData();
+	void ResetScorePanelData(int player_num);
 private:
 
 	/*如果有生命重新出生*/

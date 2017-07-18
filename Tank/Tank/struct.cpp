@@ -157,7 +157,7 @@ IMAGE ScorePanel::bunds;
 IMAGE ScorePanel::background;
 ScorePanel::ScorePanel(int id)
 {
-	player_num++;
+	//不能, gameover 再次进行游戏可能会大于 2 player_num++;
 	player_id = id;
 	switch (player_id)
 	{
@@ -234,20 +234,25 @@ bool ScorePanel::show(const HDC& image_hdc)
 	// 控制每行杀敌数自加显示 ++ 显示完一行才显示下一行
 	for (int i = 0; i < 4; i++)
 	{
+		// 当前显示着的行
 		if (cur_line == i)
 		{
 			int temp = kill_num2[i] + 1;
+
 			if (temp <= kill_num[i])
 			{
 				kill_num2[i]++;
 				break;
 			}
+
+			// 检测所有玩家该行分数显示完了吗
 			else
 			{
 				line_done_flag[player_id] = true;
 				bool temp = true;
 				for (int m = 0; m < player_num; m++)
 				{
+					printf("%d -- %d\n", player_id, player_num);
 					if (line_done_flag[m] == false)
 					{
 						temp = false;
@@ -256,6 +261,7 @@ bool ScorePanel::show(const HDC& image_hdc)
 				}
 				if (temp)
 				{
+					printf("%d, %d\n", player_num, i);
 					cur_line++; 
 					for (int m = 0; m < player_num; m++)
 						line_done_flag[m] = false;
@@ -351,10 +357,8 @@ bool ScorePanel::show(const HDC& image_hdc)
 				BLACK_NUMBER_SIZE * (total_kill_numm % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
 		}
 
-		//printf("asdasd  %d\n", end_counter);
 		if (end_counter++ > 30)
 		{
-			//ResetData();
 			return false;			// 返回结束标志
 		}
 	}
@@ -363,9 +367,10 @@ bool ScorePanel::show(const HDC& image_hdc)
 }
 
 /*游戏结束时候, 获取每个玩家的杀敌数!! 只能调用一次!!! */
-void ScorePanel::ResetData(const int * nums)
+void ScorePanel::ResetData(const int * nums, int players)
 {
 	// 数据要重置, 避免下次显示的时候保留原先的数据
+	player_num = players;
 	cur_line = 0;
 	end_counter = 0;
 	line_done_flag[0] = false;

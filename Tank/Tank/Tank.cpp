@@ -47,16 +47,16 @@ void main()
 	HDC canvas_hdc = GetImageHDC(&canvas_img);
 
 	SelectPanel* selecter = new SelectPanel(des_hdc, canvas_hdc);	// 显示玩家功能选择面板
-	GameControl* control = new GameControl(des_hdc, canvas_hdc/*, &Q_boxmark*/);
+	GameControl* control = NULL;// new GameControl(des_hdc, canvas_hdc/*, &Q_boxmark*/);
 	EnumSelectResult result;
 
 	while (_kbhit() != 27)
 	{
 		result = selecter->ShowSelectPanel();		// 获取玩家选择结果
 
-		//if (control != NULL)
-		//	delete control;
-		//control = new GameControl(des_hdc, canvas_hdc);
+		if (control != NULL)
+			delete control;
+		control = new GameControl(des_hdc, canvas_hdc);
 
 		switch (result)
 		{

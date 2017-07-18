@@ -203,8 +203,10 @@ public:
 	~ScorePanel();
 	bool show(const HDC&);
 
-	/*在PlayerBase 内调用, PlayerBase又在GameControl 内调用*/
-	void ResetData(const int * nums);				// 每次显示前需要重置
+	/*在PlayerBase 内调用, PlayerBase又在GameControl 内调用
+	* 传递杀敌数, 玩家数
+	*/
+	void ResetData(const int * nums, int);				// 每次显示前需要重置
 
 	static IMAGE background;
 
