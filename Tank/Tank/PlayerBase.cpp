@@ -369,12 +369,9 @@ BulletShootKind PlayerBase::BulletMoving(const HDC& center_hdc)
 		{
 			int dir = mBulletStruct[i].dir;
 
-
 			// 检测打中障碍物与否
 			BulletShootKind kind = CheckBomb(i);
-			if (kind == BulletShootKind::Camp)
-				return BulletShootKind::Camp;
-			else if (kind == BulletShootKind::Player_1 || kind == BulletShootKind::Player_2)
+			if (kind == BulletShootKind::Camp || kind == BulletShootKind::Player_1 || kind == BulletShootKind::Player_2)
 				return kind;
 			else if (kind == BulletShootKind::Other )
 				continue;
@@ -831,29 +828,28 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 	int b4i = bomby / SMALL_BOX_SIZE;
 	int b4j = bombx / SMALL_BOX_SIZE;
 
+	// 如果击中另外一个玩家子弹
+	if (bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 0 || 
+		bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 1 )
+	{
+		mBulletStruct[i].x = SHOOTABLE_X;
+
+		for (list<PlayerBase*>::iterator itor = mPList->begin(); itor != mPList->end(); itor++)
+		{
+			if ((*itor)->GetID() != player_id)
+			{
+				(*itor)->DisappearBullet(bms->bullet_4[b4i][b4j]);
+				break;
+			}
+		}
+		return BulletShootKind::Other;
+	}
+
 	switch (mBulletStruct[i].dir)
 	{
 	case DIR_LEFT:
 	case DIR_RIGHT:
 	{
-		// 如果击中另外一个玩家子弹
-		if (bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 0 || 
-			bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 1 )
-		{
-			mBulletStruct[i].x = SHOOTABLE_X;
-			printf("玩家子弹击中子弹\n");
-
-			for (list<PlayerBase*>::iterator itor = mPList->begin(); itor != mPList->end(); itor++)
-			{
-				if ((*itor)->GetID() != player_id)
-				{
-					(*itor)->DisappearBullet(bms->bullet_4[b4i][b4j]);
-					break;
-				}
-			}
-			return BulletShootKind::Other;
-		}
-
 		// 自身格子和上一个
 		int temp[2][2] = { {0, 0}, {-1, 0} };
 		for (int n = 0; n < 2; n++)
@@ -917,24 +913,6 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 	case DIR_UP:
 	case DIR_DOWN:
 	{
-		// 如果击中另外一个玩家子弹
-		if (bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 0 ||
-			bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 1)
-		{
-			mBulletStruct[i].x = SHOOTABLE_X;
-			printf("玩家子弹击中子弹\n");
-
-			for (list<PlayerBase*>::iterator itor = mPList->begin(); itor != mPList->end(); itor++)
-			{
-				if ((*itor)->GetID() != player_id)
-				{
-					(*itor)->DisappearBullet(bms->bullet_4[b4i][b4j]);
-					break;
-				}
-			}
-			return BulletShootKind::Other;
-		}
-
 		// 自身格子和左边那一个格子
 		int temp[2][2] = { { 0, 0 },{ 0, -1 } };
 		for (int n = 0; n < 2; n++)

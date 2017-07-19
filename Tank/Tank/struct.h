@@ -41,6 +41,11 @@
 */
 #define P_B_SIGN	400
 
+/*
+子弹击中子弹,将自身所在box_4 标记为 wait_unsign, 等待对方擦除
+*/
+#define WAIT_UNSIGN	444
+
 /*重新定义规则: 规定标记是 10000 + 1000*mEnemyTankLevel + 100*menemyKind + enemy_id */
 #define ENEMY_SIGN	10000		// 4*4 或 8*8 格子标记, 加上敌机自身 id再标记
 #define STAR_SIGN	2000		// 敌机出现四角星标记, 此时敌机不能进来

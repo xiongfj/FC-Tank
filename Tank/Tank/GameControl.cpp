@@ -36,10 +36,17 @@ GameControl::GameControl( HDC des_hdc, HDC image_hdc/*, BoxMarkStruct* bms*/)
 GameControl::~GameControl()
 {
 	for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+	{
 		delete *itor;
+		//bug ?? PlayerList.erase(itor);
+		//PlayerList.remove(*itor);
+	}
 
 	for (list<EnemyBase*>::iterator itor = EnemyList.begin(); itor != EnemyList.end(); itor++)
+	{
 		delete *itor;
+		//EnemyList.erase(itor);
+	}
 
 	delete mBoxMarkStruct;
 
