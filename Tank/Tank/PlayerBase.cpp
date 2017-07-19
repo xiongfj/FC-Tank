@@ -256,8 +256,10 @@ void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 	if (mRing.canshow)
 	{
 		if (mRing.ShowRing(canvas_hdc, mTankX, mTankY) == false)
+		{
 			// 防止玩家爆炸到结束的时候,重生位置被敌机占用,然后玩家标记被擦除
 			SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);
+		}
 	}
 }
 
@@ -439,6 +441,10 @@ bool PlayerBase::IsShootCamp()
 
 void PlayerBase::BeKill()
 {
+	// 如果显示着保护环不会受到攻击
+	if (mRing.canshow)
+		return;
+
 	SignBox_4(mTankX, mTankY, _EMPTY);
 	mDied = true;		// 必须立即 flag , 玩家移动检测该值!!
 
