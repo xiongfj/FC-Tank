@@ -93,6 +93,8 @@ void GameControl::AddPlayer(int player_num)
 
 	for (int i = 0; i < player_num; i++)
 		PlayerList.push_back(new PlayerBase(i, mBoxMarkStruct));
+
+	PlayerBase::mPList = &PlayerList;
 }
 
 /*

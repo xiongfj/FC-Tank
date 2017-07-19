@@ -6,6 +6,7 @@
 int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 依次左上右下
 PropClass* PlayerBase::mProp = NULL;
 bool PlayerBase::mTimeProp = false;
+list<PlayerBase*>* PlayerBase::mPList = NULL;
 
 PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 {
@@ -115,7 +116,7 @@ void PlayerBase::Init()
 		mTankY = 12 * 16 + BOX_SIZE;
 
 		mTankTimer.SetDrtTime(15);		// 坦克移动速度, 不同级别不同玩家 不一样
-		mBulletTimer.SetDrtTime(13);
+		mBulletTimer.SetDrtTime(43);
 	}
 	else
 	{
@@ -129,7 +130,7 @@ void PlayerBase::Init()
 		mTankY = 12 * 16 + BOX_SIZE;
 
 		mTankTimer.SetDrtTime(15);
-		mBulletTimer.SetDrtTime(13);
+		mBulletTimer.SetDrtTime(43);
 	}
 
 	int i = 0;
@@ -137,7 +138,7 @@ void PlayerBase::Init()
 	mTankDir = DIR_UP;		// 坦克方向
 
 	// 子弹结构数据
-	int temp_speed[4] = { 3, 3, 4, 4 };			// 不能超过 4 !! 会跳跃格子判断.根据坦克级别分配子弹速度系数
+	int temp_speed[4] = { 2,3,3,4 };			// 不能超过 4 !! 会跳跃格子判断.根据坦克级别分配子弹速度系数
 	for (i = 0; i < 2; i++)
 	{
 		mBulletStruct[i].x = SHOOTABLE_X;		// x 坐标用于判断是否可以发射
@@ -360,11 +361,15 @@ BulletShootKind PlayerBase::BulletMoving(const HDC& center_hdc)
 	if (mDied || mBulletTimer.IsTimeOut() == false)
 		return BulletShootKind::None;
 
+
 	for (int i = 0; i < 2; i++)
 	{
 		// 子弹在移动
 		if (mBulletStruct[i].x != SHOOTABLE_X)
 		{
+			int dir = mBulletStruct[i].dir;
+
+
 			// 检测打中障碍物与否
 			BulletShootKind kind = CheckBomb(i);
 			if (kind == BulletShootKind::Camp)
@@ -374,13 +379,17 @@ BulletShootKind PlayerBase::BulletMoving(const HDC& center_hdc)
 			else if (kind == BulletShootKind::Other )
 				continue;
 
-			int dir = mBulletStruct[i].dir;
+			// 先检测再取消标记
+			SignBullet(mBulletStruct[i].x, mBulletStruct[i].y, dir, _EMPTY);
+
 			mBulletStruct[i].x += mDevXY[dir][0] * mBulletStruct[i].speed[mPlayerTankLevel];
 			mBulletStruct[i].y += mDevXY[dir][1] * mBulletStruct[i].speed[mPlayerTankLevel];
 
 			// 记录子弹 1 的步数, 决定可否发射子弹 2
 			if ( i == 0 )
 				mBullet_1_counter--;
+
+			SignBullet(mBulletStruct[i].x, mBulletStruct[i].y, dir, P_B_SIGN + player_id * 10 + i);
 		}
 	}
 
@@ -465,7 +474,7 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 }
 
 //
-int PlayerBase::GetID()
+const int& PlayerBase::GetID()
 {
 	return player_id;
 }
@@ -520,6 +529,19 @@ void PlayerBase::ResetScorePanelData(const int& player_num, const int& stage)
 }
 /////////////////////////////////////////////////////////////
 
+
+void PlayerBase::SignBullet(int lx, int ty, byte dir, int val)
+{
+	// 转换弹头坐标
+	int hx = lx + BulletStruct::devto_head[dir][0];
+	int hy = ty + BulletStruct::devto_head[dir][1];
+
+	// 转换成 4*4 格子下标索引
+	int b4i = hy / SMALL_BOX_SIZE;
+	int b4j = hx / SMALL_BOX_SIZE;
+
+	bms->bullet_4[b4i][b4j] = val;
+}
 
 //---------------------------------------------------------------- private function ---------
 void PlayerBase::Reborn()
@@ -727,6 +749,8 @@ bool PlayerBase::ShootBullet( int bullet_id )
 			mBulletStruct[0].y = (int)(mTankY + BulletStruct::devto_tank[mTankDir][1]);
 			mBulletStruct[0].dir = mTankDir;
 			mBullet_1_counter = 6;
+
+			SignBullet(mBulletStruct[0].x, mBulletStruct[0].y, mBulletStruct[0].dir, P_B_SIGN + player_id * 10 + bullet_id );
 			return true;
 
 		case 1:
@@ -738,6 +762,8 @@ bool PlayerBase::ShootBullet( int bullet_id )
 			mBulletStruct[1].x = (int)(mTankX + BulletStruct::devto_tank[mTankDir][0]);
 			mBulletStruct[1].y = (int)(mTankY + BulletStruct::devto_tank[mTankDir][1]);
 			mBulletStruct[1].dir = mTankDir;
+
+			SignBullet(mBulletStruct[1].x, mBulletStruct[1].y, mBulletStruct[1].dir, P_B_SIGN + player_id * 10 + bullet_id);
 			return true;
 
 		default:
@@ -810,6 +836,24 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 	case DIR_LEFT:
 	case DIR_RIGHT:
 	{
+		// 如果击中另外一个玩家子弹
+		if (bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 0 || 
+			bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 1 )
+		{
+			mBulletStruct[i].x = SHOOTABLE_X;
+			printf("玩家子弹击中子弹\n");
+
+			for (list<PlayerBase*>::iterator itor = mPList->begin(); itor != mPList->end(); itor++)
+			{
+				if ((*itor)->GetID() != player_id)
+				{
+					(*itor)->DisappearBullet(bms->bullet_4[b4i][b4j]);
+					break;
+				}
+			}
+			return BulletShootKind::Other;
+		}
+
 		// 自身格子和上一个
 		int temp[2][2] = { {0, 0}, {-1, 0} };
 		for (int n = 0; n < 2; n++)
@@ -873,6 +917,24 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 	case DIR_UP:
 	case DIR_DOWN:
 	{
+		// 如果击中另外一个玩家子弹
+		if (bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 0 ||
+			bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 1)
+		{
+			mBulletStruct[i].x = SHOOTABLE_X;
+			printf("玩家子弹击中子弹\n");
+
+			for (list<PlayerBase*>::iterator itor = mPList->begin(); itor != mPList->end(); itor++)
+			{
+				if ((*itor)->GetID() != player_id)
+				{
+					(*itor)->DisappearBullet(bms->bullet_4[b4i][b4j]);
+					break;
+				}
+			}
+			return BulletShootKind::Other;
+		}
+
 		// 自身格子和左边那一个格子
 		int temp[2][2] = { { 0, 0 },{ 0, -1 } };
 		for (int n = 0; n < 2; n++)
@@ -1081,6 +1143,12 @@ bool PlayerBase::CheckBox_4(int cx, int cy)
 		}
 	}
 	return true;
+}
+
+void PlayerBase::DisappearBullet(int sign)
+{
+	int bid = sign % 10;
+	mBulletStruct[bid].x = SHOOTABLE_X;
 }
 
 

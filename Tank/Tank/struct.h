@@ -27,8 +27,19 @@
 #define PLAYER_SIGN	100
 #define CAMP_SIGN	200			// 大本营标记
 
-#define E_B_SIGN	300			//敌机子弹标记
-#define P_B_SIGN	400			// 玩家子弹标记
+/* 
+* 敌机子弹标记
+* box_4[i][j] = E_B_SIGN + enemy_id
+* 只标记弹头坐标所在的那一个 4*4 格子
+*/
+#define E_B_SIGN	300
+
+/*
+* 玩家子弹标记
+* box_4[i][j] = P_B_SIGN + player_id*10 + bullet_id 
+* 只标记弹头坐标所在的那一个 4*4 格子
+*/
+#define P_B_SIGN	400
 
 /*重新定义规则: 规定标记是 10000 + 1000*mEnemyTankLevel + 100*menemyKind + enemy_id */
 #define ENEMY_SIGN	10000		// 4*4 或 8*8 格子标记, 加上敌机自身 id再标记
@@ -86,6 +97,7 @@ struct BoxMarkStruct
 	int box_8[26][26];			// 8*8 格子的标记, 坦克移动,击中用该格子检测
 	int box_4[52][52];			// 4*4 格子的标记, 墙被击中用该标记检测
 	int prop_8[26][26];			// 道具的格子标记
+	int bullet_4[52][52];		// 子弹层标记
 };
 
 #define TOTAL_ENEMY_NUMBER	20

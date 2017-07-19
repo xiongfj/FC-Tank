@@ -80,7 +80,7 @@ public:
 	*/
 	bool Blasting(const HDC&);
 
-	int GetID();
+	const int& GetID();
 
 	/*GameControl 内调用, 检测玩家是否获得时间道具*/
 	static bool IsGetTimeProp();
@@ -110,6 +110,12 @@ public:
 	void ResetScorePanelData(const int& player_num, const int& stage);
 
 private:
+
+	/*
+	* 标记子弹头所在的一个 4*4 格子
+	* 参数是子弹图片左上角坐标
+	*/
+	void SignBullet(int, int, byte dir, int val);
 
 	/*如果有生命重新出生*/
 	void Reborn();
@@ -165,6 +171,12 @@ private:
 	* 参数必须是 8*8 格子线上的点
 	*/
 	bool CheckBox_4(int cx, int cy);
+
+	/*子弹击中子弹时候调用*/
+	void DisappearBullet(int sign);
+
+public:
+	static list<PlayerBase*>* mPList;		// 在GameControl内 赋值
 
 private:
 	bool mDied;								// 生命是否用完,死亡
