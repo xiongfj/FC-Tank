@@ -357,6 +357,9 @@ GameResult GameControl::StartGame()
 							if ( !(*itor)->IsLifeEnd() )
 								(*itor)->Init();
 						}
+
+						// 静态数据会保留,需要手动重置
+						EnemyBase::SetPause(false);
 						EnemyList.clear();
 						mCurrentStage++;
 						LoadMap();
