@@ -173,7 +173,7 @@ private:
 	bool CheckBox_4(int cx, int cy);
 
 	/*子弹击中子弹时候调用*/
-	void DisappearBullet(int sign);
+	//void DisappearBullet(int sign);
 
 public:
 	static list<PlayerBase*>* mPList;		// 在GameControl内 赋值

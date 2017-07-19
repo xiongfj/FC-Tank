@@ -37,6 +37,13 @@ public:
 private:
 	void SignBox_8(int, int, int value);
 	void SignBox_4(int x, int y, int value);		// 标记或取消 4*4 大小的格子为坦克;
+
+	/*
+	* 标记子弹头所在的一个 4 * 4 格子
+	* 参数是子弹图片左上角坐标
+	*/
+	void SignBullet(int, int, byte dir, int val);
+
 	bool CheckBox_8();	// 检测某个 box_8 是否可以放置坦克, 参数是 16*16 格子的中心点, 与坦克坐标规则相同
 	bool CheckMoveable();			// 
 	void RejustDirPosition();		// 重新定位坦克方向, 调正坦克位置, 保持在格子上

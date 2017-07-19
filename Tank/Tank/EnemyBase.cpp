@@ -191,6 +191,7 @@ bool EnemyBase::ShootBullet()
 	mBulletStruct.y = mTankY + BulletStruct::devto_tank[mTankDir][1];
 	mBulletStruct.dir = mTankDir;
 
+	SignBullet(mBulletStruct.x, mBulletStruct.y, mBulletStruct.dir, E_B_SIGN);
 	return true;
 }
 
@@ -222,13 +223,12 @@ BulletShootKind EnemyBase::BulletMoving()
 	}
 
 	int dir = mBulletStruct.dir;
+	SignBullet(mBulletStruct.x, mBulletStruct.y, dir, _EMPTY );
+
 	mBulletStruct.x += mDevXY[dir][0] * mBulletStruct.speed[mEnemyTankLevel];
 	mBulletStruct.y += mDevXY[dir][1] * mBulletStruct.speed[mEnemyTankLevel];
-	/*
-	TransparentBlt(center_hdc, mBulletStruct.x, mBulletStruct.y, BulletStruct::mBulletSize[dir][0],
-		BulletStruct::mBulletSize[dir][1], GetImageHDC(&BulletStruct::mBulletImage[dir]),
-		0, 0, BulletStruct::mBulletSize[dir][0], BulletStruct::mBulletSize[dir][1], 0x000000);
-		*/
+
+	SignBullet(mBulletStruct.x, mBulletStruct.y, dir, E_B_SIGN );
 	return BulletShootKind::None;
 }
 
@@ -384,6 +384,23 @@ void EnemyBase::SignBox_4(int cx, int cy, int val)
 	}
 }
 
+void EnemyBase::SignBullet(int lx, int ty, byte dir, int val)
+{
+	// 转换弹头坐标
+	int hx = lx + BulletStruct::devto_head[dir][0];
+	int hy = ty + BulletStruct::devto_head[dir][1];
+
+	// 转换成 4*4 格子下标索引
+	int b4i = hy / SMALL_BOX_SIZE;
+	int b4j = hx / SMALL_BOX_SIZE;
+	if (b4i > 51 || b4j > 51 || b4i < 0 || b4j < 0)
+	{
+		printf("adad茶水间%d, %d\n", b4i, b4j);
+	}//printf("%d, %d\n", b4i, b4j);
+
+	bms->bullet_4[b4i][b4j] = val;
+}
+
 // 检测某个16*16位置可以放坦克吗, x,y 16*16的中心点
 bool EnemyBase::CheckBox_8()
 {
@@ -440,10 +457,10 @@ bool EnemyBase::CheckMoveable()
 	int index_4j = tempx / SMALL_BOX_SIZE;
 
 	// -1, 0, 1, 2 都可以移动
-	bool tank1 = bms->box_4[index_4i + dev_4[mTankDir][0][0]][index_4j + dev_4[mTankDir][0][1]] <= _FOREST;
-	bool tank2 = bms->box_4[index_4i + dev_4[mTankDir][1][0]][index_4j + dev_4[mTankDir][1][1]] <= _FOREST;
-	bool tank3 = bms->box_4[index_4i + dev_4[mTankDir][2][0]][index_4j + dev_4[mTankDir][2][1]] <= _FOREST;
-	bool tank4 = bms->box_4[index_4i + dev_4[mTankDir][3][0]][index_4j + dev_4[mTankDir][3][1]] <= _FOREST;
+	bool tank1 = bms->box_4[index_4i + dev_4[mTankDir][0][0]][index_4j + dev_4[mTankDir][0][1]] <= _ICE;
+	bool tank2 = bms->box_4[index_4i + dev_4[mTankDir][1][0]][index_4j + dev_4[mTankDir][1][1]] <= _ICE;
+	bool tank3 = bms->box_4[index_4i + dev_4[mTankDir][2][0]][index_4j + dev_4[mTankDir][2][1]] <= _ICE;
+	bool tank4 = bms->box_4[index_4i + dev_4[mTankDir][3][0]][index_4j + dev_4[mTankDir][3][1]] <= _ICE;
 
 	// 遇到障碍物
 	if (bms->box_8 [index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]] > 2 ||
@@ -504,7 +521,7 @@ void EnemyBase::RejustDirPosition()
 
 //
 BulletShootKind EnemyBase::CheckBomb()
-{/*
+{
 	int dir = mBulletStruct.dir;
 
 	// 子弹头接触到障碍物的那个点, 左右方向点在上, 上下方向点在右
@@ -550,17 +567,34 @@ BulletShootKind EnemyBase::CheckBomb()
 
 	int tempi, tempj;
 
-	// 4*4 格子索引
-	int bi = bomby / SMALL_BOX_SIZE;
-	int bj = bombx / SMALL_BOX_SIZE;
-
 	// 坐标所在 8*8 格子的索引
 	int b8i = bomby / BOX_SIZE;
 	int b8j = bombx / BOX_SIZE;
 
+	// 4*4 格子索引
+	int bi = bomby / SMALL_BOX_SIZE;
+	int bj = bombx / SMALL_BOX_SIZE;
+
+	// 如果击中玩家子弹
+	if (bms->bullet_4[bi][bj] == P_B_SIGN + 0 * 10 + 0 ||
+		bms->bullet_4[bi][bj] == P_B_SIGN + 0 * 10 + 1 ||
+		bms->bullet_4[bi][bj] == P_B_SIGN + 1 * 10 + 0 ||
+		bms->bullet_4[bi][bj] == P_B_SIGN + 1 * 10 + 1 )
+	{
+		mBulletStruct.x = SHOOTABLE_X;
+		bms->bullet_4[bi][bj] = WAIT_UNSIGN;		// 先标记中间值, 等待被击中的子弹检测到该值后,再擦除该标记
+		return BulletShootKind::Other;
+	}
+	else if (bms->bullet_4[bi][bj] == WAIT_UNSIGN)
+	{
+		mBulletStruct.x = SHOOTABLE_X;
+		bms->bullet_4[bi][bj] = _EMPTY;
+		return BulletShootKind::Other;
+	}
+
 	switch (dir)
 	{
-		// 左右检测子弹头所在的4*4格子和它上面相邻的那个
+	// 左右检测子弹头所在的4*4格子和它上面相邻的那个
 	case DIR_LEFT:
 	case DIR_RIGHT:
 	{
@@ -655,7 +689,7 @@ BulletShootKind EnemyBase::CheckBomb()
 	break;
 	default:
 		break;
-	}*/
+	}
 	return BulletShootKind::None;
 }
 

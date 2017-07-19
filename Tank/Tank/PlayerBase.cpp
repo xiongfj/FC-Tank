@@ -17,7 +17,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	mProp = new PropClass(b);
 
 	mPlayerLife = 2;		// 玩家 HP
-	mPlayerTankLevel = 3;
+	mPlayerTankLevel = 2;
 
 	// 不同级别坦克移动速度系数
 	int temp[4] = { 1, 1, 1, 1 };
@@ -116,7 +116,7 @@ void PlayerBase::Init()
 		mTankY = 12 * 16 + BOX_SIZE;
 
 		mTankTimer.SetDrtTime(15);		// 坦克移动速度, 不同级别不同玩家 不一样
-		mBulletTimer.SetDrtTime(13);
+		mBulletTimer.SetDrtTime(33);
 	}
 	else
 	{
@@ -130,7 +130,7 @@ void PlayerBase::Init()
 		mTankY = 12 * 16 + BOX_SIZE;
 
 		mTankTimer.SetDrtTime(15);
-		mBulletTimer.SetDrtTime(13);
+		mBulletTimer.SetDrtTime(33);
 	}
 
 	int i = 0;
@@ -396,16 +396,16 @@ BulletShootKind PlayerBase::BulletMoving(const HDC& center_hdc)
 
 void PlayerBase::Bombing(const HDC& center_hdc)
 {
-	int index[3] = {0,1,2};
+	int index[6] = {0,1,1,2,2,1};
 	for (int i = 0; i < 2; i++)
 	{
 		if (mBombS[i].canBomb)
 		{
 			TransparentBlt(center_hdc, mBombS[i].mBombX - BOX_SIZE, mBombS[i].mBombY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
-				GetImageHDC(&BombStruct::mBombImage[index[mBombS[i].counter % 3]]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+				GetImageHDC(&BombStruct::mBombImage[index[mBombS[i].counter % 6]]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 		// bug?	if (mBombTimer.IsTimeOut())
 			{
-				if (mBombS[i].counter++ >= 3)
+				if (mBombS[i].counter++ >= 6)
 				{
 					mBombS[i].counter = 0;
 					mBombS[i].canBomb = false;
@@ -536,6 +536,9 @@ void PlayerBase::SignBullet(int lx, int ty, byte dir, int val)
 	// 转换成 4*4 格子下标索引
 	int b4i = hy / SMALL_BOX_SIZE;
 	int b4j = hx / SMALL_BOX_SIZE;
+	if (b4i > 51 || b4j > 51 || b4i < 0 || b4j < 0)
+		return;
+	// printf("adad茶水间  %d, %d\n", lx, ty);
 
 	bms->bullet_4[b4i][b4j] = val;
 }
@@ -559,7 +562,7 @@ void PlayerBase::Reborn()
 		mBulletStruct[i].mKillId = 0;			// 记录击中的敌机 id
 	}
 
-	mBullet_1_counter = 9;				// 子弹 1 运动 N 个循环后才可以发射子弹 2 
+	mBullet_1_counter = 6;				// 子弹 1 运动 N 个循环后才可以发射子弹 2 
 	mMoving = false;
 	mRing.SetShowable();			// 显示保护环
 }
@@ -706,10 +709,10 @@ bool PlayerBase::CheckMoveable()
 	int index_4j = tempx / SMALL_BOX_SIZE;
 	
 	// -1, 0, 1, 2 都可以移动
-	bool tank1 = bms->box_4[index_4i + dev_4[mTankDir][0][0]][index_4j + dev_4[mTankDir][0][1]] <= _FOREST;
-	bool tank2 = bms->box_4[index_4i + dev_4[mTankDir][1][0]][index_4j + dev_4[mTankDir][1][1]] <= _FOREST;
-	bool tank3 = bms->box_4[index_4i + dev_4[mTankDir][2][0]][index_4j + dev_4[mTankDir][2][1]] <= _FOREST;
-	bool tank4 = bms->box_4[index_4i + dev_4[mTankDir][3][0]][index_4j + dev_4[mTankDir][3][1]] <= _FOREST;
+	bool tank1 = bms->box_4[index_4i + dev_4[mTankDir][0][0]][index_4j + dev_4[mTankDir][0][1]] <= _ICE;
+	bool tank2 = bms->box_4[index_4i + dev_4[mTankDir][1][0]][index_4j + dev_4[mTankDir][1][1]] <= _ICE;
+	bool tank3 = bms->box_4[index_4i + dev_4[mTankDir][2][0]][index_4j + dev_4[mTankDir][2][1]] <= _ICE;
+	bool tank4 = bms->box_4[index_4i + dev_4[mTankDir][3][0]][index_4j + dev_4[mTankDir][3][1]] <= _ICE;
 
 	// 遇到障碍物调节坐标
 	if (temp1 > 2 || temp2 > 2)
@@ -830,28 +833,11 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 
 	// 如果击中另外一个玩家子弹
 	if (bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 0 || 
-		bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 1 )
+		bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 1 ||
+		bms->bullet_4[b4i][b4j] == E_B_SIGN )
 	{
 		mBulletStruct[i].x = SHOOTABLE_X;
-		//bms->bullet_4[b4i][b4j] = _EMPTY;
-		bms->bullet_4[b4i][b4j] = WAIT_UNSIGN;
-		/*for (int i = 0; i < 52; i++)
-		{
-			for (int j = 0; j < 52; j++)
-			{
-				printf("%d-", bms->bullet_4[i][j] % 100 );
-			}
-			printf("\n");
-		}*/
-
-		/*for (list<PlayerBase*>::iterator itor = mPList->begin(); itor != mPList->end(); itor++)
-		{
-			if ((*itor)->GetID() != player_id)
-			{
-				(*itor)->DisappearBullet(bms->bullet_4[b4i][b4j]);
-				break;
-			}
-		}*/
+		bms->bullet_4[b4i][b4j] = WAIT_UNSIGN;		// 先标记中间值, 等待被击中的子弹擦除该标记
 		return BulletShootKind::Other;
 	}
 	else if (bms->bullet_4[b4i][b4j] == WAIT_UNSIGN)
@@ -1139,11 +1125,11 @@ bool PlayerBase::CheckBox_4(int cx, int cy)
 	return true;
 }
 
-void PlayerBase::DisappearBullet(int sign)
+/*void PlayerBase::DisappearBullet(int sign)
 {
 	int bid = sign % 10;
 	mBulletStruct[bid].x = SHOOTABLE_X;
-}
+}*/
 
 
 
