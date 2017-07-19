@@ -116,7 +116,7 @@ void PlayerBase::Init()
 		mTankY = 12 * 16 + BOX_SIZE;
 
 		mTankTimer.SetDrtTime(15);		// 坦克移动速度, 不同级别不同玩家 不一样
-		mBulletTimer.SetDrtTime(43);
+		mBulletTimer.SetDrtTime(13);
 	}
 	else
 	{
@@ -130,7 +130,7 @@ void PlayerBase::Init()
 		mTankY = 12 * 16 + BOX_SIZE;
 
 		mTankTimer.SetDrtTime(15);
-		mBulletTimer.SetDrtTime(43);
+		mBulletTimer.SetDrtTime(13);
 	}
 
 	int i = 0;
@@ -833,15 +833,31 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 		bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 1 )
 	{
 		mBulletStruct[i].x = SHOOTABLE_X;
+		//bms->bullet_4[b4i][b4j] = _EMPTY;
+		bms->bullet_4[b4i][b4j] = WAIT_UNSIGN;
+		/*for (int i = 0; i < 52; i++)
+		{
+			for (int j = 0; j < 52; j++)
+			{
+				printf("%d-", bms->bullet_4[i][j] % 100 );
+			}
+			printf("\n");
+		}*/
 
-		for (list<PlayerBase*>::iterator itor = mPList->begin(); itor != mPList->end(); itor++)
+		/*for (list<PlayerBase*>::iterator itor = mPList->begin(); itor != mPList->end(); itor++)
 		{
 			if ((*itor)->GetID() != player_id)
 			{
 				(*itor)->DisappearBullet(bms->bullet_4[b4i][b4j]);
 				break;
 			}
-		}
+		}*/
+		return BulletShootKind::Other;
+	}
+	else if (bms->bullet_4[b4i][b4j] == WAIT_UNSIGN)
+	{
+		mBulletStruct[i].x = SHOOTABLE_X;
+		bms->bullet_4[b4i][b4j] = _EMPTY;
 		return BulletShootKind::Other;
 	}
 
