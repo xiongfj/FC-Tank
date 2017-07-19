@@ -6,7 +6,10 @@
 int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 依次左上右下
 PropClass* PlayerBase::mProp = NULL;
 bool PlayerBase::mTimeProp = false;
+bool PlayerBase::mShovelProp = false;
+int PlayerBase::mShovelProp_counter = 0;
 list<PlayerBase*>* PlayerBase::mPList = NULL;
+BoxMarkStruct* PlayerBase::bms = NULL;
 
 PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 {
@@ -107,6 +110,7 @@ void PlayerBase::Init()
 
 	mTimeProp = false;
 	mBombProp = false;
+	mShovelProp = false;
 
 	// 不同玩家数据不同
 	if (player_id == 0)
@@ -499,6 +503,34 @@ bool PlayerBase::IsGetTimeProp()
 	return temp;
 }
 
+bool PlayerBase::IsGetShvelProp()
+{
+	if (mShovelProp)
+	{
+		// 刚获得铲子道具
+		if (mShovelProp_counter++ == 0)
+		{
+			ProtectCamp(_STONE);
+		}
+		else if (mShovelProp_counter > 31000 && mShovelProp_counter < 35400 )		// 显示一段时间后闪烁
+		{
+			int val = _STONE;
+			if (mShovelProp_counter % 12 < 6)
+				val = _STONE;
+			else
+				val = _WALL;
+
+			ProtectCamp(val);
+		}else if (mShovelProp_counter > 35400)
+		{
+			mShovelProp = false;
+			mShovelProp_counter = 0;
+			ProtectCamp(_WALL);
+		}
+	}
+	return false;
+}
+
 /*GameControl 内循环调用*/
 bool PlayerBase::IsGetBombProp()
 {
@@ -607,6 +639,7 @@ void PlayerBase::DispatchProp(int prop_kind)
 		mBombProp = true;
 		break;
 	case SHOVEL_PRO:		// 铲子
+		mShovelProp = true;
 		break;
 	case  CAP_PROP:			// 帽子
 		mRing.SetShowable();
@@ -1147,6 +1180,28 @@ bool PlayerBase::CheckBox_4(int cx, int cy)
 		}
 	}
 	return true;
+}
+
+/*获得铲子道具保护camp 内部使用*/
+void PlayerBase::ProtectCamp(int val)
+{
+	for (int i = 23; i < 26; i++)
+	{
+		for (int j = 11; j < 15; j++)
+		{
+			if (i < 24 || j < 12 || j > 13)
+			{
+				bms->box_8[i][j] = val;			// 鸟巢周围是 _WALL
+				for (int m = 2 * i; m < 2 * i + 2; m++)
+				{
+					for (int n = 2 * j; n < 2 * j + 2; n++)
+					{
+						bms->box_4[m][n] = val;
+					}
+				}
+			}
+		}
+	}
 }
 
 /*void PlayerBase::DisappearBullet(int sign)

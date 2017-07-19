@@ -84,6 +84,9 @@ public:
 
 	/*GameControl 内调用, 检测玩家是否获得时间道具*/
 	static bool IsGetTimeProp();
+
+	// 铲子道具训话
+	static bool IsGetShvelProp();
 	bool IsGetBombProp();
 
 	/*在 gameControl 内循环调用 检测并显示闪烁道具*/
@@ -177,6 +180,8 @@ private:
 	/*子弹击中子弹时候调用*/
 	//void DisappearBullet(int sign);
 
+	static void ProtectCamp(int val);
+
 public:
 	static list<PlayerBase*>* mPList;		// 在GameControl内 赋值
 
@@ -184,7 +189,7 @@ private:
 	bool mDied;								// 生命是否用完,死亡
 	byte player_id : 1;						// [0-1] 玩家
 	PlayerTank* mPlayerTank;				// 坦克类
-	BoxMarkStruct* bms;
+	static BoxMarkStruct* bms;
 
 	IMAGE m12PImage;						// 1P\2P 图标
 	int m12PImage_x, m12PImage_y;			// 图标坐标
@@ -220,7 +225,9 @@ private:
 
 	/*GameControl 内循环检测该值, 然后在设置 EnemyBase 停止移动*/
 	static bool mTimeProp;			// 记录是否获得 时钟道具
-	bool mBombProp;				// 地雷道具, 逻辑与 mTimeProp 相同
+	bool mBombProp;					// 地雷道具, 逻辑与 mTimeProp 相同
+	static bool mShovelProp;				// 玩家是否拥有铲子道具
+	static int mShovelProp_counter;	// 
 		
 	TimeClock mTankTimer;			// 坦克移动计时器
 	TimeClock mBulletTimer;			// 子弹移动速度

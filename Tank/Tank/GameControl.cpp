@@ -557,6 +557,9 @@ bool GameControl::RefreshData()
 		EnemyBase::SetPause(true);
 	}
 
+	// 循环铲子道具逻辑
+	PlayerBase::IsGetShvelProp();
+
 	// 玩家获得地雷道具
 	for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 	{
@@ -567,8 +570,6 @@ bool GameControl::RefreshData()
 				if ((*EnemyItor)->BeKill(true))
 				{
 					mKillEnemyNum++;
-
-					//printf("%d \n", mKillEnemyNum);
 
 					// 玩家记录消灭的敌机数量
 					(*itor)->AddKillEnemyNum((*EnemyItor)->GetLevel());
