@@ -170,6 +170,8 @@ class RingClass
 {
 public:
 	RingClass();
+	void Init();
+
 	bool ShowRing(const HDC&, int centerx, int centery);		//
 	void SetShowable();				// 设置可以显示环状, PlayerBase 内获取道具后调用
 	static IMAGE image[2];

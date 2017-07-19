@@ -53,9 +53,16 @@ void StarClass::Init()
 IMAGE RingClass::image[2];
 RingClass::RingClass()
 {
+	Init();
+}
+
+void RingClass::Init()
+{
 	canshow = true;
 	index_counter = 0;
 }
+
+
 
 bool RingClass::ShowRing(const HDC &canvas_hdc, int mTankX, int mTankY)
 {

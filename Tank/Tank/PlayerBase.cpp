@@ -103,6 +103,8 @@ void PlayerBase::Init()
 	//printf("adasd\n");
 	mProp->Init();
 	mStar.Init();
+	mRing.Init();
+
 	mTimeProp = false;
 	mBombProp = false;
 
