@@ -242,6 +242,9 @@ private:
 	IMAGE pts;
 	static IMAGE bunds;		// bunds 1000pts 字样
 
+	// 检测哪个玩家分数多,就显示在哪边
+	static int who_bunds[2];			// 显示在玩家一还是玩家二处
+
 	static int player_num;		// 玩家数; 初始化一个本类对象 +1
 	static bool line_done_flag[2];	// 每一行数据两个玩家都显示完与否
 

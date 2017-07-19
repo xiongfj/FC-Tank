@@ -164,6 +164,7 @@ int ScorePanel::end_counter = 0;
 int ScorePanel::cur_line = 0;
 bool ScorePanel::line_done_flag[2] = {false, false};
 int ScorePanel::player_num = 0;
+int ScorePanel::who_bunds[2] = {0, 0};
 IMAGE ScorePanel::number;
 IMAGE ScorePanel::bunds;
 IMAGE ScorePanel::background;
@@ -240,6 +241,8 @@ ScorePanel::ScorePanel(int id)
 	end_counter = 0;
 	total_score = 0;
 	stage = 1;
+
+	who_bunds[0] = who_bunds[1] = 0;
 }
 
 ScorePanel::~ScorePanel()
@@ -402,7 +405,12 @@ bool ScorePanel::show(const HDC& image_hdc)
 				BLACK_NUMBER_SIZE * (total_kill_numm % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
 		}
 
-		if (end_counter++ > 30)
+		if (/*player_num == 1 && who_bunds[0] >= 1000 || */player_num == 2 && who_bunds[0] > who_bunds[1] && who_bunds[0] > 1000)
+			TransparentBlt(image_hdc, 26, 190, 63, 15, GetImageHDC(&bunds), 0, 0, 63, 15, 0x000000);
+		else if (player_num == 2 && who_bunds[1] > who_bunds[0] && who_bunds[1] > 1000)
+			TransparentBlt(image_hdc, 170, 190, 63, 15, GetImageHDC(&bunds), 0, 0, 63, 15, 0x000000);
+
+		if (end_counter++ > 230)
 			return false;			// 返回结束标志
 	}
 
@@ -421,6 +429,7 @@ void ScorePanel::ResetData(const int * nums, const int& players, const int& sta)
 	total_kill_numm = 0;
 	total_score = 0;
 	stage = sta;
+	who_bunds[player_id] = 0;// 不能设置到另一个玩家的数据~~!! = who_bunds[1] = 0;
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -436,4 +445,6 @@ void ScorePanel::ResetData(const int * nums, const int& players, const int& sta)
 	}
 
 	total_score = nums[0] * 100 + nums[1] * 200 + nums[2] * 300 + nums[3] * 400;
+
+	who_bunds[player_id] = total_score;
 }
