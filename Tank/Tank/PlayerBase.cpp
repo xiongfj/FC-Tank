@@ -17,7 +17,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	mProp = new PropClass(b);
 
 	mPlayerLife = 2;		// 玩家 HP
-	mPlayerTankLevel = 2;
+	mPlayerTankLevel = 3;
 
 	// 不同级别坦克移动速度系数
 	int temp[4] = { 1, 1, 1, 1 };
@@ -88,18 +88,21 @@ PlayerBase::~PlayerBase()
 	delete mScorePanel;
 
 	// 静态数据放置多次 delete
+	/*不能这样释放, 当 delete 单个对象的时候, 其它对象还会用到这个静态数据!!!
 	if (mProp != NULL)
 	{
 		delete mProp;
 		mProp = NULL;
-	}
+	}*/
 
 	printf("PLayerBase:: ~PlayerBase()\n");
 }
 
 void PlayerBase::Init()
 {
+	//printf("adasd\n");
 	mProp->Init();
+	mStar.Init();
 	mTimeProp = false;
 	mBombProp = false;
 
@@ -116,7 +119,7 @@ void PlayerBase::Init()
 		mTankY = 12 * 16 + BOX_SIZE;
 
 		mTankTimer.SetDrtTime(15);		// 坦克移动速度, 不同级别不同玩家 不一样
-		mBulletTimer.SetDrtTime(33);
+		mBulletTimer.SetDrtTime(13);
 	}
 	else
 	{
@@ -130,7 +133,7 @@ void PlayerBase::Init()
 		mTankY = 12 * 16 + BOX_SIZE;
 
 		mTankTimer.SetDrtTime(15);
-		mBulletTimer.SetDrtTime(33);
+		mBulletTimer.SetDrtTime(13);
 	}
 
 	int i = 0;
@@ -435,7 +438,7 @@ bool PlayerBase::IsShootCamp()
 void PlayerBase::BeKill()
 {
 	SignBox_4(mTankX, mTankY, _EMPTY);
-	mDied = true;
+	mDied = true;		// 必须立即 flag , 玩家移动检测该值!!
 
 	// 设置爆炸坐标
 	mBlast.blastx = mTankX;
@@ -459,8 +462,12 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 				mBlast.canBlast = false;
 
 				// 检测是否可以重生
-				if (mPlayerLife-- == 0)
+				if (mPlayerLife-- <= 0)
+				{
+					//mDied = true;
 					mPlayerLife = 0;
+					return true;
+				}
 				else
 					Reborn();
 				return true;
@@ -524,6 +531,10 @@ void PlayerBase::ResetScorePanelData(const int& player_num, const int& stage)
 {
 	mScorePanel->ResetData(mKillEnemyNumber, player_num, stage);
 }
+bool PlayerBase::IsLifeEnd()
+{
+	return mPlayerLife <= 0;
+}
 /////////////////////////////////////////////////////////////
 
 
@@ -537,8 +548,10 @@ void PlayerBase::SignBullet(int lx, int ty, byte dir, int val)
 	int b4i = hy / SMALL_BOX_SIZE;
 	int b4j = hx / SMALL_BOX_SIZE;
 	if (b4i > 51 || b4j > 51 || b4i < 0 || b4j < 0)
+	{
+		printf("adad茶水间  %d, %d\n", lx, ty);
 		return;
-	// printf("adad茶水间  %d, %d\n", lx, ty);
+	}
 
 	bms->bullet_4[b4i][b4j] = val;
 }
@@ -830,6 +843,9 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 	// 将坐标转换成 4*4 格子索引
 	int b4i = bomby / SMALL_BOX_SIZE;
 	int b4j = bombx / SMALL_BOX_SIZE;
+
+	//if (b4i > 51 || b4j > 51 || b4i < 0 || b4j < 0)
+	//	printf("22222222\n");
 
 	// 如果击中另外一个玩家子弹
 	if (bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 0 || 

@@ -109,6 +109,8 @@ public:
 	/*GameControl 内每一关结束显示分数面板的时候调用*/
 	void ResetScorePanelData(const int& player_num, const int& stage);
 
+	bool IsLifeEnd();
+
 private:
 
 	/*

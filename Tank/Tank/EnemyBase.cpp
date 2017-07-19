@@ -395,8 +395,9 @@ void EnemyBase::SignBullet(int lx, int ty, byte dir, int val)
 	int b4j = hx / SMALL_BOX_SIZE;
 	if (b4i > 51 || b4j > 51 || b4i < 0 || b4j < 0)
 	{
-		printf("adad茶水间%d, %d\n", b4i, b4j);
-	}//printf("%d, %d\n", b4i, b4j);
+		//printf("adad茶水间%d, %d\n", b4i, b4j);
+		return;
+	}
 
 	bms->bullet_4[b4i][b4j] = val;
 }
@@ -574,6 +575,9 @@ BulletShootKind EnemyBase::CheckBomb()
 	// 4*4 格子索引
 	int bi = bomby / SMALL_BOX_SIZE;
 	int bj = bombx / SMALL_BOX_SIZE;
+
+	//if ( bi>51 || bj > 51 || bi < 0 || bj < 0)
+	//printf("%d, %d\n", bi, bj);
 
 	// 如果击中玩家子弹
 	if (bms->bullet_4[bi][bj] == P_B_SIGN + 0 * 10 + 0 ||

@@ -37,6 +37,11 @@ BlastStruct::BlastStruct()
 IMAGE StarClass::mStarImage[4];
 StarClass::StarClass()
 {
+	Init();
+}
+
+void StarClass::Init()
+{
 	mStarIndexDev = -1;						// 控制索引下标的增加还是减少
 	mStarIndex = 3;							// star 图片索引下标
 	mStarCounter = 0;						// 多少次更换 star 图片
@@ -118,7 +123,7 @@ void PropClass::StartShowProp(int _x, int _y)
 	leftx = 12 * BOX_SIZE;// (rand() % 25 + 1) * BOX_SIZE;
 	topy = 12 * BOX_SIZE; //(rand() % 25 + 1) * BOX_SIZE;
 	can_show = true;
-	prop_kind = 3;// rand() % 6;		// 随机出现一个道具
+	prop_kind = TIME_PROP;// rand() % 6;		// 随机出现一个道具
 	index_counter = 0;
 	SignPropBox(PROP_SIGN + prop_kind);
 }

@@ -353,8 +353,10 @@ GameResult GameControl::StartGame()
 					{
 						Init();
 						for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
-							(*itor)->Init();
-
+						{
+							if ( !(*itor)->IsLifeEnd() )
+								(*itor)->Init();
+						}
 						EnemyList.clear();
 						mCurrentStage++;
 						LoadMap();
@@ -485,7 +487,7 @@ void GameControl::InitSignBox()
 // 待修改, 添加的敌机种类需要修改
 void GameControl::AddEnemy()
 {
-	if (EnemyList.size() >= 16 || TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber <= 0)
+	if (EnemyList.size() >= 6 || TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber <= 0)
 		return;
 
 	int level;
@@ -834,8 +836,9 @@ void GameControl::RefreshCenterPanel()
 			(*itor)->Bombing(mCenter_hdc);
 			if ((*itor)->Blasting(mCenter_hdc))
 			{
+				// 不能 delete, 还需要显示玩家分数面板
 				//delete *itor;
-				//bug PlayerList.erase(itor);
+				//PlayerList.erase(itor);
 				break;
 			}
 		}
