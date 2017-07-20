@@ -58,7 +58,7 @@ GameControl::~GameControl()
 
 void GameControl::Init()
 {
-	mOutedEnemyTankNumber = 0;													// 已经出现在地图上的敌机数量,最多显示6架
+	//mOutedEnemyTankNumber = 0;													// 已经出现在地图上的敌机数量,最多显示6架
 	mRemainEnemyTankNumber = 20;	 // 剩余未出现的敌机数量
 	mCurMovingTankNumber = 0;
 	mKillEnemyNum = 0;
@@ -498,23 +498,25 @@ void GameControl::InitSignBox()
 // 待修改, 添加的敌机种类需要修改
 void GameControl::AddEnemy()
 {
-	if (mCurMovingTankNumber >= 6/*EnemyList.size() >= 16*/ || TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber <= 0)
+	int size = EnemyList.size();
+
+	if (mCurMovingTankNumber >= 6/*EnemyList.size() >= 16*/ || TOTAL_ENEMY_NUMBER - size <= 0)
 		return;
 	mCurMovingTankNumber++;
 
 	int level;
 	TANK_KIND kind;
-	if (mOutedEnemyTankNumber < 8)
+	if (size < 8)
 		level = 0;
-	else if (mOutedEnemyTankNumber < 13)
+	else if (size < 13)
 		level = 1;
-	else if (mOutedEnemyTankNumber < 17)
+	else if (size < 17)
 		level = 2;
 	else
 		level = 3;
 
 	// 每个5架除一架道具坦克
-	if (mOutedEnemyTankNumber % 5 == 4)
+	if (size % 5 == 4)
 		kind = TANK_KIND::PROP;
 	else
 		kind = TANK_KIND::COMMON;
@@ -524,7 +526,7 @@ void GameControl::AddEnemy()
 	case 0:
 	case 1:
 	case 2:
-		mOutedEnemyTankNumber++;
+		//mOutedEnemyTankNumber++;
 		switch (kind)
 		{
 			case 0: EnemyList.push_back((new PropTank(level, mBoxMarkStruct))); break;
@@ -535,7 +537,7 @@ void GameControl::AddEnemy()
 
 	case 3:
 		EnemyList.push_back(new BigestTank((TANK_KIND)kind, mBoxMarkStruct));
-		mOutedEnemyTankNumber++;
+		//mOutedEnemyTankNumber++;
 		break;
 	default:
 		break;

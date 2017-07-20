@@ -14,6 +14,9 @@ struct Map
 * 存储格子标记
 * 存储玩家链表
 * 进行游戏循环
+
+** 成员数据:
+- EnemyList: 存储被消灭的 and 正在移动 and 等待出现的敌机
 */
 
 enum GameResult {Victory, Fail};		// 每一关胜利\失败
@@ -75,7 +78,7 @@ private:
 	IMAGE mGameOverImage;			//
 
 	// 初始 mActiveEnemyTankNumber + mRemainEnemyTankNumber = 20
-	int mOutedEnemyTankNumber;		// 累计已经添加到显示列表的敌机数, 包括已经被消灭的,当前移动的,在队列中还没有出现的敌机
+	//int mOutedEnemyTankNumber;		// 累计已经添加到显示列表的敌机数, 包括已经被消灭的,当前移动的,在队列中还没有出现的敌机
 	int mRemainEnemyTankNumber;		// 余下未显示的敌机数量, 初始值=20, 出现一架敌机该值减一
 	int mCurMovingTankNumber;		// 当前出现的敌机数量
 	int mKillEnemyNum;				// 已经消灭的敌机数
