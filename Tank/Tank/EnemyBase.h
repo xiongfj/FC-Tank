@@ -82,6 +82,8 @@ protected:
 	TimeClock mBlastTimer;		// 坦克爆炸速度
 
 	TimeClock mShootBackTimer;	// 坦克回头射击,然后短距离再次变向
+
+	IMAGE mScoreImage[4];			// 100\200.. 分, 敌机爆炸完后显示的
 };
 
 // 前三种普通坦克

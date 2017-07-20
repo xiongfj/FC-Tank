@@ -833,7 +833,7 @@ void GameControl::RefreshCenterPanel()
 			{
 				//delete *EnemyItor;
 				//EnemyList.erase(EnemyItor);
-				break;
+				//break;
 			}
 
 			// 如果该敌机击中大本营

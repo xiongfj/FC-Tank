@@ -63,6 +63,11 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 
 	// 设置回头射击频率
 	mShootBackTimer.SetDrtTime( rand()%5000 + 9000 );
+
+	loadimage(&mScoreImage[0], _T("./res/big/100.gif"));
+	loadimage(&mScoreImage[1], _T("./res/big/200.gif"));
+	loadimage(&mScoreImage[2], _T("./res/big/300.gif"));
+	loadimage(&mScoreImage[3], _T("./res/big/400.gif"));
 }
 
 EnemyBase::~EnemyBase()
@@ -278,11 +283,17 @@ bool EnemyBase::Blasting(const HDC& center_hdc)
 	int index[13] = {0,1,1,2,2,3,3,4,4,3,2,1,0};
 	if (mBlast.canBlast)
 	{
-		TransparentBlt(center_hdc, mBlast.blastx - BOX_SIZE * 2, mBlast.blasty - BOX_SIZE * 2, BOX_SIZE * 4, BOX_SIZE * 4,
-			GetImageHDC(&BlastStruct::image[index[mBlast.counter % 13]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+		if (mBlast.counter < 13)
+			TransparentBlt(center_hdc, mBlast.blastx - BOX_SIZE * 2, mBlast.blasty - BOX_SIZE * 2, BOX_SIZE * 4, BOX_SIZE * 4,
+				GetImageHDC(&BlastStruct::image[index[mBlast.counter % 13]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+		else
+		{
+			TransparentBlt(center_hdc, mBlast.blastx - 7, mBlast.blasty - 3, 14, 7,
+				GetImageHDC(&mScoreImage[mEnemyTankLevel]), 0, 0, 14, 7, 0x000000);
+		}
 		if (mBlastTimer.IsTimeOut())
 		{
-			if (mBlast.counter++ >= 13)
+			if (mBlast.counter++ >= 18)
 			{
 				mBlast.counter = 0;
 				mBlast.canBlast = false;
