@@ -171,11 +171,9 @@ private:
 	void SignBox_4(int, int, int);
 
 	/*
-	* 坦克重生时调用检测重生位置是否被敌机占用
-	* 检测某个中心位置可以放置坦克与否
-	* 参数必须是 8*8 格子线上的点
+	* 参数是 [26][26] 的下标索引
 	*/
-	bool CheckBox_4(int cx, int cy);
+	static bool CheckBox_8(int iy, int jx);
 
 	/*子弹击中子弹时候调用*/
 	//void DisappearBullet(int sign);

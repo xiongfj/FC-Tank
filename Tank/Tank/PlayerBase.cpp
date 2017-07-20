@@ -636,7 +636,16 @@ void PlayerBase::SetPause()
 //
 void PlayerBase::SetShowProp()
 {
-	mProp->StartShowProp(100, 100);
+	int n = 0;
+	int m = 0;
+	for ( int i = 0; i < 50; i++)
+	{
+		n = rand() % 25;
+		m = rand() % 25;
+		if (CheckBox_8(n, m))
+			break;
+	}
+	mProp->StartShowProp(n, m);
 }
 void PlayerBase::AddKillEnemyNum(byte enemy_level)
 {
@@ -1246,21 +1255,18 @@ void PlayerBase::SignBox_4(int cx, int cy, int val)
 	}
 }
 
-// 检测 16*16 格子内的 4*4 格子是否有东西
-bool PlayerBase::CheckBox_4(int cx, int cy)
+// 检测4个8*8 格子, 参数是左上角格子索引
+bool PlayerBase::CheckBox_8(int iy, int jx)
 {
-	// 右坦克中心索引转到左上角那个的 格子索引
-	int iy = cy / SMALL_BOX_SIZE - 2;
-	int jx = cx / SMALL_BOX_SIZE - 2;
-	for (int i = iy; i < iy + 4; i++)
+	for (int i = iy; i < iy + 2; i++)
 	{
-		for (int j = jx; j < jx + 4; j++)
+		for (int j = jx; j < jx + 2; j++)
 		{
-			if (bms->box_4[i][j] > _FOREST)
-				return false;
+			if (bms->box_8[i][j] < _RIVER)		// 如果有一个 8*8 坦克可以进来
+				return true;
 		}
 	}
-	return true;
+	return false;
 }
 
 /*获得铲子道具保护camp 内部使用*/

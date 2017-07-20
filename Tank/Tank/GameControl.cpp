@@ -516,7 +516,7 @@ void GameControl::AddEnemy()
 		level = 3;
 
 	// 每个5架除一架道具坦克
-	if (size % 5 == 4)
+	if (size % 5 <= 4)
 		kind = TANK_KIND::PROP;
 	else
 		kind = TANK_KIND::COMMON;

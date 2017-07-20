@@ -109,6 +109,8 @@ void PropClass::Init()
 	topy = -100;
 	index_counter = 0;
 	can_show = false;
+	show_score = false;
+	score_counter = 0;
 }
 
 // GameControl 内循环检测该函数
@@ -140,10 +142,13 @@ void PropClass::ShowProp(const HDC &canvas_hdc)
 }
 
 // 道具敌机被消灭调用该函数
-void PropClass::StartShowProp(int _x, int _y)
+void PropClass::StartShowProp(int _i, int _j)
 {
-	leftx = 12 * BOX_SIZE;// (rand() % 25 + 1) * BOX_SIZE;
-	topy = 12 * BOX_SIZE; //(rand() % 25 + 1) * BOX_SIZE;
+	// 清除上一次的标记, 防止第一个道具还没消失,出现第二个道具的时候, 残留第一个道具的 SIGN
+	SignPropBox(_EMPTY);
+
+	leftx = _j * BOX_SIZE;// (rand() % 25 + 1) * BOX_SIZE;
+	topy = _i * BOX_SIZE; //(rand() % 25 + 1) * BOX_SIZE;
 	can_show = true;
 	prop_kind = SHOVEL_PRO;// rand() % 6;		// 随机出现一个道具
 	index_counter = 0;
@@ -169,6 +174,7 @@ void PropClass::SignPropBox(int val)
 {
 	int i = topy / BOX_SIZE;
 	int j = leftx / BOX_SIZE;
+
 
 	for (int ix = i; ix < i + 2; ix++)
 	{
