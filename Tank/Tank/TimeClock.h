@@ -13,15 +13,19 @@ public:
 	TimeClock();
 	~TimeClock() {}
 
-	/*设置运动时间差*/
+	/*设置时间差, 调节速度*/
 	void SetDrtTime(double);
 
+	/*更新 QPart1*/
 	void Timer1();
+
 	void Init();		// 重置 t1 = t2
 
 	/*比较两个计时时间差, 返回 true false 并重置时间差*/
 	bool IsTimeOut();		// 时间差到
 
+
+private:
 	LARGE_INTEGER litmp;		// 定义该结构体的一个对象
 	LONGLONG QPart1, QPart2;	// 用于获取结构体里面的 QuadPart 成员
 	double dfFreq;				// 时钟频率

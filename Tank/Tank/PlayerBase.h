@@ -241,5 +241,13 @@ private:
 	bool mPause;			// 被另外一个玩家击中, 暂停一段时间
 	int mPauseCounter;		// Move() 内计数停止移动, DrawTank() 内取模计数,实现坦克闪烁
 
-	bool mHasSendKillNumToScorePanel;		// 放置 胜利后集中大本营或其它.多次发送数据到分数面板
+	bool mHasSendKillNumToScorePanel;		// 防止 胜利后集中大本营或其它.多次发送数据到分数面板
+
+	/*
+	* CheckMoveable() 内检测
+	* 坦克是否在 _ICE 上
+	* 进入 _ICE 的时候则设置为 true, 根据该 flag 设置 mTankTimer 时间差, 加快坦克移动
+	* 出来则设置 false, 调回原来时间差
+	*/
+	bool mOnIce;
 };

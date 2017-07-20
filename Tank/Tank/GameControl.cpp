@@ -2,7 +2,7 @@
 #include "GameControl.h"
 #include "typeinfo.h"
 
-int GameControl::mCurrentStage = 1;	// [1-35]
+int GameControl::mCurrentStage = 28;	// [1-35]
 GameControl::GameControl( HDC des_hdc, HDC image_hdc/*, BoxMarkStruct* bms*/)
 {
 	mDes_hdc = des_hdc;
@@ -112,7 +112,7 @@ void GameControl::LoadMap()
 {
 	// 读取地图文件数据
 	FILE* fp = NULL;
-	if (0 != fopen_s(&fp, "./res/data/map.txt", "rb"))
+	if (0 != fopen_s(&fp, "./res/data/map.dat", "rb"))
 		throw _T("读取地图数据文件异常.");
 	fseek(fp, sizeof(Map) * (mCurrentStage - 1), SEEK_SET);
 	fread(&mMap, sizeof(Map), 1, fp);
@@ -490,7 +490,7 @@ void GameControl::InitSignBox()
 // 待修改, 添加的敌机种类需要修改
 void GameControl::AddEnemy()
 {
-	if (EnemyList.size() >= 6 || TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber <= 0)
+	if (EnemyList.size() >= 16 || TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber <= 0)
 		return;
 
 	int level;

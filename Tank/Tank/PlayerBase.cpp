@@ -23,7 +23,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	mPlayerTankLevel = 3;
 
 	// 不同级别坦克移动速度系数
-	int temp[4] = { 1, 1, 1, 1 };
+	int temp[4] = { 1, 2, 2, 2 };
 	for (i = 0; i < 4; i++)
 		mSpeed[i] = temp[i];
 
@@ -184,6 +184,9 @@ void PlayerBase::Init()
 
 	mPause = false;
 	mPauseCounter = 0;
+
+	// 坦克是否在冰上移动
+	mOnIce = false;
 }
 
 // 绘制玩家的一些数据: 1P\2P 坦克图标 生命
@@ -785,6 +788,18 @@ bool PlayerBase::CheckMoveable()
 	// 遇到玩家不用调节
 	else if (!tank1 || !tank2 || !tank3 || !tank4)
 		return false;
+
+	// 如果是第一次进入 _ICE 上面
+	if ( !mOnIce && (temp1 == _ICE || temp2 == _ICE))
+	{
+		mOnIce = true;
+		mTankTimer.SetDrtTime(5);
+	}
+	if (mOnIce && (temp1 != _ICE || temp2 != _ICE))
+	{
+		mOnIce = false;
+		mTankTimer.SetDrtTime(25);
+	}
 	return true;
 }
 

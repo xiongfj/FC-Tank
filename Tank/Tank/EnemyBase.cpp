@@ -523,7 +523,7 @@ void EnemyBase::RejustDirPosition()
 //
 BulletShootKind EnemyBase::CheckBomb()
 {
-	int dir = mBulletStruct.dir;
+	/*int dir = mBulletStruct.dir;
 
 	// 子弹头接触到障碍物的那个点, 左右方向点在上, 上下方向点在右
 	int bombx = mBulletStruct.x + BulletStruct::devto_head[dir][0];
@@ -693,7 +693,7 @@ BulletShootKind EnemyBase::CheckBomb()
 	break;
 	default:
 		break;
-	}
+	}*/
 	return BulletShootKind::None;
 }
 
@@ -936,7 +936,7 @@ void BigestTank::DrawTank(const HDC & center_hdc)
 		return;
 	}
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
-		GetImageHDC(&temp[index_counter++ % 2]->GetTankImage(mTankDir, mTankImageIndex++ / 3 % 2)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+		GetImageHDC(&temp[index_counter++ / 7 % 2]->GetTankImage(mTankDir, mTankImageIndex++ / 3 % 2)), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 }
 
 bool BigestTank::BeKill(bool killanyway)
