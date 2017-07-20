@@ -239,7 +239,7 @@ bool GameControl::CreateMap(bool* isCreate)
 						if (i >= 24 && j >= 12 && j <= 13)
 						{
 							mBoxMarkStruct->box_8[i][j] = CAMP_SIGN;
-							SignBox_4(i, j, CAMP_SIGN);
+							//SignBox_4(i, j, CAMP_SIGN);
 						}
 					}
 				}

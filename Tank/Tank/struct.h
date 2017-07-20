@@ -14,6 +14,8 @@
 #define GAMEOVER_WIDTH	31
 #define GAMEOVER_HEIGHT	15
 
+// box_8, box_4 同时标记
+
 // 标记, 用于 markxx[26][26]
 #define _CLEAR		-1		// 标记障碍物被消除的格子, 用于扫描时与 0 区分开, 然后绘制黑色图片, 避免对 0 也进行多余操作
 #define _EMPTY		0		// 空地
@@ -36,7 +38,7 @@
 
 /*
 * 玩家子弹标记
-* box_4[i][j] = P_B_SIGN + player_id*10 + bullet_id 
+* bullet_4[i][j] = P_B_SIGN + player_id*10 + bullet_id 
 * 只标记弹头坐标所在的那一个 4*4 格子
 */
 #define P_B_SIGN	400
