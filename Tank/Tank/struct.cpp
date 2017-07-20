@@ -410,7 +410,7 @@ bool ScorePanel::show(const HDC& image_hdc)
 		else if (player_num == 2 && who_bunds[1] > who_bunds[0] && who_bunds[1] > 1000)
 			TransparentBlt(image_hdc, 170, 190, 63, 15, GetImageHDC(&bunds), 0, 0, 63, 15, 0x000000);
 
-		if (end_counter++ > 230)
+		if (end_counter++ > 60)
 			return false;			// 返回结束标志
 	}
 

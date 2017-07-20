@@ -250,4 +250,7 @@ private:
 	* 出来则设置 false, 调回原来时间差
 	*/
 	bool mOnIce;
+	bool mAutoMove;
+	int mAutoMove_Counter;
+	int mRandCounter;			// 每次自动移动次数随机
 };

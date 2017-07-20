@@ -23,7 +23,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	mPlayerTankLevel = 3;
 
 	// 不同级别坦克移动速度系数
-	int temp[4] = { 1, 2, 2, 2 };
+	int temp[4] = { 1, 2, 2, 1 };
 	for (i = 0; i < 4; i++)
 		mSpeed[i] = temp[i];
 
@@ -187,6 +187,9 @@ void PlayerBase::Init()
 
 	// 坦克是否在冰上移动
 	mOnIce = false;
+	mAutoMove = false;
+	mAutoMove_Counter = 0;
+	mRandCounter = rand() % 6 + 3;
 }
 
 // 绘制玩家的一些数据: 1P\2P 坦克图标 生命
@@ -295,26 +298,67 @@ bool PlayerBase::PlayerControl()
 	if (mDied || !mStar.mIsOuted)
 		return true;
 
+	// 
+	if (mAutoMove)
+	{
+		if (mAutoMove_Counter++ < mRandCounter)
+			Move(mTankDir);
+		else
+		{
+			mAutoMove = false;
+			mAutoMove_Counter = 0;
+		}
+	}
+
 	switch (player_id)
 	{
 	case 0:										// 玩家一
 		if (GetAsyncKeyState('A') & 0x8000)
 		{
+			// 同方向移动才开启自动移动
+			if (mOnIce && mTankDir == DIR_LEFT )
+			{
+				mAutoMove = true;
+				mAutoMove_Counter = 0;
+				mRandCounter = rand() % 8 + 7;
+			}
 			mMoving = true;
 			Move(DIR_LEFT);
 		}
 		else if (GetAsyncKeyState('W') & 0x8000)
 		{
+			// 同方向移动才开启自动移动
+			if (mOnIce && mTankDir == DIR_UP)
+			{
+				mAutoMove = true;
+				mAutoMove_Counter = 0;
+				mRandCounter = rand() % 8 + 7;
+			}
+
 			mMoving = true;
 			Move(DIR_UP);
 		}
 		else if (GetAsyncKeyState('D') & 0x8000)
 		{
+			// 同方向移动才开启自动移动
+			if (mOnIce && mTankDir == DIR_RIGHT)
+			{
+				mAutoMove = true;
+				mAutoMove_Counter = 0;
+				mRandCounter = rand() % 8 + 7;
+			}
 			mMoving = true;
 			Move(DIR_RIGHT);
 		}
 		else if (GetAsyncKeyState('S') & 0x8000)
 		{
+			// 同方向移动才开启自动移动
+			if (mOnIce && mTankDir == DIR_DOWN)
+			{
+				mAutoMove = true;
+				mAutoMove_Counter = 0;
+				mRandCounter = rand() % 8 + 7;
+			}
 			mMoving = true;
 			Move(DIR_DOWN);
 		}
@@ -334,21 +378,49 @@ bool PlayerBase::PlayerControl()
 	case 1:										// 玩家二
 		if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 		{
+			// 同方向移动才开启自动移动
+			if (mOnIce && mTankDir == DIR_LEFT)
+			{
+				mAutoMove = true;
+				mAutoMove_Counter = 0;
+				mRandCounter = rand() % 8 + 7;
+			}
 			mMoving = true;
 			Move(DIR_LEFT);
 		}
 		else if (GetAsyncKeyState(VK_UP) & 0x8000)
 		{
+			// 同方向移动才开启自动移动
+			if (mOnIce && mTankDir == DIR_UP)
+			{
+				mAutoMove = true;
+				mAutoMove_Counter = 0;
+				mRandCounter = rand() % 8 + 7;
+			}
 			mMoving = true;
 			Move(DIR_UP);
 		}
 		else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 		{
+			// 同方向移动才开启自动移动
+			if (mOnIce && mTankDir == DIR_RIGHT)
+			{
+				mAutoMove = true;
+				mAutoMove_Counter = 0;
+				mRandCounter = rand() % 8 + 7;
+			}
 			mMoving = true;
 			Move(DIR_RIGHT);
 		}
 		else if (GetAsyncKeyState(VK_DOWN) & 0x8000)
 		{
+			// 同方向移动才开启自动移动
+			if (mOnIce && mTankDir == DIR_DOWN)
+			{
+				mAutoMove = true;
+				mAutoMove_Counter = 0;
+				mRandCounter = rand() % 8 + 7;
+			}
 			mMoving = true;
 			Move(DIR_DOWN);
 		}else
@@ -789,16 +861,22 @@ bool PlayerBase::CheckMoveable()
 	else if (!tank1 || !tank2 || !tank3 || !tank4)
 		return false;
 
-	// 如果是第一次进入 _ICE 上面
+	/*if (temp1 == _ICE || temp2 == _ICE)
+	{
+		mAutoMove = true;
+		mAutoMove_Counter = 0;
+	}*/
+
+	//. 如果是第一次进入 _ICE 上面
 	if ( !mOnIce && (temp1 == _ICE || temp2 == _ICE))
 	{
 		mOnIce = true;
-		mTankTimer.SetDrtTime(5);
+		//mTankTimer.SetDrtTime(5);
 	}
-	if (mOnIce && (temp1 != _ICE || temp2 != _ICE))
+	if (mOnIce && temp1 != _ICE && temp2 != _ICE)
 	{
 		mOnIce = false;
-		mTankTimer.SetDrtTime(25);
+		//mTankTimer.SetDrtTime(25);
 	}
 	return true;
 }
