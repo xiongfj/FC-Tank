@@ -2,7 +2,7 @@
 #include "GameControl.h"
 #include "typeinfo.h"
 
-int GameControl::mCurrentStage = 1;	// [1-35]
+int GameControl::mCurrentStage = 3;	// [1-35]
 GameControl::GameControl( HDC des_hdc, HDC image_hdc/*, BoxMarkStruct* bms*/)
 {
 	mDes_hdc = des_hdc;
@@ -818,7 +818,8 @@ void GameControl::RefreshCenterPanel()
 				x = j * BOX_SIZE;// +CENTER_X;
 				y = i * BOX_SIZE;// +CENTER_Y;
 				if (mBoxMarkStruct->box_8[i][j] == _FOREST)
-					BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, SRCCOPY);
+					//BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(), 0, 0, SRCCOPY);
+					TransparentBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, BOX_SIZE, BOX_SIZE, 0x000000);
 			}
 		}
 
