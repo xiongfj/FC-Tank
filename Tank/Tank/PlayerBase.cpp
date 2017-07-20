@@ -673,7 +673,7 @@ void PlayerBase::SignBullet(int lx, int ty, byte dir, int val)
 	int b4j = hx / SMALL_BOX_SIZE;
 	if (b4i > 51 || b4j > 51 || b4i < 0 || b4j < 0)
 	{
-		printf("adad茶水间  %d, %d\n", lx, ty);
+		//printf("adad茶水间  %d, %d\n", lx, ty);
 		return;
 	}
 

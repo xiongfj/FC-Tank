@@ -94,6 +94,10 @@ Enemy_Show_State EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 	// 如果坦克出现的位置被暂用了, 等待下一个随机循环在出现
 	if (CheckBox_8() == false)
 	{
+		// 重新选个随机位置
+		int tempx[3] = { BOX_SIZE, 13 * BOX_SIZE, 25 * BOX_SIZE };
+		mTankX = tempx[rand() % 3];
+
 		mStar.mTankOutAfterCounter = rand() % 100 + 10;
 		return Enemy_Show_State::Showing_Star;
 	}

@@ -14,9 +14,7 @@
 #define GAMEOVER_WIDTH	31
 #define GAMEOVER_HEIGHT	15
 
-// box_8, box_4 同时标记
-
-// 标记, 用于 markxx[26][26]
+// <<box_8>>, <<box_4>> 同时标记
 #define _CLEAR		-1		// 标记障碍物被消除的格子, 用于扫描时与 0 区分开, 然后绘制黑色图片, 避免对 0 也进行多余操作
 #define _EMPTY		0		// 空地
 #define _FOREST		1		// 森林
@@ -26,17 +24,29 @@
 #define _RIVER		4		// 河流
 #define _STONE		5		// 石头
 
-#define PLAYER_SIGN	100
+//* <<box_8 标记>> */
 #define CAMP_SIGN	200			// 大本营标记
+#define STAR_SIGN	2000		// 敌机出现四角星标记, 此时敌机不能进来
+
+/* <<box_4 标记>> */
+#define PLAYER_SIGN	100
+
+/*  <<box_4 标记>> 
+* 重新定义规则:
+	规定标记是 10000 + 1000*mEnemyTankLevel + 100*menemyKind + enemy_id 
+*/
+#define ENEMY_SIGN	10000		// 4*4 或 8*8 格子标记, 加上敌机自身 id再标记
 
 /* 
+* <<bullet_4 标记>>
 * 敌机子弹标记
 * box_4[i][j] = E_B_SIGN + enemy_id
 * 只标记弹头坐标所在的那一个 4*4 格子
 */
 #define E_B_SIGN	300
 
-/*
+/* 
+* <<bullet_4>> 标记
 * 玩家子弹标记
 * bullet_4[i][j] = P_B_SIGN + player_id*10 + bullet_id 
 * 只标记弹头坐标所在的那一个 4*4 格子
@@ -44,16 +54,14 @@
 #define P_B_SIGN	400
 
 /*
+* <<bullet_4>> 标记
 子弹击中子弹,将自身所在box_4 标记为 wait_unsign, 等待对方擦除
 */
 #define WAIT_UNSIGN	444
 
-/*重新定义规则: 规定标记是 10000 + 1000*mEnemyTankLevel + 100*menemyKind + enemy_id */
-#define ENEMY_SIGN	10000		// 4*4 或 8*8 格子标记, 加上敌机自身 id再标记
-#define STAR_SIGN	2000		// 敌机出现四角星标记, 此时敌机不能进来
-
 // prop_8 标记
 #define PROP_SIGN	3000		// 道具在 prop_8 的标记
+
 
 #define BOX_SIZE					8		// 26*26 的格子
 #define SMALL_BOX_SIZE				4		// 52*52 格子大小
