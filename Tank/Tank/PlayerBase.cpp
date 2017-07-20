@@ -10,6 +10,7 @@ bool PlayerBase::mShovelProp = false;
 int PlayerBase::mShovelProp_counter = 0;
 list<PlayerBase*>* PlayerBase::mPList = NULL;
 BoxMarkStruct* PlayerBase::bms = NULL;
+IMAGE PlayerBase::mGameOverImage;
 
 PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 {
@@ -83,6 +84,9 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 
 	// 显示分数面板
 	mScorePanel = new ScorePanel(player_id);
+
+	mGameOverTimer.SetDrtTime(20);
+	loadimage(&mGameOverImage, _T("./res/big/gameover.gif") );
 }
 
 PlayerBase::~PlayerBase()
@@ -126,6 +130,11 @@ void PlayerBase::Init()
 
 		mTankTimer.SetDrtTime(15);		// 坦克移动速度, 不同级别不同玩家 不一样
 		mBulletTimer.SetDrtTime(13);
+
+		// 玩家die 后显示右移的 GAMEOVER 字样
+		mGameOverX = 0;
+		mGameOver_Dev = 3;
+		mGameOver_end_x = 53;
 	}
 	else
 	{
@@ -140,6 +149,11 @@ void PlayerBase::Init()
 
 		mTankTimer.SetDrtTime(15);
 		mBulletTimer.SetDrtTime(13);
+
+		// 玩家die 后显示左移的 GAMEOVER 字样
+		mGameOverX = 220;
+		mGameOver_Dev = -3; 
+		mGameOver_end_x = 122;
 	}
 
 	int i = 0;
@@ -190,6 +204,11 @@ void PlayerBase::Init()
 	mAutoMove = false;
 	mAutoMove_Counter = 0;
 	mRandCounter = rand() % 6 + 3;
+
+	// 玩家被消灭后显示图片 GAMEOVER
+	mGameOverY = 191;
+	mGameOverCounter = 0;
+	mShowGameOver = false;
 }
 
 // 绘制玩家的一些数据: 1P\2P 坦克图标 生命
@@ -552,6 +571,7 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 				if (mPlayerLife-- <= 0)
 				{
 					//mDied = true;
+					mShowGameOver = true;
 					mPlayerLife = 0;
 					return true;
 				}
@@ -658,6 +678,27 @@ void PlayerBase::ResetScorePanelData(const int& player_num, const int& stage)
 bool PlayerBase::IsLifeEnd()
 {
 	return mPlayerLife <= 0;
+}
+void PlayerBase::PlayerGameOver(const HDC & center_hdc)
+{
+	if (mGameOverCounter > 70)
+		mShowGameOver = false;
+
+	if (!mShowGameOver)
+		return;
+
+	TransparentBlt(center_hdc, mGameOverX, mGameOverY, 31, 15, GetImageHDC(&mGameOverImage), 0 ,0, 31, 15, 0x000000 );
+
+	if (mGameOverTimer.IsTimeOut() == false)
+		return;
+
+	if (abs(mGameOverX - mGameOver_end_x) < 5)
+	{
+		mGameOverCounter++;
+		mGameOverX = mGameOver_end_x;
+	}
+	else
+		mGameOverX += mGameOver_Dev;
 }
 /////////////////////////////////////////////////////////////
 

@@ -66,7 +66,7 @@ void RingClass::Init()
 
 bool RingClass::ShowRing(const HDC &canvas_hdc, int mTankX, int mTankY)
 {
-	if (index_counter > 790)
+	if (index_counter > 90)
 	{
 		canshow = false;
 		index_counter = 0;

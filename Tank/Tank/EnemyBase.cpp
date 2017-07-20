@@ -623,14 +623,14 @@ BulletShootKind EnemyBase::CheckBomb()
 			// 8*8 格子, 判断是否击鸟巢
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
-			/*if (bms->box_8[tempi][tempj] == CAMP_SIGN)
+			if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
 				mBombS.counter = 0;
 				mBulletStruct.x = SHOOTABLE_X;
 				//.mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
 				return BulletShootKind::Camp;
-			}*/
+			}
 
 			// 4*4 检测
 			tempi = bi + temp[n][0];
@@ -647,7 +647,7 @@ BulletShootKind EnemyBase::CheckBomb()
 				return BulletShootKind::Other;
 			}
 			// 4*4 玩家格子
-			/*else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
+			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
 			{
 				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
@@ -655,7 +655,7 @@ BulletShootKind EnemyBase::CheckBomb()
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
 				return (BulletShootKind)bms->box_4[tempi][tempj];
-			}*/
+			}
 		}
 	}
 	break;
@@ -670,14 +670,14 @@ BulletShootKind EnemyBase::CheckBomb()
 			// 8*8 格子, 判断是否击中鸟巢
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
-			/*if (bms->box_8[tempi][tempj] == CAMP_SIGN)
+			if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
 				mBombS.counter = 0;
 				mBulletStruct.x = SHOOTABLE_X;
 				//.mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
 				return BulletShootKind::Camp;
-			}*/
+			}
 
 			// 4*4 检测
 			tempi = bi + temp[n][0];
@@ -694,7 +694,7 @@ BulletShootKind EnemyBase::CheckBomb()
 				return BulletShootKind::Other;
 			}
 			// 4*4 玩家小格子
-			/*else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
+			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
 			{
 				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
@@ -702,7 +702,7 @@ BulletShootKind EnemyBase::CheckBomb()
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
 				return (BulletShootKind)bms->box_4[tempi][tempj];
-			}*/
+			}
 		}
 	}
 	break;

@@ -89,7 +89,7 @@ private:
 	bool mEnemyPause;			// 是否可以移动敌机
 	int mEnemyPauseCounter;		// 敌机暂停计数
 
-	TimeClock mTimer;			// 控制绘图频率
+	TimeClock mMainTimer;			// 控制绘图频率
 	TimeClock mCampTimer;		// Camp 爆炸速度
 	//TimeClock mScorePanelTimer1; // GameOver 显示完后多久显示分数面板
 

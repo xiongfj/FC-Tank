@@ -67,7 +67,7 @@ void GameControl::Init()
 	mEnemyPause = false;			// 敌机暂停与否
 	mEnemyPauseCounter = 0;			// 敌机暂停多久
 
-	mTimer.SetDrtTime(14);
+	mMainTimer.SetDrtTime(14);
 	mCampTimer.SetDrtTime(23);
 
 	// GameOver 图片
@@ -343,7 +343,7 @@ void GameControl::GameLoop()
 GameResult GameControl::StartGame()
 {
 	// 主绘图操作时间
-	if (mTimer.IsTimeOut())
+	if (mMainTimer.IsTimeOut())
 	{
 		// 胜利或者失败 显示分数面板
 		if (mShowScorePanel)
@@ -801,6 +801,7 @@ void GameControl::RefreshCenterPanel()
 					mCampDie = true;
 				}
 			}
+			(*itor)->PlayerGameOver(mCenter_hdc);
 		}
 
 		// 敌机

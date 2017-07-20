@@ -112,7 +112,11 @@ public:
 	/*GameControl 内每一关结束显示分数面板的时候调用*/
 	void ResetScorePanelData(const int& player_num, const int& stage);
 
+	/*胜利进入下一关时检测, 死亡的玩家不重新初始化, 下一关不会出现*/
 	bool IsLifeEnd();
+
+	/*GameCOntrol 内循环调用, 判断玩家生命值, 显示GAMEOVER 字样*/
+	void PlayerGameOver(const HDC& );
 
 private:
 
@@ -178,6 +182,7 @@ private:
 	/*子弹击中子弹时候调用*/
 	//void DisappearBullet(int sign);
 
+	/**/
 	static void ProtectCamp(int val);
 
 public:
@@ -251,4 +256,12 @@ private:
 	bool mAutoMove;
 	int mAutoMove_Counter;
 	int mRandCounter;			// 每次自动移动次数随机
+
+	TimeClock mGameOverTimer;		//
+	int mGameOver_Dev;			// X 轴移动, 玩家一是正数分量, 玩家二是负数分量
+	int mGameOverX, mGameOverY;	
+	int mGameOver_end_x;			// 图片停止的 x 坐标
+	static IMAGE mGameOverImage;		// 玩家生命值用完, 显示一个水平移动的 GAMEOVER 字样
+	int mGameOverCounter;			// 图片停止后多久消失
+	bool mShowGameOver;
 };
