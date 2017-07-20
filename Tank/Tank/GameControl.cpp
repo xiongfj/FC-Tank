@@ -2,7 +2,7 @@
 #include "GameControl.h"
 #include "typeinfo.h"
 
-int GameControl::mCurrentStage = 28;	// [1-35]
+int GameControl::mCurrentStage = 1;	// [1-35]
 GameControl::GameControl( HDC des_hdc, HDC image_hdc/*, BoxMarkStruct* bms*/)
 {
 	mDes_hdc = des_hdc;
@@ -42,11 +42,14 @@ GameControl::~GameControl()
 		//PlayerList.remove(*itor);
 	}
 
+	/* 放到分数面板显示完后释放
 	for (list<EnemyBase*>::iterator itor = EnemyList.begin(); itor != EnemyList.end(); itor++)
 	{
 		delete *itor;
 		//EnemyList.erase(itor);
 	}
+	EnemyList.clear();*/
+	//printf("%d .....\n", EnemyList.size());
 
 	delete mBoxMarkStruct;
 
@@ -56,7 +59,8 @@ GameControl::~GameControl()
 void GameControl::Init()
 {
 	mOutedEnemyTankNumber = 0;													// 已经出现在地图上的敌机数量,最多显示6架
-	mRemainEnemyTankNumber = 20;												// 剩余未出现的敌机数量
+	mRemainEnemyTankNumber = 20;	 // 剩余未出现的敌机数量
+	mCurMovingTankNumber = 0;
 	mKillEnemyNum = 0;
 	mCampDie = false;															// 标志大本营是否被击中
 
@@ -347,8 +351,14 @@ GameResult GameControl::StartGame()
 			BitBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&ScorePanel::background), 0, 0, SRCCOPY);
 			for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 			{
+				// 如果分数面板显示完
 				if (!(*itor)->ShowScorePanel(mImage_hdc))
 				{
+					// 胜利或失败都释放敌机资源
+					for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
+						delete *EnemyItor;
+					EnemyList.clear();
+
 					if (mWin)
 					{
 						Init();
@@ -360,15 +370,13 @@ GameResult GameControl::StartGame()
 
 						// 静态数据会保留,需要手动重置
 						EnemyBase::SetPause(false);
-						EnemyList.clear();
+
 						mCurrentStage++;
 						LoadMap();
 						ShowStage();
 					}
 					else
-					{
 						return GameResult::Fail;
-					}
 					break;
 				}
 			}
@@ -490,8 +498,9 @@ void GameControl::InitSignBox()
 // 待修改, 添加的敌机种类需要修改
 void GameControl::AddEnemy()
 {
-	if (EnemyList.size() >= 16 || TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber <= 0)
+	if (mCurMovingTankNumber >= 6/*EnemyList.size() >= 16*/ || TOTAL_ENEMY_NUMBER - mOutedEnemyTankNumber <= 0)
 		return;
+	mCurMovingTankNumber++;
 
 	int level;
 	TANK_KIND kind;
@@ -570,6 +579,7 @@ bool GameControl::RefreshData()
 				if ((*EnemyItor)->BeKill(true))
 				{
 					mKillEnemyNum++;
+					mCurMovingTankNumber--;
 
 					// 玩家记录消灭的敌机数量
 					(*itor)->AddKillEnemyNum((*EnemyItor)->GetLevel());
@@ -717,10 +727,13 @@ void GameControl::RefreshCenterPanel()
 		for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 		{
 			// 一个四角星动画结束后再执行下一个
-			if ((*EnemyItor)->ShowStar(mCenter_hdc, mRemainEnemyTankNumber) == SHOWING_STAR)
-			{
+			Enemy_Show_State result = (*EnemyItor)->ShowStar(mCenter_hdc, mRemainEnemyTankNumber);
+			if (result == Enemy_Show_State::Showing_Star)
 				break;
-			}
+			/*else if (result == Enemy_Show_State::Stop_Show_Star)
+			{
+				mCurMovingTankNumber++;
+			}*/
 		}
 
 		/* 开始根据数据文件绘制地图
@@ -815,8 +828,8 @@ void GameControl::RefreshCenterPanel()
 			// 爆炸完毕, 移除敌机
 			if ((*EnemyItor)->Blasting(mCenter_hdc))
 			{
-				delete *EnemyItor;
-				EnemyList.erase(EnemyItor);
+				//delete *EnemyItor;
+				//EnemyList.erase(EnemyItor);
 				break;
 			}
 
@@ -884,6 +897,7 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 					if ((*EnemyItor)->BeKill(false))
 					{
 						mKillEnemyNum++;
+						mCurMovingTankNumber--;
 						if ((int)TANK_KIND::PROP == bullet[i] % 1000 / 100)		// 获取百分位的敌机种类
 							PlayerBase::SetShowProp();
 

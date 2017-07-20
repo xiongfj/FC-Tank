@@ -76,21 +76,21 @@ void EnemyBase::Init()
 }
 
 // 显示坦克
-bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
+Enemy_Show_State EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 {
 	// 坦克已经出现,不用闪烁,直接返回
 	if (mStar.mIsOuted == true)
-		return STOP_SHOW_STAR;
+		return Enemy_Show_State::Enemy_Out;
 
 	// 一段时间后才显示四角星, 之前留空
 	if (mStar.mTankOutAfterCounter-- > 0)
-		return SHOWING_STAR;
+		return Enemy_Show_State::Showing_Star;
 
 	// 如果坦克出现的位置被暂用了, 等待下一个随机循环在出现
 	if (CheckBox_8() == false)
 	{
 		mStar.mTankOutAfterCounter = rand() % 100 + 10;
-		return SHOWING_STAR;
+		return Enemy_Show_State::Showing_Star;
 	}
 
 	// 四角星出现, 剩余坦克数-1;
@@ -125,14 +125,14 @@ bool EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 		{
 			mStar.mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
 			SignBox_4(mTankX, mTankY, ENEMY_SIGN + 1000 * mEnemyTankLevel + 100 * mEnemyTankKind + mEnemyId);		// 坦克出现, 将四角星标记改为坦克标记
-			return STOP_SHOW_STAR;
+			return Enemy_Show_State::Stop_Show_Star;
 		}
 	}
 
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
 		GetImageHDC(&StarClass::mStarImage[mStar.mStarIndex]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000 );
 
-	return SHOWING_STAR;
+	return Enemy_Show_State::Showing_Star;
 }
 
 void EnemyBase::TankMoving(const HDC& center_hdc)
@@ -171,7 +171,7 @@ void EnemyBase::TankMoving(const HDC& center_hdc)
 void EnemyBase::DrawBullet(const HDC& center_hdc)
 {
 	// 如果子弹没有移动或者敌机死亡
-	if (mBulletStruct.x == SHOOTABLE_X || mDied)
+	if (mBulletStruct.x == SHOOTABLE_X /*|| mDied*/)
 		return;
 	int dir = mBulletStruct.dir;
 
@@ -199,7 +199,7 @@ bool EnemyBase::ShootBullet()
 BulletShootKind EnemyBase::BulletMoving()
 {
 	// 如果子弹没有移动或者敌机死亡
-	if (mBulletStruct.x == SHOOTABLE_X || mDied || !mBulletTimer.IsTimeOut() )
+	if (mBulletStruct.x == SHOOTABLE_X/* || mDied */|| !mBulletTimer.IsTimeOut() )
 		return BulletShootKind::None;
 	
 	// 如果玩家吃到暂停道具
@@ -523,7 +523,7 @@ void EnemyBase::RejustDirPosition()
 //
 BulletShootKind EnemyBase::CheckBomb()
 {
-	/*int dir = mBulletStruct.dir;
+	int dir = mBulletStruct.dir;
 
 	// 子弹头接触到障碍物的那个点, 左右方向点在上, 上下方向点在右
 	int bombx = mBulletStruct.x + BulletStruct::devto_head[dir][0];
@@ -608,14 +608,14 @@ BulletShootKind EnemyBase::CheckBomb()
 			// 8*8 格子, 判断是否击鸟巢
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
-			if (bms->box_8[tempi][tempj] == CAMP_SIGN)
+			/*if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
 				mBombS.counter = 0;
 				mBulletStruct.x = SHOOTABLE_X;
 				//.mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
 				return BulletShootKind::Camp;
-			}
+			}*/
 
 			// 4*4 检测
 			tempi = bi + temp[n][0];
@@ -632,7 +632,7 @@ BulletShootKind EnemyBase::CheckBomb()
 				return BulletShootKind::Other;
 			}
 			// 4*4 玩家格子
-			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
+			/*else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
 			{
 				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
@@ -640,7 +640,7 @@ BulletShootKind EnemyBase::CheckBomb()
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
 				return (BulletShootKind)bms->box_4[tempi][tempj];
-			}
+			}*/
 		}
 	}
 	break;
@@ -655,14 +655,14 @@ BulletShootKind EnemyBase::CheckBomb()
 			// 8*8 格子, 判断是否击中鸟巢
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
-			if (bms->box_8[tempi][tempj] == CAMP_SIGN)
+			/*if (bms->box_8[tempi][tempj] == CAMP_SIGN)
 			{
 				mBombS.counter = 0;
 				mBulletStruct.x = SHOOTABLE_X;
 				//.mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
 				return BulletShootKind::Camp;
-			}
+			}*/
 
 			// 4*4 检测
 			tempi = bi + temp[n][0];
@@ -679,7 +679,7 @@ BulletShootKind EnemyBase::CheckBomb()
 				return BulletShootKind::Other;
 			}
 			// 4*4 玩家小格子
-			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
+			/*else if (bms->box_4[tempi][tempj] == PLAYER_SIGN || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1)
 			{
 				mBulletStruct.x = SHOOTABLE_X;
 				mBombS.canBomb = true;				// 指示 i bomb 爆炸
@@ -687,13 +687,13 @@ BulletShootKind EnemyBase::CheckBomb()
 				mBombS.mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct.dir][1]) * SMALL_BOX_SIZE;
 				mBombS.counter = 0;
 				return (BulletShootKind)bms->box_4[tempi][tempj];
-			}
+			}*/
 		}
 	}
 	break;
 	default:
 		break;
-	}*/
+	}
 	return BulletShootKind::None;
 }
 

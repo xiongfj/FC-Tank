@@ -109,6 +109,8 @@ struct BoxMarkStruct
 #define SHOWING_STAR	true		// 正在显示四角星
 #define STOP_SHOW_STAR	false		// 四角星显示结束
 
+enum Enemy_Show_State {Showing_Star, Stop_Show_Star, Enemy_Out};
+
 // 指示敌机类型道具坦克和普通坦克
 enum TANK_KIND { PROP, COMMON };
 

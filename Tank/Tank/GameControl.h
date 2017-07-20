@@ -77,6 +77,7 @@ private:
 	// 初始 mActiveEnemyTankNumber + mRemainEnemyTankNumber = 20
 	int mOutedEnemyTankNumber;		// 累计已经添加到显示列表的敌机数, 包括已经被消灭的,当前移动的,在队列中还没有出现的敌机
 	int mRemainEnemyTankNumber;		// 余下未显示的敌机数量, 初始值=20, 出现一架敌机该值减一
+	int mCurMovingTankNumber;		// 当前出现的敌机数量
 	int mKillEnemyNum;				// 已经消灭的敌机数
 
 	BlastStruct mBlast;				// 大本营爆炸
