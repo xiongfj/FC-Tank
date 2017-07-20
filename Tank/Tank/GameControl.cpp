@@ -376,7 +376,10 @@ GameResult GameControl::StartGame()
 						ShowStage();
 					}
 					else
+					{
+						mCurrentStage = 1;
 						return GameResult::Fail;
+					}
 					break;
 				}
 			}

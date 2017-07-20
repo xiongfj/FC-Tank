@@ -196,7 +196,7 @@ public:
 #define STAR_PROP	1	// 五角星
 #define TIME_PROP	2	// 时钟
 #define BOMB_PROP	3	// 地雷
-#define SHOVEL_PRO	4	// 铲子
+#define SHOVEL_PROP	4	// 铲子
 #define CAP_PROP	5	// 帽子
 
 /*** 道具类,

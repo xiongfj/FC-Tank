@@ -264,4 +264,7 @@ private:
 	static IMAGE mGameOverImage;		// 玩家生命值用完, 显示一个水平移动的 GAMEOVER 字样
 	int mGameOverCounter;			// 图片停止后多久消失
 	bool mShowGameOver;
+
+	static int mMoveSpeedDev[4];	// 四个级别坦克移动时间间隔
+	static int mBulletSpeedDev[4];	// 不同级别子弹时间间隔速度
 };

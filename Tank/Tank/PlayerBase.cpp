@@ -11,6 +11,8 @@ int PlayerBase::mShovelProp_counter = 0;
 list<PlayerBase*>* PlayerBase::mPList = NULL;
 BoxMarkStruct* PlayerBase::bms = NULL;
 IMAGE PlayerBase::mGameOverImage;
+int PlayerBase::mMoveSpeedDev[4] = {21, 19, 17, 15};
+int PlayerBase::mBulletSpeedDev[4] = {17, 16, 15, 14};
 
 PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 {
@@ -21,10 +23,10 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	mProp = new PropClass(b);
 
 	mPlayerLife = 2;		// 玩家 HP
-	mPlayerTankLevel = 3;
+	mPlayerTankLevel = 0;
 
 	// 不同级别坦克移动速度系数
-	int temp[4] = { 1, 2, 2, 1 };
+	int temp[4] = { 1, 1, 1, 1 };
 	for (i = 0; i < 4; i++)
 		mSpeed[i] = temp[i];
 
@@ -128,8 +130,8 @@ void PlayerBase::Init()
 		mTankX = 4 * 16 + BOX_SIZE;							// 坦克首次出现时候的中心坐标
 		mTankY = 12 * 16 + BOX_SIZE;
 
-		mTankTimer.SetDrtTime(15);		// 坦克移动速度, 不同级别不同玩家 不一样
-		mBulletTimer.SetDrtTime(13);
+		mTankTimer.SetDrtTime(mMoveSpeedDev[mPlayerTankLevel]);		// 坦克移动速度, 不同级别不同玩家 不一样
+		mBulletTimer.SetDrtTime(mBulletSpeedDev[mPlayerTankLevel]);
 
 		// 玩家die 后显示右移的 GAMEOVER 字样
 		mGameOverX = 0;
@@ -147,8 +149,8 @@ void PlayerBase::Init()
 		mTankX = 8 * 16 + BOX_SIZE;
 		mTankY = 12 * 16 + BOX_SIZE;
 
-		mTankTimer.SetDrtTime(15);
-		mBulletTimer.SetDrtTime(13);
+		mTankTimer.SetDrtTime(mMoveSpeedDev[mPlayerTankLevel]);
+		mBulletTimer.SetDrtTime(mBulletSpeedDev[mPlayerTankLevel]);
 
 		// 玩家die 后显示左移的 GAMEOVER 字样
 		mGameOverX = 220;
@@ -756,6 +758,8 @@ void PlayerBase::DispatchProp(int prop_kind)
 		break;
 	case STAR_PROP:			// 五角星
 		mPlayerTankLevel = mPlayerTankLevel + 1 > 3 ? 3 : mPlayerTankLevel + 1;
+		mTankTimer.SetDrtTime(mMoveSpeedDev[mPlayerTankLevel]);
+		mBulletTimer.SetDrtTime(mBulletSpeedDev[mPlayerTankLevel]);
 		break;
 	case TIME_PROP:			// 时钟
 		mTimeProp = true;
@@ -763,7 +767,7 @@ void PlayerBase::DispatchProp(int prop_kind)
 	case  BOMB_PROP:		// 地雷
 		mBombProp = true;
 		break;
-	case SHOVEL_PRO:		// 铲子
+	case SHOVEL_PROP:		// 铲子
 		mShovelProp = true;
 		break;
 	case  CAP_PROP:			// 帽子
