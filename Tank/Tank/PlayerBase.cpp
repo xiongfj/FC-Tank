@@ -697,7 +697,7 @@ void PlayerBase::Reborn()
 
 void PlayerBase::DispatchProp(int prop_kind)
 {
-	mProp->StopShowProp();
+	mProp->StopShowProp(true);
 
 	switch (prop_kind)
 	{
@@ -861,23 +861,11 @@ bool PlayerBase::CheckMoveable()
 	else if (!tank1 || !tank2 || !tank3 || !tank4)
 		return false;
 
-	/*if (temp1 == _ICE || temp2 == _ICE)
-	{
-		mAutoMove = true;
-		mAutoMove_Counter = 0;
-	}*/
-
 	//. 如果是第一次进入 _ICE 上面
 	if ( !mOnIce && (temp1 == _ICE || temp2 == _ICE))
-	{
 		mOnIce = true;
-		//mTankTimer.SetDrtTime(5);
-	}
 	if (mOnIce && temp1 != _ICE && temp2 != _ICE)
-	{
 		mOnIce = false;
-		//mTankTimer.SetDrtTime(25);
-	}
 	return true;
 }
 

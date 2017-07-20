@@ -90,14 +90,16 @@ PropClass::PropClass(BoxMarkStruct * b)
 	Init();
 	bms = b;
 
+	score_counter = 0;
+	show_score = false;
+	loadimage(&score, _T("./res/big/500.gif"));
+
 	TCHAR buf[100];
 	for (int i = 0; i < 6; i++)
 	{
 		_stprintf_s(buf, _T("./res/big/prop/p%d.gif"), i);
 		loadimage(&image[i], buf);
 	}
-
-	//mTimer.SetDrtTime(10);
 }
 
 //
@@ -115,13 +117,26 @@ void PropClass::ShowProp(const HDC &canvas_hdc)
 	if (!can_show)
 		return;
 
-	if ( (++index_counter / 17) % 2 == 0 )
-		TransparentBlt(canvas_hdc, leftx, topy, BOX_SIZE * 2,
-			BOX_SIZE * 2, GetImageHDC(&image[prop_kind]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+	if (show_score)
+	{
+		score_counter++;
+		TransparentBlt(canvas_hdc, leftx + 8, topy + 3, 14, 7, GetImageHDC(&score), 0, 0, 14, 7, 0x000000);
+		if (score_counter > 37)
+		{
+			show_score = false;
+			can_show = false;
+		}
+	}
+	else if ( can_show )
+	{
+		if ((++index_counter / 17) % 2 == 0)
+			TransparentBlt(canvas_hdc, leftx, topy, BOX_SIZE * 2,
+				BOX_SIZE * 2, GetImageHDC(&image[prop_kind]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+	}
 
 	// 超过时间 消失
 	if (index_counter > 1300)
-		StopShowProp();
+		StopShowProp(false);
 }
 
 // 道具敌机被消灭调用该函数
@@ -135,10 +150,17 @@ void PropClass::StartShowProp(int _x, int _y)
 	SignPropBox(PROP_SIGN + prop_kind);
 }
 
-//
-void PropClass::StopShowProp()
+// getted = true 表示玩家获得道具, 显示分数, false 则超时不显示分数
+void PropClass::StopShowProp(bool getted)
 {
-	can_show = false;
+	//can_show = false;
+	if (getted)
+	{
+		show_score = true;
+		score_counter = 0;
+	}
+	else
+		can_show = false;
 	SignPropBox(_EMPTY);
 }
 

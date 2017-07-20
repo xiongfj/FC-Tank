@@ -205,9 +205,13 @@ public:
 
 	/*参数是左上角的坐标*/
 	void StartShowProp(int x, int y);	// 道具坦克被击中后调用该函数
-	void StopShowProp();			// 停止显示道具, 超时或者被玩家获得
+	void StopShowProp(bool);			// 停止显示道具, 超时或者被玩家获得, 参数指示是玩家获得还是超时
 
 private:
+	int score_counter;		// 计数显示多久
+	bool show_score;
+	IMAGE score;				// 500 分数
+
 	BoxMarkStruct* bms;
 	int leftx, topy;			// 道具中心点坐标
 	int index_counter = 0;			// 下标变换索引
