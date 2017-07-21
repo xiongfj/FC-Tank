@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "struct.h"
+#include "IrrklangSound.h"
 
 
 // ---------------- 子弹结构静态数据
@@ -150,7 +151,7 @@ void PropClass::StartShowProp(int _i, int _j)
 	leftx = _j * BOX_SIZE;// (rand() % 25 + 1) * BOX_SIZE;
 	topy = _i * BOX_SIZE; //(rand() % 25 + 1) * BOX_SIZE;
 	can_show = true;
-	prop_kind = STAR_PROP;// rand() % 6;		// 随机出现一个道具
+	prop_kind = ADD_PROP;// rand() % 6;		// 随机出现一个道具
 	index_counter = 0;
 	SignPropBox(PROP_SIGN + prop_kind);
 }
@@ -295,6 +296,7 @@ bool ScorePanel::show(const HDC& image_hdc)
 			if (temp <= kill_num[i])
 			{
 				kill_num2[i]++;
+				IrrklangSound::_PlaySound(S_SCOREPANEL_DI);
 				break;
 			}
 
@@ -433,10 +435,14 @@ bool ScorePanel::show(const HDC& image_hdc)
 				BLACK_NUMBER_SIZE * (total_kill_numm % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0x000000);
 		}
 
-		if (/*player_num == 1 && who_bunds[0] >= 1000 || */player_num == 2 && who_bunds[0] > who_bunds[1] && who_bunds[0] > 1000)
+		if (player_num == 2 && who_bunds[0] > who_bunds[1] && who_bunds[0] > 1000)
 			TransparentBlt(image_hdc, 26, 190, 63, 15, GetImageHDC(&bunds), 0, 0, 63, 15, 0x000000);
 		else if (player_num == 2 && who_bunds[1] > who_bunds[0] && who_bunds[1] > 1000)
 			TransparentBlt(image_hdc, 170, 190, 63, 15, GetImageHDC(&bunds), 0, 0, 63, 15, 0x000000);
+			
+		// 只播放一次
+		if (end_counter == 0 && player_num == 2 && who_bunds[0] + who_bunds[1] > 2000)
+			IrrklangSound::_PlaySound(S_BOUNS1000);
 
 		if (end_counter++ > 30)
 			return false;			// 返回结束标志

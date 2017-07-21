@@ -34,6 +34,7 @@ public:
 	GameResult StartGame();								// 更新绘制游戏各种东西, 返回 false 结束游戏
 
 private:
+	void CutStage();		// 动画
 	void ShowStage();				// 开始每一关之前显示 STAGE 2 之类的字样
 	void ClearSignBox();
 	void InitSignBox();				// 初始化格子标记
@@ -45,6 +46,7 @@ private:
 	void CheckKillEnemy(PlayerBase*);		// 检测玩家是否击中敌机, 击中则删除该敌机
 	void IsGameOver();				// 循环检测是否flag,  gameover
 	void IsWinOver();				// 消灭所有敌机胜利过关
+	//bool ShowGameOverAfterScorePanel();		// 如果失败, 分数面板结束后显示 GAMEOVER 字样
 
 public:
 	static int mCurrentStage;						// [1-35] 当前关卡, SelectPanel 内使用, 本类内使用
@@ -73,6 +75,8 @@ private:
 
 	IMAGE mEnemyTankIcoImage;		// 敌机坦克图标
 	IMAGE mFlagImage;				// 旗子
+
+	int mCutStageCounter;
 	IMAGE mCurrentStageImage;		// STAGE 字样
 	IMAGE mBlackNumberImage;		// 0123456789 当前关卡数
 	IMAGE mGameOverImage;			//
@@ -105,4 +109,10 @@ private:
 
 	bool mWin;			// 消灭完敌机,胜利
 	int mWinCounter;	// 消灭完后隔几秒才跳转
+
+	bool mShowGameOverAfterScorePanel;
+	IMAGE msgoas_image;
+	int msgoas_y;		// 上升坐标
+	int msgoas_counter;
+	//TimeClock msgoas_Timer;
 };

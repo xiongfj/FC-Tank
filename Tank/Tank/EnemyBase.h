@@ -2,6 +2,7 @@
 #include "TankClass.h"
 #include "struct.h"
 #include "TimeClock.h"
+#include "IrrklangSound.h"
 
 /************** 敌机坦克 ************
 * 一个敌机实例化一个对象

@@ -51,8 +51,11 @@ EnumSelectResult SelectPanel::ShowSelectPanel()
 	// 选择玩家面板上升动画
 	while (mSelect_player_image_y > 0)
 	{
-		Sleep(19);
-		mSelect_player_image_y -= 35;
+		if (GetAsyncKeyState(VK_RETURN) & 0x8000)
+			mSelect_player_image_y = 0;
+
+		Sleep(55);
+		mSelect_player_image_y -= 5;
 		if ( mSelect_player_image_y < 0 )
 			mSelect_player_image_y = 0;
 

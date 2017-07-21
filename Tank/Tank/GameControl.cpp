@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameControl.h"
 #include "typeinfo.h"
+#include "IrrklangSound.h"
 
 int GameControl::mCurrentStage = 3;	// [1-35]
 GameControl::GameControl( HDC des_hdc, HDC image_hdc/*, BoxMarkStruct* bms*/)
@@ -29,6 +30,8 @@ GameControl::GameControl( HDC des_hdc, HDC image_hdc/*, BoxMarkStruct* bms*/)
 
 	// 自定义绘制地图
 	loadimage(&mCreateMapTankImage, _T("./res/big/0Player/m0-1-2.gif"));
+
+	loadimage(&msgoas_image, _T("./res/big/big-gameover.gif"));
 
 	Init();
 }
@@ -70,11 +73,13 @@ void GameControl::Init()
 	mMainTimer.SetDrtTime(14);
 	mCampTimer.SetDrtTime(23);
 
+	mCutStageCounter = 0;		// STAGE 字样计数
+
 	// GameOver 图片
 	mGameOverX = -100;
 	mGameOverY = -100;
 	mGameOverFlag = false;
-	mGameOverTimer.SetDrtTime(10);
+	mGameOverTimer.SetDrtTime(30);
 
 	// 绘制地图坦克游标的坐标
 	mCMTImageX = BOX_SIZE;
@@ -89,6 +94,11 @@ void GameControl::Init()
 	// 胜利
 	mWin = false;
 	mWinCounter = 0;
+
+	msgoas_counter = 0;
+	msgoas_y = CENTER_HEIGHT;
+	//msgoas_Timer.SetDrtTime(20);
+	mShowGameOverAfterScorePanel = false;
 }
 
 // 存储玩家进链表
@@ -329,6 +339,8 @@ bool GameControl::CreateMap(bool* isCreate)
 
 void GameControl::GameLoop()
 {
+	IrrklangSound::_PlaySound(S_START);
+	CutStage();
 	ShowStage();
 	GameResult result = GameResult::Victory;
 
@@ -354,6 +366,8 @@ GameResult GameControl::StartGame()
 				// 如果分数面板显示完
 				if (!(*itor)->ShowScorePanel(mImage_hdc))
 				{
+					mShowScorePanel = false;
+
 					// 胜利或失败都释放敌机资源
 					for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 						delete *EnemyItor;
@@ -373,12 +387,16 @@ GameResult GameControl::StartGame()
 
 						mCurrentStage++;
 						LoadMap();
+						IrrklangSound::_PlaySound(S_START);
+						CutStage();
 						ShowStage();
 					}
 					else
 					{
 						mCurrentStage = 1;
-						return GameResult::Fail;
+						mShowGameOverAfterScorePanel = true;
+						IrrklangSound::_PlaySound(S_FAIL);
+						//return GameResult::Fail;
 					}
 					break;
 				}
@@ -387,6 +405,33 @@ GameResult GameControl::StartGame()
 			// 整张画布缩放显示 image 到主窗口
 			StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 			FlushBatchDraw();
+			return GameResult::Victory;
+		}
+
+		//
+		if (mShowGameOverAfterScorePanel)
+		{
+			//if (msgoas_Timer.IsTimeOut())
+			{
+				StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&mBlackBackgroundImage),
+					0, 0, CENTER_WIDTH, CENTER_HEIGHT, SRCCOPY);
+				BitBlt(mImage_hdc, 60, msgoas_y, 124, 80, GetImageHDC(&msgoas_image), 0, 0, SRCCOPY);
+
+				// 整张画布缩放显示 image 到主窗口
+				StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
+				FlushBatchDraw();
+
+				msgoas_y = msgoas_y - 2 > 60 ? msgoas_y - 2: 60;
+				if (msgoas_y == 60)
+					msgoas_counter++;
+
+				if (msgoas_counter > 200)
+				{
+					mShowGameOverAfterScorePanel = false;
+					msgoas_counter = 0;
+					return GameResult::Fail;
+				}
+			}
 			return GameResult::Victory;
 		}
 
@@ -415,13 +460,32 @@ GameResult GameControl::StartGame()
 ///////////////////////// 私有函数,本类使用 //////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-void GameControl::ShowStage()
+void GameControl::CutStage()
 {
 	// 灰色背景
-	//mGraphics->DrawImage(mGrayBackgroundImage, 0, 0, CANVAS_WIDTH + 10, CANVAS_HEIGHT + 10);	// +10 去掉由于拉伸的边缘变色
 	StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT,
 		GetImageHDC(&mGrayBackgroundImage), 0, 0, 66, 66, SRCCOPY);
 
+	while (mCutStageCounter < 110)
+	{
+		Sleep(6);
+		mCutStageCounter += 3;
+		StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, mCutStageCounter, GetImageHDC(&mBlackBackgroundImage), 0, 0, CENTER_WIDTH, CENTER_HEIGHT, SRCCOPY);
+		StretchBlt(mImage_hdc, 0, CANVAS_HEIGHT - mCutStageCounter, CANVAS_WIDTH, CANVAS_HEIGHT,
+					GetImageHDC(&mBlackBackgroundImage), 0, 0, CENTER_WIDTH, CENTER_HEIGHT, SRCCOPY);
+
+		StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
+		FlushBatchDraw();
+	}
+}
+
+void GameControl::ShowStage()
+{
+	// 灰色背景
+	StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT,
+		GetImageHDC(&mGrayBackgroundImage), 0, 0, 66, 66, SRCCOPY);
+
+	 
 	TransparentBlt(mImage_hdc, 97, 103, 39, 7, GetImageHDC(&mCurrentStageImage), 0, 0, 39, 7, 0xffffff);
 
 	// [1-9] 关卡，单个数字
@@ -439,7 +503,9 @@ void GameControl::ShowStage()
 	StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 	FlushBatchDraw();
 
-	Sleep(300);
+	Sleep(2300);
+
+	IrrklangSound::_PlaySound(S_BK);
 }
 
 //
@@ -614,6 +680,7 @@ bool GameControl::RefreshData()
 			mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
 			mGameOverY = CENTER_HEIGHT;
 			mGameOverFlag = true;
+			IrrklangSound::_PlaySound(S_CAMP_BOMB);
 			break;
 
 		// 遍历被击中的玩家 然后暂停它
@@ -661,7 +728,8 @@ bool GameControl::RefreshData()
 		case BulletShootKind::Camp:
 			mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
 			mGameOverY = CENTER_HEIGHT;
-			mGameOverFlag = true; 
+			mGameOverFlag = true;
+			IrrklangSound::_PlaySound(S_CAMP_BOMB);
 			break;
 
 		default:
@@ -934,6 +1002,7 @@ void GameControl::IsGameOver()
 		mGameOverY -= 2;
 	else if (mGameOverY <= CENTER_HEIGHT * 0.45 && mShowScorePanel == false)
 	{
+		IrrklangSound::PauseBk(true);
 		mShowScorePanel = true;
 		mWin = false;
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
@@ -946,8 +1015,9 @@ void GameControl::IsGameOver()
 // 如果敌机都被消灭, 隔 mWinCounter 后跳转到分数面板
 void GameControl::IsWinOver()
 {
-	if (mWin && mWinCounter++ > 210 && !mGameOverFlag)
+	if (mWin && mWinCounter++ > 210 && !mGameOverFlag && mShowScorePanel == false)
 	{
+		IrrklangSound::PauseBk(true);
 		mShowScorePanel = true;
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
@@ -955,3 +1025,29 @@ void GameControl::IsWinOver()
 		}
 	}
 }
+
+/*bool GameControl::ShowGameOverAfterScorePanel()
+{
+	if (!mShowGameOverAfterScorePanel || !msgoas_Timer.IsTimeOut())
+		return true;
+
+	StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&mBlackBackgroundImage),
+		0, 0, CENTER_WIDTH, CENTER_HEIGHT, SRCCOPY);
+	BitBlt(mImage_hdc, 60, msgoas_y, 124, 80, GetImageHDC(&msgoas_image), 0, 0, SRCCOPY);
+
+	// 整张画布缩放显示 image 到主窗口
+	StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
+	FlushBatchDraw();
+
+	msgoas_y = msgoas_y - 2 > 50 ? msgoas_y : 50;
+	if (msgoas_y == 50)
+		msgoas_counter++;
+
+	if (msgoas_counter > 30)
+	{
+		mShowGameOverAfterScorePanel = false;
+		msgoas_counter = 0;
+	}
+
+	return true;
+}*/

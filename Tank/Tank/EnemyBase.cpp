@@ -270,6 +270,7 @@ bool EnemyBase::BeKill(bool killanyway)
 	if (mStar.mIsOuted == false || mBlast.canBlast == true || mDied == true)
 		return false;
 
+	IrrklangSound::_PlaySound(S_ENEMY_BOMB);
 	mDied = true;
 	SignBox_4(mTankX, mTankY, _EMPTY);
 
@@ -959,6 +960,7 @@ bool BigestTank::BeKill(bool killanyway)
 	if (mStar.mIsOuted == false || mBlast.canBlast == true || mDied == true)
 		return false;
 
+	IrrklangSound::_PlaySound(S_BIN);
 	if (--hp <= 0 || killanyway)
 	{
 		hp = 0;
