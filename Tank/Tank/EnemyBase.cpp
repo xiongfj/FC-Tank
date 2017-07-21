@@ -270,7 +270,8 @@ bool EnemyBase::BeKill(bool killanyway)
 	if (mStar.mIsOuted == false || mBlast.canBlast == true || mDied == true)
 		return false;
 
-	IrrklangSound::_PlaySound(S_ENEMY_BOMB);
+	//IrrklangSound::_PlaySound(S_ENEMY_BOMB);
+	MciSound::_PlaySound(S_ENEMY_BOMB);
 	mDied = true;
 	SignBox_4(mTankX, mTankY, _EMPTY);
 
@@ -539,7 +540,7 @@ void EnemyBase::RejustDirPosition()
 //
 BulletShootKind EnemyBase::CheckBomb()
 {
-	int dir = mBulletStruct.dir;
+	/*int dir = mBulletStruct.dir;
 
 	// 子弹头接触到障碍物的那个点, 左右方向点在上, 上下方向点在右
 	int bombx = mBulletStruct.x + BulletStruct::devto_head[dir][0];
@@ -709,7 +710,7 @@ BulletShootKind EnemyBase::CheckBomb()
 	break;
 	default:
 		break;
-	}
+	}*/
 	return BulletShootKind::None;
 }
 
@@ -960,7 +961,8 @@ bool BigestTank::BeKill(bool killanyway)
 	if (mStar.mIsOuted == false || mBlast.canBlast == true || mDied == true)
 		return false;
 
-	IrrklangSound::_PlaySound(S_BIN);
+	//IrrklangSound::_PlaySound(S_BIN);
+	MciSound::_PlaySound(S_BIN);
 	if (--hp <= 0 || killanyway)
 	{
 		hp = 0;

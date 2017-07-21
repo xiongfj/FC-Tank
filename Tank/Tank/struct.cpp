@@ -151,7 +151,7 @@ void PropClass::StartShowProp(int _i, int _j)
 	leftx = _j * BOX_SIZE;// (rand() % 25 + 1) * BOX_SIZE;
 	topy = _i * BOX_SIZE; //(rand() % 25 + 1) * BOX_SIZE;
 	can_show = true;
-	prop_kind = ADD_PROP;// rand() % 6;		// 随机出现一个道具
+	prop_kind = rand() % 6;		// 随机出现一个道具
 	index_counter = 0;
 	SignPropBox(PROP_SIGN + prop_kind);
 }
@@ -296,7 +296,8 @@ bool ScorePanel::show(const HDC& image_hdc)
 			if (temp <= kill_num[i])
 			{
 				kill_num2[i]++;
-				IrrklangSound::_PlaySound(S_SCOREPANEL_DI);
+				//IrrklangSound::_PlaySound(S_SCOREPANEL_DI);
+				MciSound::_PlaySound(S_SCOREPANEL_DI);
 				break;
 			}
 
@@ -442,7 +443,8 @@ bool ScorePanel::show(const HDC& image_hdc)
 			
 		// 只播放一次
 		if (end_counter == 0 && player_num == 2 && who_bunds[0] + who_bunds[1] > 2000)
-			IrrklangSound::_PlaySound(S_BOUNS1000);
+			//IrrklangSound::_PlaySound(S_BOUNS1000);
+			MciSound::_PlaySound(S_BOUNS1000);
 
 		if (end_counter++ > 30)
 			return false;			// 返回结束标志

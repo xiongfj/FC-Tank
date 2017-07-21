@@ -97,6 +97,7 @@ private:
 	TimeClock mCampTimer;		// Camp 爆炸速度
 	//TimeClock mScorePanelTimer1; // GameOver 显示完后多久显示分数面板
 
+	int mGameOverCounter;
 	int mGameOverX, mGameOverY;	// 
 	bool mGameOverFlag;			// 游戏结束标记, 玩家生命用完, 鸟巢被击中
 	TimeClock mGameOverTimer;	// 上升控制

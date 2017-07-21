@@ -3,7 +3,7 @@
 #include "typeinfo.h"
 #include "IrrklangSound.h"
 
-int GameControl::mCurrentStage = 3;	// [1-35]
+int GameControl::mCurrentStage = 1;	// [1-35]
 GameControl::GameControl( HDC des_hdc, HDC image_hdc/*, BoxMarkStruct* bms*/)
 {
 	mDes_hdc = des_hdc;
@@ -76,6 +76,7 @@ void GameControl::Init()
 	mCutStageCounter = 0;		// STAGE 字样计数
 
 	// GameOver 图片
+	mGameOverCounter = 0;
 	mGameOverX = -100;
 	mGameOverY = -100;
 	mGameOverFlag = false;
@@ -339,7 +340,8 @@ bool GameControl::CreateMap(bool* isCreate)
 
 void GameControl::GameLoop()
 {
-	IrrklangSound::_PlaySound(S_START);
+	//IrrklangSound::_PlaySound(S_START);
+	MciSound::_PlaySound(S_START);
 	CutStage();
 	ShowStage();
 	GameResult result = GameResult::Victory;
@@ -387,7 +389,8 @@ GameResult GameControl::StartGame()
 
 						mCurrentStage++;
 						LoadMap();
-						IrrklangSound::_PlaySound(S_START);
+						//IrrklangSound::_PlaySound(S_START);
+						MciSound::_PlaySound(S_START);
 						CutStage();
 						ShowStage();
 					}
@@ -395,8 +398,8 @@ GameResult GameControl::StartGame()
 					{
 						mCurrentStage = 1;
 						mShowGameOverAfterScorePanel = true;
-						IrrklangSound::_PlaySound(S_FAIL);
-						//return GameResult::Fail;
+						//IrrklangSound::_PlaySound(S_FAIL);
+						MciSound::_PlaySound(S_FAIL);
 					}
 					break;
 				}
@@ -503,9 +506,11 @@ void GameControl::ShowStage()
 	StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 	FlushBatchDraw();
 
-	Sleep(2300);
+	Sleep(1700);
 
-	IrrklangSound::_PlaySound(S_BK);
+	//IrrklangSound::_PlaySound(S_BK);
+
+	MciSound::_PlaySound(S_BK);
 }
 
 //
@@ -680,7 +685,13 @@ bool GameControl::RefreshData()
 			mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
 			mGameOverY = CENTER_HEIGHT;
 			mGameOverFlag = true;
-			IrrklangSound::_PlaySound(S_CAMP_BOMB);
+			//IrrklangSound::_PlaySound(S_CAMP_BOMB);
+			MciSound::_PlaySound(S_CAMP_BOMB);
+
+			//IrrklangSound::PauseBk(true);
+			//IrrklangSound::PauseMove(true);
+			MciSound::PauseBk(true);
+			MciSound::PauseMove(true);
 			break;
 
 		// 遍历被击中的玩家 然后暂停它
@@ -729,7 +740,13 @@ bool GameControl::RefreshData()
 			mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
 			mGameOverY = CENTER_HEIGHT;
 			mGameOverFlag = true;
-			IrrklangSound::_PlaySound(S_CAMP_BOMB);
+			//IrrklangSound::_PlaySound(S_CAMP_BOMB);
+			MciSound::_PlaySound(S_CAMP_BOMB);
+
+			//IrrklangSound::PauseBk(true);
+			//IrrklangSound::PauseMove(true);
+			MciSound::PauseBk(true);
+			MciSound::PauseMove(true);
 			break;
 
 		default:
@@ -1000,9 +1017,11 @@ void GameControl::IsGameOver()
 
 	if (mGameOverTimer.IsTimeOut() && mGameOverY >= CENTER_HEIGHT * 0.45)
 		mGameOverY -= 2;
-	else if (mGameOverY <= CENTER_HEIGHT * 0.45 && mShowScorePanel == false)
+	else if (mGameOverY < CENTER_HEIGHT * 0.45)
+		mGameOverCounter++;
+
+	if (mGameOverCounter > 300 && mShowScorePanel == false)
 	{
-		IrrklangSound::PauseBk(true);
 		mShowScorePanel = true;
 		mWin = false;
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
@@ -1017,7 +1036,8 @@ void GameControl::IsWinOver()
 {
 	if (mWin && mWinCounter++ > 210 && !mGameOverFlag && mShowScorePanel == false)
 	{
-		IrrklangSound::PauseBk(true);
+		//IrrklangSound::PauseBk(true);
+		MciSound::PauseBk(true);
 		mShowScorePanel = true;
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
