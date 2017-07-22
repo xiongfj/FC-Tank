@@ -408,29 +408,26 @@ GameResult GameControl::StartGame()
 			return GameResult::Victory;
 		}
 
-		//
+		// 上升的 GAMEOVER 字样
 		if (mShowGameOverAfterScorePanel)
 		{
-			//if (msgoas_Timer.IsTimeOut())
+			StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&mBlackBackgroundImage),
+				0, 0, CENTER_WIDTH, CENTER_HEIGHT, SRCCOPY);
+			BitBlt(mImage_hdc, 66, msgoas_y, 124, 80, GetImageHDC(&msgoas_image), 0, 0, SRCCOPY);
+
+			// 整张画布缩放显示 image 到主窗口
+			StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
+			FlushBatchDraw();
+
+			msgoas_y = msgoas_y - 2 > 56 ? msgoas_y - 2: 56;
+			if (msgoas_y == 56)
+				msgoas_counter++;
+
+			if (msgoas_counter > 200)
 			{
-				StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&mBlackBackgroundImage),
-					0, 0, CENTER_WIDTH, CENTER_HEIGHT, SRCCOPY);
-				BitBlt(mImage_hdc, 60, msgoas_y, 124, 80, GetImageHDC(&msgoas_image), 0, 0, SRCCOPY);
-
-				// 整张画布缩放显示 image 到主窗口
-				StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
-				FlushBatchDraw();
-
-				msgoas_y = msgoas_y - 2 > 60 ? msgoas_y - 2: 60;
-				if (msgoas_y == 60)
-					msgoas_counter++;
-
-				if (msgoas_counter > 200)
-				{
-					mShowGameOverAfterScorePanel = false;
-					msgoas_counter = 0;
-					return GameResult::Fail;
-				}
+				mShowGameOverAfterScorePanel = false;
+				msgoas_counter = 0;
+				return GameResult::Fail;
 			}
 			return GameResult::Victory;
 		}
