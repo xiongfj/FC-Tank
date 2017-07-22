@@ -27,6 +27,7 @@ IMAGE BlastStruct::image[5];
 BlastStruct::BlastStruct()
 {
 	Init();
+	timer.SetDrtTime(36);
 }
 
 void BlastStruct::Init()
@@ -35,28 +36,52 @@ void BlastStruct::Init()
 	blasty = -100;
 	canBlast = false;
 	counter = 0;
-	timer.SetDrtTime(36);
 }
 
 BlastState BlastStruct::Blasting(const HDC& center_hdc)
 {
-	int index[8] = { 0,1,2,3,4,3,2,1 };
+	int index[13] = {0,1,1,2,2,3,3,4,4,3,2,1,0};
 	if (canBlast)
 	{
 		TransparentBlt(center_hdc, blastx - BOX_SIZE * 2, blasty - BOX_SIZE * 2, BOX_SIZE * 4, BOX_SIZE * 4,
-			GetImageHDC(&BlastStruct::image[index[counter % 8]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+			GetImageHDC(&BlastStruct::image[index[counter % 13]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
 		if (timer.IsTimeOut())
 		{
-			if (counter++ >= 7)
+			if (counter++ >= 12)
 			{
 				Init();
 				return BlastState::BlastEnd;
 			}
 		}
-
 		return BlastState::Blasting;
 	}
+	return BlastState::NotBlast;
+}
 
+// 专用于敌机爆炸
+BlastState BlastStruct::EnemyBlasting(const HDC &center_hdc, IMAGE* score )
+{
+	int index[13] = { 0,1,1,2,2,3,3,4,4,3,2,1,0 };
+	if (canBlast)
+	{
+		if (counter < 13)
+			TransparentBlt(center_hdc, blastx - BOX_SIZE * 2, blasty - BOX_SIZE * 2, BOX_SIZE * 4, BOX_SIZE * 4,
+				GetImageHDC(&BlastStruct::image[index[counter % 13]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+		else
+		{
+			TransparentBlt(center_hdc, blastx - 7, blasty - 3, 14, 7,
+				GetImageHDC(score), 0, 0, 14, 7, 0x000000);
+		}
+		if (timer.IsTimeOut())
+		{
+			if (counter++ >= 18)
+			{
+				Init();
+				return BlastState::BlastEnd;
+			}
+		}
+		return BlastState::Blasting;
+	}
 	return BlastState::NotBlast;
 }
 

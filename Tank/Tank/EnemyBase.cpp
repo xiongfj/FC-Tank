@@ -62,7 +62,7 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 	mBombTimer.SetDrtTime(37);
 
 	// 坦克爆炸速率
-	mBlastTimer.SetDrtTime(37);
+	//mBlastTimer.SetDrtTime(37);
 
 	// 设置回头射击频率
 	mShootBackTimer.SetDrtTime( rand()%5000 + 9000 );
@@ -266,7 +266,7 @@ void EnemyBase::Bombing(const HDC & center_hdc)
 bool EnemyBase::BeKill(bool killanyway)
 {
 	// 如果敌机还没有出现
-	if (mStar.mIsOuted == false || mBlast.canBlast == true || mDied == true)
+	if (mStar.mIsOuted == false || mBlast.IsBlasting() || mDied == true)
 		return false;
 
 	MciSound::_PlaySound(S_ENEMY_BOMB);
@@ -274,9 +274,10 @@ bool EnemyBase::BeKill(bool killanyway)
 	SignBox_4(mTankX, mTankY, _EMPTY);
 
 	// 设置爆炸坐标
-	mBlast.blastx = mTankX;
-	mBlast.blasty = mTankY;
-	mBlast.canBlast = true;
+	//mBlast.blastx = ;
+	//mBlast.blasty = ;
+	//mBlast.canBlast = true;
+	mBlast.StartBlasting(mTankX, mTankY);
 
 	return true;
 }
@@ -284,7 +285,23 @@ bool EnemyBase::BeKill(bool killanyway)
 // 显示坦克爆炸效果, GameControl 内循环检测
 bool EnemyBase::Blasting(const HDC& center_hdc)
 {
-	int index[13] = {0,1,1,2,2,3,3,4,4,3,2,1,0};
+	switch (mBlast.EnemyBlasting(center_hdc, &mScoreImage[mEnemyTankLevel]))
+	{
+	case BlastState::NotBlast:
+		break;
+
+	case BlastState::Blasting:
+		break;
+
+	case BlastState::BlastEnd:
+		return true;
+
+	default:
+		break;
+	}
+
+
+	/*int index[13] = {0,1,1,2,2,3,3,4,4,3,2,1,0};
 	if (mBlast.canBlast)
 	{
 		if (mBlast.counter < 13)
@@ -304,7 +321,7 @@ bool EnemyBase::Blasting(const HDC& center_hdc)
 				return true;
 			}
 		}
-	}
+	}*/
 	return false;
 }
 
@@ -956,7 +973,7 @@ void BigestTank::DrawTank(const HDC & center_hdc)
 
 bool BigestTank::BeKill(bool killanyway)
 {
-	if (mStar.mIsOuted == false || mBlast.canBlast == true || mDied == true)
+	if (mStar.mIsOuted == false || mBlast.IsBlasting() || mDied == true)
 		return false;
 
 	MciSound::_PlaySound(S_BIN);

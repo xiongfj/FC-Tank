@@ -162,7 +162,10 @@ public:
 	/*PlayerBase 或 EnemyBase 内调用, 循环检测坦克爆炸
 	爆炸完毕返回 BLAST_END
 	其余情况返回 */
-	BlastState Blasting(const HDC& );
+	BlastState Blasting(const HDC&);
+
+	/*敌机爆炸不一样, 还要显示分数*/
+	BlastState EnemyBlasting(const HDC&, IMAGE*);
 
 	/*设置开始爆炸标志 和 传递坐标*/
 	void StartBlasting(int tankx, int tanky);

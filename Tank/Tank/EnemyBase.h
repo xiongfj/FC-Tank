@@ -79,7 +79,7 @@ protected:
 	TimeClock mBulletTimer;		// 子弹移动速度
 	TimeClock mShootTimer;		// 发射子弹频率
 	TimeClock mBombTimer;		// 子弹爆炸速度
-	TimeClock mBlastTimer;		// 坦克爆炸速度
+	//TimeClock mBlastTimer;		// 坦克爆炸速度
 
 	TimeClock mShootBackTimer;	// 坦克回头射击,然后短距离再次变向
 

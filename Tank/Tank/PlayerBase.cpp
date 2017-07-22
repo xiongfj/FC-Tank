@@ -594,10 +594,10 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 	switch (mBlast.Blasting(center_hdc))
 	{
 	case BlastState::NotBlast:
-		return false;
+		break;
 
 	case BlastState::Blasting:
-		return false;
+		break;
 
 	case BlastState::BlastEnd:
 		// 检测是否可以重生
