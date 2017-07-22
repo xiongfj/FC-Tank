@@ -149,6 +149,9 @@ struct BombStruct
 	int counter;						// 取模计数器, 多少次循环更换一张图片
 };
 
+// 坦克爆炸状态
+enum BlastState {Blasting, BlastEnd, NotBlast};
+
 class BlastStruct
 {
 public:
@@ -156,10 +159,17 @@ public:
 	~BlastStruct() {}
 	void Init();
 
+	/*PlayerBase 或 EnemyBase 内调用, 循环检测坦克爆炸
+	爆炸完毕返回 BLAST_END
+	其余情况返回 */
+	BlastState Blasting(const HDC& );
+
 	static IMAGE image[5];
 	int blastx, blasty;			// 中心坐标, 32*32
 	bool canBlast;
 	int counter;				// 计数多少次换一张图片
+
+	TimeClock timer;
 };
 
 class StarClass

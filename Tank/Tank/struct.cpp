@@ -35,6 +35,29 @@ void BlastStruct::Init()
 	blasty = -100;
 	canBlast = false;
 	counter = 0;
+	timer.SetDrtTime(36);
+}
+
+BlastState BlastStruct::Blasting(const HDC& center_hdc)
+{
+	int index[8] = { 0,1,2,3,4,3,2,1 };
+	if (canBlast)
+	{
+		TransparentBlt(center_hdc, blastx - BOX_SIZE * 2, blasty - BOX_SIZE * 2, BOX_SIZE * 4, BOX_SIZE * 4,
+			GetImageHDC(&BlastStruct::image[index[counter % 8]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+		if (timer.IsTimeOut())
+		{
+			if (counter++ >= 7)
+			{
+				Init();
+				return BlastState::BlastEnd;
+			}
+		}
+
+		return BlastState::Blasting;
+	}
+
+	return BlastState::NotBlast;
 }
 
 //-----------------------------------------

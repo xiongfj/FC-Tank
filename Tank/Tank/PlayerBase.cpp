@@ -589,7 +589,34 @@ void PlayerBase::BeKill()
 // 玩家被击中爆炸
 bool PlayerBase::Blasting(const HDC & center_hdc)
 {
-	int index[8] = { 0,1,2,3,4,3,2,1 };
+	switch (mBlast.Blasting(center_hdc))
+	{
+	case BlastState::NotBlast:
+		return false;
+
+	case BlastState::Blasting:
+		return false;
+
+	case BlastState::BlastEnd:
+		// 检测是否可以重生
+		if (mPlayerLife-- <= 0)
+		{
+			mDied = true;/*m*/
+			mShowGameOver = true;
+			mPlayerLife = 0;
+			return true;
+		}
+		else
+			Reborn();
+		return true;
+
+	default:
+		break;
+	}
+
+	return false;
+
+	/*int index[8] = { 0,1,2,3,4,3,2,1 };
 	if (mBlast.canBlast)
 	{
 		TransparentBlt(center_hdc, mBlast.blastx - BOX_SIZE * 2, mBlast.blasty - BOX_SIZE * 2, BOX_SIZE * 4, BOX_SIZE * 4,
@@ -605,10 +632,10 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 				// 检测是否可以重生
 				if (mPlayerLife-- <= 0)
 				{
-					mDied = true;/*m*/
+					mDied = true;
 					mShowGameOver = true;
 					mPlayerLife = 0;
-					return true;
+					//return true;
 				}
 				else
 					Reborn();
@@ -616,7 +643,7 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 			}
 		}
 	}
-	return false;
+	return false;*/
 }
 
 //
