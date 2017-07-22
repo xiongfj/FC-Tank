@@ -679,8 +679,8 @@ bool GameControl::RefreshData()
 			mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
 			mGameOverY = CENTER_HEIGHT;
 			mGameOverFlag = true;
-			MciSound::_PlaySound(S_CAMP_BOMB);
 
+			MciSound::_PlaySound(S_CAMP_BOMB);
 			MciSound::PauseBk(true);
 			MciSound::PauseMove(true);
 			break;
@@ -731,8 +731,8 @@ bool GameControl::RefreshData()
 			mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
 			mGameOverY = CENTER_HEIGHT;
 			mGameOverFlag = true;
-			MciSound::_PlaySound(S_CAMP_BOMB);
 
+			MciSound::_PlaySound(S_CAMP_BOMB);
 			MciSound::PauseBk(true);
 			MciSound::PauseMove(true);
 			break;

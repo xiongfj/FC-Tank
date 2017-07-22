@@ -28,6 +28,14 @@ BlastStruct::BlastStruct()
 {
 	Init();
 	timer.SetDrtTime(36);
+
+	// ̹�˱�ըͼƬ�ṹ
+	TCHAR buf[100];
+	for (INT i = 0; i < 5; i++)
+	{
+		_stprintf_s(buf, _T("./res/big/blast/%d.gif"), i);
+		loadimage(&BlastStruct::image[i], buf);
+	}
 }
 
 void BlastStruct::Init()

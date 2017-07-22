@@ -173,6 +173,7 @@ public:
 	/*返回当前是否否在爆炸*/
 	bool IsBlasting();
 
+
 	static IMAGE image[5];
 	int blastx, blasty;			// 中心坐标, 32*32
 	bool canBlast;

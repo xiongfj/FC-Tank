@@ -61,13 +61,6 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		loadimage(&BombStruct::mBombImage[i], buf);
 	}
 
-	// 坦克爆炸图片结构
-	for (i = 0; i < 5; i++)
-	{
-		_stprintf_s(buf, _T("./res/big/blast/%d.gif"), i);
-		loadimage(&BlastStruct::image[i], buf);
-	}
-
 	// 出生四角星闪烁
 	for (int i = 0; i < 4; i++)
 	{
