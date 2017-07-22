@@ -154,6 +154,7 @@ class BlastStruct
 public:
 	BlastStruct();
 	~BlastStruct() {}
+	void Init();
 
 	static IMAGE image[5];
 	int blastx, blasty;			// 中心坐标, 32*32
@@ -184,11 +185,16 @@ public:
 	RingClass();
 	void Init();
 	bool ShowRing(const HDC&, int centerx, int centery);		//
-	void SetShowable();				// 设置可以显示环状, PlayerBase 内获取道具后调用
+
+	/*设置可以显示环状, PlayerBase 内获取道具后调用
+	参数设置显示多久, 出生显示较短, 获得道具后显示较长*/
+	void SetShowable(long);				// 
 
 	static IMAGE image[2];
 	bool canshow;			// 是否可以显示环状
 	int index_counter;		// 变化下标索引
+
+	TimeClock timer;
 };
 
 // 道具类型

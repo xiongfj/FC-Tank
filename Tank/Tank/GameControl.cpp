@@ -567,7 +567,7 @@ void GameControl::AddEnemy()
 {
 	int size = EnemyList.size();
 
-	if (mCurMovingTankNumber >= 6/*EnemyList.size() >= 16*/ || TOTAL_ENEMY_NUMBER - size <= 0)
+	if (mCurMovingTankNumber >= 6 || TOTAL_ENEMY_NUMBER - size <= 0)
 		return;
 	mCurMovingTankNumber++;
 

@@ -26,6 +26,11 @@ IMAGE BombStruct::mBombImage[3];
 IMAGE BlastStruct::image[5];
 BlastStruct::BlastStruct()
 {
+	Init();
+}
+
+void BlastStruct::Init()
+{
 	blastx = -100;
 	blasty = -100;
 	canBlast = false;
@@ -68,16 +73,17 @@ void RingClass::Init()
 {
 	canshow = true;
 	index_counter = 0;
+	//timer.Init();
+	timer.SetDrtTime(3222);
 }
 
-
-
+//
 bool RingClass::ShowRing(const HDC &canvas_hdc, int mTankX, int mTankY)
 {
-	if (index_counter > 90)
+	if (timer.IsTimeOut())
 	{
-		canshow = false;
 		index_counter = 0;
+		canshow = false;
 		return false;
 	}
 	TransparentBlt(canvas_hdc, (int)(mTankX - BOX_SIZE), (int)(mTankY - BOX_SIZE), BOX_SIZE * 2, 
@@ -85,10 +91,12 @@ bool RingClass::ShowRing(const HDC &canvas_hdc, int mTankX, int mTankY)
 	return true;
 }
 
-void RingClass::SetShowable()
+void RingClass::SetShowable( long drt_time)
 {
 	canshow = true;
 	index_counter = 0;
+	timer.Init();
+	timer.SetDrtTime(drt_time);
 }
 
 /////////////////////////////////////////////////////

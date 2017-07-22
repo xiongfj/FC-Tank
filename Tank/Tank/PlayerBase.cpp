@@ -107,6 +107,7 @@ void PlayerBase::Init()
 	mProp->Init();
 	mStar.Init();
 	mRing.Init();
+	mBlast.Init();
 
 	mTimeProp = false;
 	mBombProp = false;
@@ -249,6 +250,7 @@ bool PlayerBase::ShowStar(const HDC& center_hdc)
 			mStar.mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
 			SignBox_8(mTankX, mTankY, _EMPTY);		// 防止玩家绘制地图把坦克出现的位置遮挡住
 			SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);
+			mRing.SetShowable(3222);
 			return STOP_SHOW_STAR;
 		}
 	}
@@ -596,8 +598,9 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 		{
 			if (mBlast.counter++ >= 7)
 			{
-				mBlast.counter = 0;
-				mBlast.canBlast = false;
+				mBlast.Init();
+				//mBlast.counter = 0;
+				//mBlast.canBlast = false;
 
 				// 检测是否可以重生
 				if (mPlayerLife-- <= 0)
@@ -775,7 +778,7 @@ void PlayerBase::Reborn()
 
 	mBullet_1_counter = 6;				// 子弹 1 运动 N 个循环后才可以发射子弹 2 
 	mMoving = false;
-	mRing.SetShowable();			// 显示保护环
+	mRing.SetShowable(3222);			// 显示保护环
 }
 
 void PlayerBase::DispatchProp(int prop_kind)
@@ -804,7 +807,7 @@ void PlayerBase::DispatchProp(int prop_kind)
 		mShovelProp = true;
 		break;
 	case  CAP_PROP:			// 帽子
-		mRing.SetShowable();
+		mRing.SetShowable(12000);
 		break;
 	default:
 		break;
