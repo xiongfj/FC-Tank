@@ -24,8 +24,6 @@ public:
 	void Bombing(const HDC&);
 	virtual bool BeKill(bool killanyway);			// 敌机被消灭, 清除 SignBox 标记, 参数表示玩家获得地雷直接kill掉BigestTank
 	bool Blasting(const HDC& );		// 显示坦克爆炸图, true 标识爆炸完,GameControl 获取返回值然后将该敌机删除
-	//.bool IsShootCamp();				// 是否击中大本营, GeamControl 内循环检测
-	//int  IsShootToPlayer();			// 获取被击中的玩家 id
 
 	/*由 GameControl 内设置, 设置 mPause, 然后 ShootBullet() 检测停止发射子弹*/
 	static void SetPause(bool);
@@ -71,6 +69,8 @@ protected:
 	bool mTankNumberReduce;		// 当四角星开始, true-坦克总数减一,然后设该值=false, 只减一次
 
 	BulletStruct mBulletStruct;
+	int mShootCounter;		// 设置一个随机数, 随机计数差后发射子弹
+
 	BombStruct mBombS;			// 爆炸结构体
 	BlastStruct mBlast;			// 坦克爆炸结构
 	StarClass mStar;			// 四角星闪烁类

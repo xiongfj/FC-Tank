@@ -46,7 +46,6 @@ private:
 	void CheckKillEnemy(PlayerBase*);		// 检测玩家是否击中敌机, 击中则删除该敌机
 	void IsGameOver();				// 循环检测是否flag,  gameover
 	void IsWinOver();				// 消灭所有敌机胜利过关
-	//bool ShowGameOverAfterScorePanel();		// 如果失败, 分数面板结束后显示 GAMEOVER 字样
 
 public:
 	static int mCurrentStage;						// [1-35] 当前关卡, SelectPanel 内使用, 本类内使用
@@ -82,7 +81,6 @@ private:
 	IMAGE mGameOverImage;			//
 
 	// 初始 mActiveEnemyTankNumber + mRemainEnemyTankNumber = 20
-	//int mOutedEnemyTankNumber;		// 累计已经添加到显示列表的敌机数, 包括已经被消灭的,当前移动的,在队列中还没有出现的敌机
 	int mRemainEnemyTankNumber;		// 余下未显示的敌机数量, 初始值=20, 出现一架敌机该值减一
 	int mCurMovingTankNumber;		// 当前出现的敌机数量
 	int mKillEnemyNum;				// 已经消灭的敌机数
@@ -91,11 +89,11 @@ private:
 	bool mCampDie;					// 大本营被击中, 不再 Camp 贴图 
 
 	bool mEnemyPause;			// 是否可以移动敌机
-	int mEnemyPauseCounter;		// 敌机暂停计数
+	//int mEnemyPauseCounter;		// 敌机暂停计数
+	TimeClock mEnemyPauseTimer;		// 敌机暂停多久
 
 	TimeClock mMainTimer;			// 控制绘图频率
 	TimeClock mCampTimer;		// Camp 爆炸速度
-	//TimeClock mScorePanelTimer1; // GameOver 显示完后多久显示分数面板
 
 	int mGameOverCounter;
 	int mGameOverX, mGameOverY;	// 
@@ -115,5 +113,4 @@ private:
 	IMAGE msgoas_image;
 	int msgoas_y;		// 上升坐标
 	int msgoas_counter;
-	//TimeClock msgoas_Timer;
 };

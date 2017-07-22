@@ -68,7 +68,8 @@ void GameControl::Init()
 	mCampDie = false;															// 标志大本营是否被击中
 
 	mEnemyPause = false;			// 敌机暂停与否
-	mEnemyPauseCounter = 0;			// 敌机暂停多久
+	//mEnemyPauseCounter = 0;		
+	mEnemyPauseTimer.SetDrtTime(10000);	// 敌机暂停多久
 
 	mMainTimer.SetDrtTime(14);
 	mCampTimer.SetDrtTime(23);
@@ -630,7 +631,8 @@ bool GameControl::RefreshData()
 	if (PlayerBase::IsGetTimeProp())
 	{
 		mEnemyPause = true;
-		mEnemyPauseCounter = 0;
+		mEnemyPauseTimer.Init();		// 重置 t1 = t2
+		//.mEnemyPauseCounter = 0;
 		EnemyBase::SetPause(true);
 	}
 
@@ -744,10 +746,10 @@ bool GameControl::RefreshData()
 		{
 			(*EnemyItor)->TankMoving(mCenter_hdc);
 		}
-		else if (mEnemyPauseCounter++ > 14300)
+		else if (mEnemyPauseTimer.IsTimeOut())
 		{
 			mEnemyPause = false;
-			mEnemyPauseCounter = 0;;
+			//.mEnemyPauseCounter = 0;;
 			(*EnemyItor)->SetPause(false);
 		}
 	}

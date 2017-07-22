@@ -14,7 +14,6 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 	mEnemyTankKind = kind;
 	mEnemyTankLevel = level;
 	mDied = false;
-	//.mIsShootCamp = false;
 	bms = b;
 
 	int tempx[3] = {BOX_SIZE, 13 * BOX_SIZE, 25 * BOX_SIZE};	// 坦克随机出现的三个位置 x 坐标
@@ -40,6 +39,8 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 	for (int i = 0; i < 4; i++)
 		mBulletStruct.speed[i] = 3;		// 不能超过 4
 	mBulletStruct.mKillId = 0;			// 记录击中玩家坦克的id
+
+	mShootCounter = rand() % 100 + 100;	// 随机间隔发射子弹
 	
 	// 爆炸图片
 	mBombS.mBombX = -100;
@@ -54,7 +55,7 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 	mBulletTimer.SetDrtTime(30);
 
 	// 发射子弹频率
-	mShootTimer.SetDrtTime(30);
+	mShootTimer.SetDrtTime( rand() % 1000 + 700 );
 
 	// 子弹爆炸速度
 	mBombTimer.SetDrtTime(37);
@@ -193,7 +194,7 @@ void EnemyBase::DrawBullet(const HDC& center_hdc)
 //
 bool EnemyBase::ShootBullet()
 {
-	if ( mPause || mBulletStruct.x != SHOOTABLE_X || !mShootTimer.IsTimeOut() || mDied || mStar.mIsOuted == false )
+	if ( mPause || mBulletStruct.x != SHOOTABLE_X || mShootTimer.IsTimeOut() == false || mDied || mStar.mIsOuted == false )
 		return false;
 
 	// 子弹发射点坐标
@@ -209,13 +210,9 @@ bool EnemyBase::ShootBullet()
 BulletShootKind EnemyBase::BulletMoving()
 {
 	// 如果子弹没有移动或者敌机死亡
-	if (mBulletStruct.x == SHOOTABLE_X/* || mDied */|| !mBulletTimer.IsTimeOut() )
+	if (mBulletStruct.x == SHOOTABLE_X/* || mDied*/ || !mBulletTimer.IsTimeOut() )
 		return BulletShootKind::None;
 	
-	// 如果玩家吃到暂停道具
-	//if (CheckPause())
-	//	return;
-
 	// 如果子弹在爆炸
 	BulletShootKind result = CheckBomb();
 	switch (result)
