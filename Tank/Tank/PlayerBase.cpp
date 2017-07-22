@@ -75,13 +75,6 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		loadimage(&StarClass::mStarImage[i], buf);
 	}
 
-	// 出生保护环
-	for (int i = 0; i < 2; i++)
-	{
-		_stprintf_s(buf, _T("./res/big/ring%d.gif"), i);
-		loadimage(&RingClass::image[i], buf);
-	}
-
 	mBombTimer.SetDrtTime(20);	// 不能设置太小..
 	mBlastTimer.SetDrtTime(36);
 

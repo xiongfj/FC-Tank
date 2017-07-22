@@ -53,6 +53,14 @@ void StarClass::Init()
 IMAGE RingClass::image[2];
 RingClass::RingClass()
 {
+	TCHAR buf[100];
+	// 出生保护环
+	for (int i = 0; i < 2; i++)
+	{
+		_stprintf_s(buf, _T("./res/big/ring%d.gif"), i);
+		loadimage(&RingClass::image[i], buf);
+	}
+
 	Init();
 }
 
