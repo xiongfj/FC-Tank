@@ -11,11 +11,6 @@
 #pragma comment ( lib, "Winmm.lib" )
 using namespace std;
 
-// irrklang
-#include "./irrklang/include/irrklang.h"
-#pragma comment (lib, "./irrklang/lib/irrklang.lib")
-using namespace irrklang;
-
 // GDI
 #include <wingdi.h>
 #pragma comment (lib, "msimg32.lib")

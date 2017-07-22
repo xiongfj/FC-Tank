@@ -503,7 +503,7 @@ void GameControl::ShowStage()
 	StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 	FlushBatchDraw();
 
-	Sleep(1700);
+	Sleep(1300);
 
 	MciSound::_PlaySound(S_BK);
 }
