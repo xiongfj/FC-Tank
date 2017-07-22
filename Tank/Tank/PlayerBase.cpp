@@ -581,9 +581,11 @@ void PlayerBase::BeKill()
 	/*m mDied = true;*/		// 必须立即 flag , 玩家移动检测该值!!
 
 	// 设置爆炸坐标
-	mBlast.blastx = mTankX;
-	mBlast.blasty = mTankY;
-	mBlast.canBlast = true;
+	//mBlast.blastx = ;
+	//mBlast.blasty = ;
+	//mBlast.canBlast = true;
+
+	mBlast.StartBlasting(mTankX, mTankY);
 }
 
 // 玩家被击中爆炸

@@ -60,6 +60,13 @@ BlastState BlastStruct::Blasting(const HDC& center_hdc)
 	return BlastState::NotBlast;
 }
 
+void BlastStruct::StartBlasting(int tankx, int tanky)
+{
+	blastx = tankx;
+	blasty = tanky;
+	canBlast = true;
+}
+
 //-----------------------------------------
 
 IMAGE StarClass::mStarImage[4];

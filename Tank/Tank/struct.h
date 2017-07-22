@@ -164,6 +164,9 @@ public:
 	其余情况返回 */
 	BlastState Blasting(const HDC& );
 
+	/*设置开始爆炸标志 和 传递坐标*/
+	void StartBlasting(int tankx, int tanky);
+
 	static IMAGE image[5];
 	int blastx, blasty;			// 中心坐标, 32*32
 	bool canBlast;
