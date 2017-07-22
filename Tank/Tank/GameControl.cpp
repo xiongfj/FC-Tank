@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GameControl.h"
 #include "typeinfo.h"
-#include "IrrklangSound.h"
+#include "MciSound.h"
 
 int GameControl::mCurrentStage = 1;	// [1-35]
 GameControl::GameControl( HDC des_hdc, HDC image_hdc/*, BoxMarkStruct* bms*/)
@@ -340,7 +340,6 @@ bool GameControl::CreateMap(bool* isCreate)
 
 void GameControl::GameLoop()
 {
-	//IrrklangSound::_PlaySound(S_START);
 	MciSound::_PlaySound(S_START);
 	CutStage();
 	ShowStage();
@@ -389,7 +388,6 @@ GameResult GameControl::StartGame()
 
 						mCurrentStage++;
 						LoadMap();
-						//IrrklangSound::_PlaySound(S_START);
 						MciSound::_PlaySound(S_START);
 						CutStage();
 						ShowStage();
@@ -398,7 +396,6 @@ GameResult GameControl::StartGame()
 					{
 						mCurrentStage = 1;
 						mShowGameOverAfterScorePanel = true;
-						//IrrklangSound::_PlaySound(S_FAIL);
 						MciSound::_PlaySound(S_FAIL);
 					}
 					break;
@@ -507,8 +504,6 @@ void GameControl::ShowStage()
 	FlushBatchDraw();
 
 	Sleep(1700);
-
-	//IrrklangSound::_PlaySound(S_BK);
 
 	MciSound::_PlaySound(S_BK);
 }
@@ -685,11 +680,8 @@ bool GameControl::RefreshData()
 			mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
 			mGameOverY = CENTER_HEIGHT;
 			mGameOverFlag = true;
-			//IrrklangSound::_PlaySound(S_CAMP_BOMB);
 			MciSound::_PlaySound(S_CAMP_BOMB);
 
-			//IrrklangSound::PauseBk(true);
-			//IrrklangSound::PauseMove(true);
 			MciSound::PauseBk(true);
 			MciSound::PauseMove(true);
 			break;
@@ -740,11 +732,8 @@ bool GameControl::RefreshData()
 			mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
 			mGameOverY = CENTER_HEIGHT;
 			mGameOverFlag = true;
-			//IrrklangSound::_PlaySound(S_CAMP_BOMB);
 			MciSound::_PlaySound(S_CAMP_BOMB);
 
-			//IrrklangSound::PauseBk(true);
-			//IrrklangSound::PauseMove(true);
 			MciSound::PauseBk(true);
 			MciSound::PauseMove(true);
 			break;
@@ -1036,7 +1025,6 @@ void GameControl::IsWinOver()
 {
 	if (mWin && mWinCounter++ > 210 && !mGameOverFlag && mShowScorePanel == false)
 	{
-		//IrrklangSound::PauseBk(true);
 		MciSound::PauseBk(true);
 		mShowScorePanel = true;
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)

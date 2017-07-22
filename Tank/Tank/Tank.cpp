@@ -3,7 +3,7 @@
 #include "struct.h"
 #include "SelectPanel.h"
 #include "GameControl.h"
-#include "IrrklangSound.h"
+#include "MciSound.h"
 
 #define ONE_PLAYER	1		// 不能修改该值!! 已经用于数组下标!!
 #define TWO_PLAYER	2
@@ -35,9 +35,6 @@ void main()
 {
 	srand((unsigned)time(0));
 	bool isCustomMap = false;		// 自定义地图
-	//IrrklangSound::InitSounds();
-	//IrrklangSound::_PlaySound(S_PLAYER_MOVE);			// 先加载玩家移动声音, 此时是暂停的, 后面有玩家控制播放
-
 	MciSound::InitSounds();
 
 	// 灰色背景

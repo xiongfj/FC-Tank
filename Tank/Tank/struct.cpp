@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "struct.h"
-#include "IrrklangSound.h"
-
+#include "MciSound.h"
 
 // ---------------- 子弹结构静态数据
 IMAGE BulletStruct::mBulletImage[4];
@@ -296,7 +295,6 @@ bool ScorePanel::show(const HDC& image_hdc)
 			if (temp <= kill_num[i])
 			{
 				kill_num2[i]++;
-				//IrrklangSound::_PlaySound(S_SCOREPANEL_DI);
 				MciSound::_PlaySound(S_SCOREPANEL_DI);
 				break;
 			}
@@ -443,7 +441,6 @@ bool ScorePanel::show(const HDC& image_hdc)
 			
 		// 只播放一次
 		if (end_counter == 0 && player_num == 2 && who_bunds[0] + who_bunds[1] > 2000)
-			//IrrklangSound::_PlaySound(S_BOUNS1000);
 			MciSound::_PlaySound(S_BOUNS1000);
 
 		if (end_counter++ > 30)

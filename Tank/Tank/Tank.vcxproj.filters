@@ -45,7 +45,7 @@
     <ClInclude Include="TimeClock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IrrklangSound.h">
+    <ClInclude Include="MciSound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -77,7 +77,7 @@
     <ClCompile Include="TimeClock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IrrklangSound.cpp">
+    <ClCompile Include="MciSound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

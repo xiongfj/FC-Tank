@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "PlayerBase.h"
-#include "IrrklangSound.h"
+#include "MciSound.h"
 
 //----------------- PlayerBase 类静态数据
 
@@ -345,7 +345,6 @@ bool PlayerBase::PlayerControl()
 				mRandCounter = rand() % 8 + 7;
 			}
 			if (mMoving == false) {
-				//IrrklangSound::PauseMove(false);
 				MciSound::PauseMove(false);
 			}
 			mMoving = true;
@@ -362,7 +361,6 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				//IrrklangSound::PauseMove(false);
 				MciSound::PauseMove(false);
 			mMoving = true;
 			Move(DIR_UP);
@@ -378,7 +376,6 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				//IrrklangSound::PauseMove(false);
 				MciSound::PauseMove(false);
 			mMoving = true;
 			Move(DIR_RIGHT);
@@ -393,7 +390,6 @@ bool PlayerBase::PlayerControl()
 				mRandCounter = rand() % 8 + 7;
 			}
 			if (mMoving == false)
-				//IrrklangSound::PauseMove(false);
 				MciSound::PauseMove(false);
 			mMoving = true;
 			Move(DIR_DOWN);
@@ -401,7 +397,6 @@ bool PlayerBase::PlayerControl()
 		else if (mMoving)
 		{
 			mMoving = false;
-			//IrrklangSound::PauseMove(true);
 			MciSound::PauseMove(true);
 		}
 
@@ -411,11 +406,9 @@ bool PlayerBase::PlayerControl()
 			if (!ShootBullet(0))
 			{
 				if (ShootBullet(1))
-					//IrrklangSound::_PlaySound(S_SHOOT);
 					MciSound::_PlaySound(S_SHOOT1);
 			}
 			else
-				//IrrklangSound::_PlaySound(S_SHOOT);
 				MciSound::_PlaySound(S_SHOOT0);
 		}
 		break;
@@ -432,7 +425,6 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				//IrrklangSound::PauseMove(false);
 				MciSound::PauseMove(false);
 			mMoving = true;
 			Move(DIR_LEFT);
@@ -448,7 +440,6 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				//IrrklangSound::PauseMove(false);
 				MciSound::PauseMove(false);
 			mMoving = true;
 			Move(DIR_UP);
@@ -464,7 +455,6 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				//IrrklangSound::PauseMove(false);
 				MciSound::PauseMove(false);
 			mMoving = true;
 			Move(DIR_RIGHT);
@@ -480,15 +470,12 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				//IrrklangSound::PauseMove(false);
 				MciSound::PauseMove(false);
 			mMoving = true;
 			Move(DIR_DOWN);
 		}
 		else if (mMoving)
 		{
-			//printf("asdas\n");
-			//IrrklangSound::PauseMove(true);
 			MciSound::PauseMove(true);
 			mMoving = false;
 		}
@@ -499,11 +486,9 @@ bool PlayerBase::PlayerControl()
 			if (!ShootBullet(0))
 			{
 				if (ShootBullet(1))
-					//IrrklangSound::_PlaySound(S_SHOOT);
 					MciSound::_PlaySound(S_SHOOT3);
 			}
 			else
-				//IrrklangSound::_PlaySound(S_SHOOT);
 				MciSound::_PlaySound(S_SHOOT2);
 		}
 		break;
@@ -596,7 +581,6 @@ void PlayerBase::BeKill()
 	if (mRing.canshow)
 		return;
 	
-	//IrrklangSound::_PlaySound(S_PLAYER_BOMB);
 	MciSound::_PlaySound(S_PLAYER_BOMB);
 	SignBox_4(mTankX, mTankY, _EMPTY);
 	mDied = true;		// 必须立即 flag , 玩家移动检测该值!!
@@ -720,7 +704,6 @@ void PlayerBase::SetShowProp()
 		if (CheckBox_8(n, m))
 			break;
 	}
-	//IrrklangSound::_PlaySound(S_PROPOUT);
 	MciSound::_PlaySound(S_PROPOUT);
 	mProp->StartShowProp(n, m);
 }
@@ -804,14 +787,12 @@ void PlayerBase::Reborn()
 
 void PlayerBase::DispatchProp(int prop_kind)
 {
-	//IrrklangSound::_PlaySound(S_GETPROP);
 	MciSound::_PlaySound(S_GETPROP);
 	mProp->StopShowProp(true);
 
 	switch (prop_kind)
 	{
 	case ADD_PROP:			// 加机
-		//IrrklangSound::_PlaySound(S_ADDLIFE);
 		MciSound::_PlaySound(S_ADDLIFE);
 		mPlayerLife = mPlayerLife + 1 > 5 ? 5 : mPlayerLife + 1;
 		break;
@@ -1068,11 +1049,6 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 		mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 		mBombS[i].counter = 0;
 
-		// 不同玩家不同子弹各自设置一个声音,不然会覆盖
-		///TCHAR temp[20];
-		///_stprintf_s(temp, _T("bin%d%d"), player_id, i);
-		///_PlaySound(NULL, _T("bb.wav"), temp);
-		//IrrklangSound::_PlaySound(S_BIN);
 		MciSound::_PlaySound(S_BIN);
 
 		return BulletShootKind::Other;
@@ -1261,8 +1237,6 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 				bms->box_4[tempx][tempy] = _CLEAR;
 			else if (mPlayerTankLevel < 3 && bms->box_4[tempx][tempy] == _STONE && bin_once == false)
 			{
-				// 不同玩家不同子弹各自设置一个声音,不然会覆盖
-				//IrrklangSound::_PlaySound(S_BIN);
 				MciSound::_PlaySound(S_BIN);
 				bin_once = true;
 			}
@@ -1304,8 +1278,6 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 				bms->box_4[tempx][tempy] = _CLEAR;
 			else if (mPlayerTankLevel < 3 && bms->box_4[tempx][tempy] == _STONE && bin_once == false)
 			{
-				// 不同玩家不同子弹各自设置一个声音,不然会覆盖
-				//IrrklangSound::_PlaySound(S_BIN);
 				MciSound::_PlaySound(S_BIN);
 				bin_once = true;
 			}

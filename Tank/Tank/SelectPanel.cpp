@@ -122,31 +122,3 @@ EnumSelectResult SelectPanel::ShowSelectPanel()
 	}
 	return Error;
 }
-/*
-void SelectPanel::ShowStage()
-{
-	// 灰色背景
-	//mGraphics->DrawImage(mGrayBackgroundImage, 0, 0, CANVAS_WIDTH + 10, CANVAS_HEIGHT + 10);	// +10 去掉由于拉伸的边缘变色
-	StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, 
-		GetImageHDC(&mGrayBackgroundImage), 0, 0, 66, 66, SRCCOPY);
-
-	//mGraphics->DrawImage(mCurrentStageImage, 97, 103, 39, 7);									// "STAGE" 字样
-	TransparentBlt(mImage_hdc, 97, 103, 39, 7, GetImageHDC(&mCurrentStageImage), 0, 0, 39, 7, 0xffffff);
-
-	// [1-9] 关卡，单个数字
-	if ( GameControl::mCurrentStage < 10 )
-		TransparentBlt(mImage_hdc, 157, 103, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE,
-			GetImageHDC(&mBlackNumberImage), BLACK_NUMBER_SIZE * GameControl::mCurrentStage, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0xffffff );
-	else	// 10,11,12 .. 双位数关卡
-	{
-		TransparentBlt(mImage_hdc, 157, 103, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE,
-			GetImageHDC(&mBlackNumberImage), BLACK_NUMBER_SIZE * (GameControl::mCurrentStage / 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0xffffff);
-
-		TransparentBlt(mImage_hdc, 157, 103, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE,
-			GetImageHDC(&mBlackNumberImage), BLACK_NUMBER_SIZE * (GameControl::mCurrentStage % 10), 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0xffffff);
-	}
-	StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
-	FlushBatchDraw();
-
-	Sleep(300);
-}*/
