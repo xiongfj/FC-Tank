@@ -150,7 +150,7 @@ void PropClass::StartShowProp(int _i, int _j)
 	leftx = _j * BOX_SIZE;// (rand() % 25 + 1) * BOX_SIZE;
 	topy = _i * BOX_SIZE; //(rand() % 25 + 1) * BOX_SIZE;
 	can_show = true;
-	prop_kind = rand() % 6;		// 随机出现一个道具
+	prop_kind = CAP_PROP;// rand() % 6;		// 随机出现一个道具
 	index_counter = 0;
 	SignPropBox(PROP_SIGN + prop_kind);
 }

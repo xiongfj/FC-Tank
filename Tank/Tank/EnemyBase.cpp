@@ -48,8 +48,9 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 	mBombS.canBomb = false;
 	mBombS.counter = 0;
 
-	// 敌机移动时间间隔
-	mTankTimer.SetDrtTime(30);
+	// 不同级别敌机移动时间间隔
+	int movelevel[4] = { 30, 15, 27, 25};
+	mTankTimer.SetDrtTime(movelevel[mEnemyTankLevel]);
 
 	// 子弹移动时间间隔
 	mBulletTimer.SetDrtTime(30);
