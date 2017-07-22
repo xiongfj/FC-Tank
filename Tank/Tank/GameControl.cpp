@@ -420,8 +420,8 @@ GameResult GameControl::StartGame()
 			StretchBlt(mDes_hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
 			FlushBatchDraw();
 
-			msgoas_y = msgoas_y - 2 > 56 ? msgoas_y - 2: 56;
-			if (msgoas_y == 56)
+			msgoas_y = msgoas_y - 2 > 66 ? msgoas_y - 2: 66;
+			if (msgoas_y == 66)
 				msgoas_counter++;
 
 			if (msgoas_counter > 200)

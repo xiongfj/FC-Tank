@@ -264,7 +264,7 @@ bool PlayerBase::ShowStar(const HDC& center_hdc)
 //
 void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 {
-	if (!mStar.mIsOuted || mDied)
+	if (!mStar.mIsOuted || mDied || mBlast.canBlast)
 		return;
 
 	// 0-5不显示坦克. 6-11 显示.. 依次类推
@@ -312,7 +312,7 @@ void PlayerBase::DrawBullet(const HDC & center_hdc)
 //
 bool PlayerBase::PlayerControl()
 {
-	if (mDied || !mStar.mIsOuted)
+	if ( mDied || mBlast.canBlast  || !mStar.mIsOuted)
 		return true;
 
 	// 
@@ -496,7 +496,7 @@ bool PlayerBase::PlayerControl()
 //
 BulletShootKind PlayerBase::BulletMoving(const HDC& center_hdc)
 {
-	if (mDied || mBulletTimer.IsTimeOut() == false)
+	if ( mDied /*|| mBlast.canBlast*/ || mBulletTimer.IsTimeOut() == false)
 		return BulletShootKind::None;
 
 
@@ -578,7 +578,7 @@ void PlayerBase::BeKill()
 	
 	MciSound::_PlaySound(S_PLAYER_BOMB);
 	SignBox_4(mTankX, mTankY, _EMPTY);
-	mDied = true;		// 必须立即 flag , 玩家移动检测该值!!
+	/*m mDied = true;*/		// 必须立即 flag , 玩家移动检测该值!!
 
 	// 设置爆炸坐标
 	mBlast.blastx = mTankX;
@@ -605,7 +605,7 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 				// 检测是否可以重生
 				if (mPlayerLife-- <= 0)
 				{
-					//mDied = true;
+					mDied = true;/*m*/
 					mShowGameOver = true;
 					mPlayerLife = 0;
 					return true;
@@ -760,7 +760,7 @@ void PlayerBase::SignBullet(int lx, int ty, byte dir, int val)
 //---------------------------------------------------------------- private function ---------
 void PlayerBase::Reborn()
 {
-	mDied = false;
+	/*m mDied = false;*/
 	mTankX = (4 + 4 * player_id) * 16 + BOX_SIZE;				// 坦克首次出现时候的中心坐标
 	mTankY = 12 * 16 + BOX_SIZE;
 	SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);		// 坦克出现, 将四角星标记改为坦克标记
@@ -817,7 +817,7 @@ void PlayerBase::DispatchProp(int prop_kind)
 // 变向的同时调整坦克所在格子. 必须保证坦克中心在格子线上
 void PlayerBase::Move(int new_dir)
 {
-	if (!mTankTimer.IsTimeOut() || mDied)
+	if (!mTankTimer.IsTimeOut() || mDied || mBlast.canBlast)
 		return;
 
 	// 如果玩家被另一个玩家击中暂停
