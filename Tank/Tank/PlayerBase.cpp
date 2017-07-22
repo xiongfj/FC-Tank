@@ -76,7 +76,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	}
 
 	mBombTimer.SetDrtTime(20);	// 不能设置太小..
-	mBlastTimer.SetDrtTime(36);
+	//mBlastTimer.SetDrtTime(36);
 
 	// 显示分数面板
 	mScorePanel = new ScorePanel(player_id);
@@ -264,7 +264,7 @@ bool PlayerBase::ShowStar(const HDC& center_hdc)
 //
 void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 {
-	if (!mStar.mIsOuted || mDied || mBlast.canBlast)
+	if (!mStar.mIsOuted || mDied || mBlast.IsBlasting())
 		return;
 
 	// 0-5不显示坦克. 6-11 显示.. 依次类推
@@ -312,7 +312,7 @@ void PlayerBase::DrawBullet(const HDC & center_hdc)
 //
 bool PlayerBase::PlayerControl()
 {
-	if ( mDied || mBlast.canBlast  || !mStar.mIsOuted)
+	if ( mDied || mBlast.IsBlasting() || !mStar.mIsOuted)
 		return true;
 
 	// 
@@ -846,7 +846,7 @@ void PlayerBase::DispatchProp(int prop_kind)
 // 变向的同时调整坦克所在格子. 必须保证坦克中心在格子线上
 void PlayerBase::Move(int new_dir)
 {
-	if (!mTankTimer.IsTimeOut() || mDied || mBlast.canBlast)
+	if (!mTankTimer.IsTimeOut() || mDied || mBlast.IsBlasting())
 		return;
 
 	// 如果玩家被另一个玩家击中暂停

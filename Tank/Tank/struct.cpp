@@ -67,6 +67,11 @@ void BlastStruct::StartBlasting(int tankx, int tanky)
 	canBlast = true;
 }
 
+bool BlastStruct::IsBlasting()
+{
+	return canBlast;
+}
+
 //-----------------------------------------
 
 IMAGE StarClass::mStarImage[4];

@@ -235,7 +235,7 @@ private:
 	TimeClock mTankTimer;			// 坦克移动计时器
 	TimeClock mBulletTimer;			// 子弹移动速度
 	TimeClock mBombTimer;	//bug?		// 子弹爆炸速度
-	TimeClock mBlastTimer;			// 坦克爆炸速度
+	//TimeClock mBlastTimer;			// 坦克爆炸速度
 
 	ScorePanel* mScorePanel;		// 关卡结束后显示分数结果
 
