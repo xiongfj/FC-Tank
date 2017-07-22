@@ -72,7 +72,7 @@ void GameControl::Init()
 	mEnemyPauseTimer.SetDrtTime(10000);	// 敌机暂停多久
 
 	mMainTimer.SetDrtTime(14);
-	mCampTimer.SetDrtTime(23);
+	mCampTimer.SetDrtTime(33);
 
 	mCutStageCounter = 0;		// STAGE 字样计数
 
@@ -865,7 +865,7 @@ void GameControl::RefreshCenterPanel()
 			(*itor)->DrawPlayerTank(mCenter_hdc);		// 坦克
 			(*itor)->DrawBullet(mCenter_hdc);
 			CheckKillEnemy(*itor);
-			if ((*itor)->IsShootCamp())
+			/*if ((*itor)->IsShootCamp())
 			{
 				if (mBlast.canBlast == false)
 				{
@@ -876,7 +876,7 @@ void GameControl::RefreshCenterPanel()
 						mBlast.canBlast = true;
 					mCampDie = true;
 				}
-			}
+			}*/
 			(*itor)->PlayerGameOver(mCenter_hdc);
 		}
 
@@ -912,19 +912,19 @@ void GameControl::RefreshCenterPanel()
 				//EnemyList.erase(EnemyItor);
 				//break;
 			}
+		}
 
-			// 如果该敌机击中大本营
-			if (mGameOverFlag)
+		// 如果该敌机击中大本营
+		if (mGameOverFlag)
+		{
+			if (mBlast.canBlast == false)
 			{
-				if (mBlast.canBlast == false)
-				{
-					int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
-					TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
-						GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
-					if ( mCampTimer.IsTimeOut() && mBlast.counter++ == 17)
-						mBlast.canBlast = true;
-					mCampDie = true;
-				}
+				int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
+				TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
+					GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+				if ( mCampTimer.IsTimeOut() && mBlast.counter++ == 17)
+					mBlast.canBlast = true;
+				mCampDie = true;
 			}
 		}
 

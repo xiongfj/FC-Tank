@@ -180,7 +180,7 @@ void PlayerBase::Init()
 	mHasSendKillNumToScorePanel = false;
 
 	// 是否击中大本营
-	mIsShootCamp = false;
+	//mIsShootCamp = false;
 
 	// 杀敌数
 	for (i = 0; i< 4; i++)
@@ -558,10 +558,10 @@ void PlayerBase::GetKillEnemy(int& bullet1, int& bullet2)
 }
 
 //
-bool PlayerBase::IsShootCamp()
-{
-	return mIsShootCamp;
-}
+//bool PlayerBase::IsShootCamp()
+//{
+	//return mIsShootCamp;
+//}
 
 void PlayerBase::BeKill()
 {
@@ -1117,7 +1117,7 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 			{
 				mBulletStruct[i].x = SHOOTABLE_X;
 				mBombS[i].counter = 0;
-				mIsShootCamp = true;
+				//mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
 				return BulletShootKind::Camp;
 			}
@@ -1181,7 +1181,7 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 			{
 				mBulletStruct[i].x = SHOOTABLE_X;
 				mBombS[i].counter = 0;
-				mIsShootCamp = true;
+				//mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
 				return BulletShootKind::Camp;
 			}

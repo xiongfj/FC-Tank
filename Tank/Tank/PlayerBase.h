@@ -63,7 +63,7 @@ public:
 	* 检测玩家是否击中大本营
 	* 函数内的成员 mIsShootCamp 在检测子弹击中的函数中赋值
 	*/
-	bool IsShootCamp();
+	//bool IsShootCamp();
 
 	/*
 	* 在 GameControl 内检测调用
@@ -219,7 +219,7 @@ private:
 	BombStruct mBombS[2];					// 爆炸结构体
 	BlastStruct mBlast;				// 坦克爆炸结构, 
 
-	bool mIsShootCamp;				// 是否击中大本营
+	//bool mIsShootCamp;				// 是否击中大本营
 
 	StarClass mStar;				// 坦克出现前的四角星闪烁
 	RingClass mRing;				// 保护圈类
