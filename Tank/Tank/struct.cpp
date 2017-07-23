@@ -156,9 +156,6 @@ Star_State StarClass::ShowStar(const HDC& center_hdc, int tankx, int tanky)
 		if (mStarCounter == 25)
 		{
 			mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
-			/*SignBox_8(mTankX, mTankY, _EMPTY);		// 防止玩家绘制地图把坦克出现的位置遮挡住
-			SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);
-			SetShowable(3222);*/
 			return Star_State::Star_Stop;
 		}
 	}
@@ -167,6 +164,11 @@ Star_State StarClass::ShowStar(const HDC& center_hdc, int tankx, int tanky)
 		GetImageHDC(&mStarImage[mStarIndex]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 
 	return Star_State::Star_Showing;
+}
+
+bool StarClass::IsStop()
+{
+	return mIsOuted;
 }
 
 //------------------------------------------

@@ -190,7 +190,7 @@ public:
 
 	/*PlayerBase 或 EnemyBase 内调用, 参数是坦克坐标*/
 	Star_State ShowStar(const HDC&, int, int );
-
+	bool IsStop();
 
 	static IMAGE mStarImage[4];	// 四角星图片, 有玩家赋值
 	int mStarIndexDev;			// 索引的变化量, -1, 1  -1是star由小变大, 1 是star由大变小

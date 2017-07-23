@@ -93,19 +93,21 @@ EnumSelectResult SelectPanel::ShowSelectPanel()
 		}
 	}
 
-	// 重置数据, 下次才能上升
-	Init();
 
 	// 响应玩家的选择
 	switch( mSelectIndex )
 	{
 	case 0:
-		//ShowStage();
+		// 重置数据, 下次才能上升
+		Init();
 		return OnePlayer;
 	case 1:
-		//ShowStage();
+		// 重置数据, 下次才能上升
+		Init();
 		return TwoPlayer;
 	case 2:
+		// 重置数据, 下次才能上升
+		Init();
 		return Custom;
 	default:
 		throw _T("void SelectPanel::ShowSelectPanel() 异常");

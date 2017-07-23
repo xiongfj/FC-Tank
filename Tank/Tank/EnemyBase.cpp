@@ -87,7 +87,7 @@ void EnemyBase::Init()
 Star_State EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 {
 	// 坦克已经出现,不用闪烁,直接返回
-	if (mStar.mIsOuted == true)
+	if (mStar.IsStop() == true)
 		return Star_State::Tank_Out;
 
 	// 一段时间后才显示四角星, 之前留空
@@ -116,8 +116,21 @@ Star_State EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 		SignBox_4(mTankX, mTankY, STAR_SIGN);
 	}
 
+	switch (mStar.ShowStar(center_hdc, mTankX, mTankY))
+	{
+	case Star_State::Star_Showing:
+		break;
+
+	case Star_State::Star_Stop:
+		SignBox_4(mTankX, mTankY, ENEMY_SIGN + 1000 * mEnemyTankLevel + 100 * mEnemyTankKind + mEnemyId);		// 坦克出现, 将四角星标记改为坦克标记
+		return Star_State::Star_Stop;
+
+	case Star_State::Tank_Out:
+		return Star_State::Tank_Out;
+	}
+
 	// 开始闪烁四角星
-	if (mStar.mStarCounter++ % 2 == 0)
+	/*if (mStar.mStarCounter++ % 2 == 0)
 	{
 		if (mStar.mStarIndex + mStar.mStarIndexDev < 0)
 		{
@@ -143,7 +156,7 @@ Star_State EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
 		GetImageHDC(&StarClass::mStarImage[mStar.mStarIndex]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000 );
-
+		*/
 	return Star_State::Star_Showing;
 }
 
