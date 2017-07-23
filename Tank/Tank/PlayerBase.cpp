@@ -1217,31 +1217,45 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 		{
 			tempx = boxi + temp[i][0];
 			tempy = boxj + temp[i][1];
-			if (bms->box_4[tempx][tempy] == _WALL || mPlayerTankLevel == 3 && bms->box_4[tempx][tempy] == _STONE)
-				bms->box_4[tempx][tempy] = _CLEAR;
-			else if (mPlayerTankLevel < 3 && bms->box_4[tempx][tempy] == _STONE && bin_once == false)
-			{
-				MciSound::_PlaySound(S_BIN);
-				bin_once = true;
-			}
 
 			// 转到 tempx,tempy所在的 8*8 格子索引
 			int n = tempx / 2;
 			int m = tempy / 2;
 
-			// 检测 8*8 格子内的4个 4*4 的小格子是否全部被清除,
-			bool isClear = true;	
-			for (int a = 2 * n; a < 2 * n + 2; a++)
+			if (bms->box_4[tempx][tempy] == _WALL )
 			{
-				for (int b = 2 * m; b < 2 * m + 2; b++)
+				bms->box_4[tempx][tempy] = _CLEAR;
+
+				// 检测 8*8 格子内的4个 4*4 的小格子是否全部被清除,
+				bool isClear = true;
+				for (int a = 2 * n; a < 2 * n + 2; a++)
 				{
-					if (bms->box_4[a][b] != _CLEAR)
-						isClear = false;
+					for (int b = 2 * m; b < 2 * m + 2; b++)
+					{
+						if (bms->box_4[a][b] != _CLEAR)
+							isClear = false;
+					}
+				}
+				if (isClear)
+				{
+					bms->box_8[n][m] = _EMPTY;
 				}
 			}
-			if (isClear)
+			else if (mPlayerTankLevel < 3 && bms->box_4[tempx][tempy] == _STONE && bin_once == false)
+			{
+				MciSound::_PlaySound(S_BIN);
+				bin_once = true;
+			}
+			else if (mPlayerTankLevel == 3 && bms->box_4[tempx][tempy] == _STONE && i % 2 == 0)	// %2==0 防止多余循环判断
 			{
 				bms->box_8[n][m] = _EMPTY;
+				for (int a = 2 * n; a < 2 * n + 2; a++)
+				{
+					for (int b = 2 * m; b < 2 * m + 2; b++)
+					{
+						bms->box_4[a][b] = _CLEAR;
+					}
+				}
 			}
 		}
 	}
@@ -1258,20 +1272,49 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 		{
 			tempx = boxi + temp[i][0];
 			tempy = boxj + temp[i][1];
-			if (bms->box_4[tempx][tempy] == _WALL || mPlayerTankLevel == 3 && bms->box_4[tempx][tempy] == _STONE)
-				bms->box_4[tempx][tempy] = _CLEAR;
-			else if (mPlayerTankLevel < 3 && bms->box_4[tempx][tempy] == _STONE && bin_once == false)
-			{
-				MciSound::_PlaySound(S_BIN);
-				bin_once = true;
-			}
 
 			// 转到 tempx,tempy所在的 8*8 格子索引
 			int n = tempx / 2;
 			int m = tempy / 2;
 
+			if (bms->box_4[tempx][tempy] == _WALL)
+			{
+				bms->box_4[tempx][tempy] = _CLEAR;
+
+				// 检测 8*8 格子内的4个 4*4 的小格子是否全部被清除,
+				bool isClear = true;
+				for (int a = 2 * n; a < 2 * n + 2; a++)
+				{
+					for (int b = 2 * m; b < 2 * m + 2; b++)
+					{
+						if (bms->box_4[a][b] != _CLEAR)
+							isClear = false;
+					}
+				}
+				if (isClear)
+				{
+					bms->box_8[n][m] = _EMPTY;
+				}
+			}
+			else if (mPlayerTankLevel < 3 && bms->box_4[tempx][tempy] == _STONE && bin_once == false)
+			{
+				MciSound::_PlaySound(S_BIN);
+				bin_once = true;
+			}
+			else if (mPlayerTankLevel == 3 && bms->box_4[tempx][tempy] == _STONE && i % 2 == 0)	// %2==0 防止多余循环判断
+			{
+				bms->box_8[n][m] = _EMPTY;
+				for (int a = 2 * n; a < 2 * n + 2; a++)
+				{
+					for (int b = 2 * m; b < 2 * m + 2; b++)
+					{
+						bms->box_4[a][b] = _CLEAR;
+					}
+				}
+			}
+
 			// 检测 8*8 格子内的4个 4*4 的小格子是否全部被清除,
-			bool isClear = true;
+			/*bool isClear = true;
 			for (int a = 2 * n; a < 2 * n + 2; a++)
 			{
 				for (int b = 2 * m; b < 2 * m + 2; b++)
@@ -1283,7 +1326,7 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 			if (isClear)
 			{
 				bms->box_8[n][m] = _EMPTY;
-			}
+			}*/
 		}
 	}
 	break;
