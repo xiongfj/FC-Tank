@@ -181,7 +181,13 @@ public:
 
 
 // 敌机或者玩家的四角星闪烁返回类型
-enum Star_State { Star_Showing, Star_Stop, Tank_Out };
+enum Star_State { 
+	Star_Timing,		// 只用于敌机, 表示当前还没有出现四角星, 还在计时之中
+	Star_Failed,		// 用于敌机, 表示当前位置敌机出现失败
+	Star_Showing,		// 正在闪烁四角星
+	Star_Stop,			// 刚刚停止闪烁
+	Tank_Out };			// 坦克已经出现
+
 class StarClass
 {
 public:
@@ -191,6 +197,8 @@ public:
 	/*PlayerBase 或 EnemyBase 内调用, 参数是坦克坐标*/
 	Star_State ShowStar(const HDC&, int, int );
 	bool IsStop();
+
+	Star_State EnemyShowStar(const HDC&, int, int, const BoxMarkStruct* );
 
 	static IMAGE mStarImage[4];	// 四角星图片, 有玩家赋值
 	int mStarIndexDev;			// 索引的变化量, -1, 1  -1是star由小变大, 1 是star由大变小

@@ -87,7 +87,7 @@ void EnemyBase::Init()
 Star_State EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 {
 	// 坦克已经出现,不用闪烁,直接返回
-	if (mStar.IsStop() == true)
+	/*if (mStar.IsStop() == true)
 		return Star_State::Tank_Out;
 
 	// 一段时间后才显示四角星, 之前留空
@@ -103,30 +103,35 @@ Star_State EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 
 		mStar.mTankOutAfterCounter = rand() % 100 + 10;
 		return Star_State::Star_Showing;
-	}
+	}*/
 
-	// 四角星出现, 剩余坦克数-1;
-	if (mTankNumberReduce)
+
+	Star_State result = mStar.EnemyShowStar(center_hdc, mTankX, mTankY, bms);
+	switch (result)
 	{
-		mEnemyId = TOTAL_ENEMY_NUMBER - remainnumber;
-		remainnumber -= 1;
-		mTankNumberReduce = false;
-
-		// 标记为 STAR_SIGN = 2000, 2000 属于坦克不能穿行的标志
-		SignBox_4(mTankX, mTankY, STAR_SIGN);
-	}
-
-	switch (mStar.ShowStar(center_hdc, mTankX, mTankY))
-	{
+	// Failed, Timing, Showing, Stop 四种情况 GameControl 内不会显示下一架敌机
+	case Star_State::Star_Failed:
+	case Star_State::Star_Timing:
 	case Star_State::Star_Showing:
 		break;
 
 	case Star_State::Star_Stop:
+
+		// 四角星消失. 敌机出现, 剩余坦克数-1;
+		if (mTankNumberReduce)
+		{
+			mEnemyId = TOTAL_ENEMY_NUMBER - remainnumber;
+			remainnumber -= 1;
+			mTankNumberReduce = false;
+
+			// 标记为 STAR_SIGN = 2000, 2000 属于坦克不能穿行的标志
+			SignBox_4(mTankX, mTankY, STAR_SIGN);
+		}
 		SignBox_4(mTankX, mTankY, ENEMY_SIGN + 1000 * mEnemyTankLevel + 100 * mEnemyTankKind + mEnemyId);		// 坦克出现, 将四角星标记改为坦克标记
-		return Star_State::Star_Stop;
+		break;
 
 	case Star_State::Tank_Out:
-		return Star_State::Tank_Out;
+		break;
 	}
 
 	// 开始闪烁四角星
@@ -157,7 +162,7 @@ Star_State EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
 		GetImageHDC(&StarClass::mStarImage[mStar.mStarIndex]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000 );
 		*/
-	return Star_State::Star_Showing;
+	return result;
 }
 
 void EnemyBase::TankMoving(const HDC& center_hdc)

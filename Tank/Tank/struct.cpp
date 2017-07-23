@@ -171,6 +171,59 @@ bool StarClass::IsStop()
 	return mIsOuted;
 }
 
+Star_State StarClass::EnemyShowStar(const HDC &center_hdc, int tankx, int tanky, const BoxMarkStruct* bms)
+{
+	// 坦克已经出现,不用闪烁,直接返回
+	if (mIsOuted == true)
+		return Star_State::Tank_Out;
+
+	// 一段时间后才显示四角星, 之前留空
+	if (mTankOutAfterCounter-- > 0)
+		return Star_State::Star_Timing;
+
+	// 获取坦克左上角的 4*4 下标 
+	int iy = tanky / SMALL_BOX_SIZE - 2;
+	int jx = tankx / SMALL_BOX_SIZE - 2;
+	for (int i = iy; i < iy + 4; i++)
+	{
+		for (int j = jx; j < jx + 4; j++)
+		{
+			// 检测四角星, 玩家,敌机,
+			if (bms->box_4[i][j] != STAR_SIGN && bms->box_4[i][j] > _FOREST)
+				return Star_State::Star_Failed;
+		}
+	}
+
+	// 开始闪烁四角星
+	if (mStarCounter++ % 2 == 0)
+	{
+		if (mStarIndex + mStarIndexDev < 0)
+		{
+			mStarIndex = 1;
+			mStarIndexDev = 1;
+		}
+		else if (mStarIndex + mStarIndexDev > 3)
+		{
+			mStarIndex = 2;
+			mStarIndexDev = -1;
+		}
+		else
+		{
+			mStarIndex += mStarIndexDev;
+		}
+		if (mStarCounter == 35)
+		{
+			mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
+			return Star_State::Star_Stop;
+		}
+	}
+
+	TransparentBlt(center_hdc, tankx - BOX_SIZE, tanky - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
+		GetImageHDC(&mStarImage[mStarIndex]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+
+	return Star_State::Star_Showing;
+}
+
 //------------------------------------------
 IMAGE RingClass::image[2];
 RingClass::RingClass()

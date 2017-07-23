@@ -803,9 +803,9 @@ void GameControl::RefreshCenterPanel()
 	   // 四角星闪烁控制
 		for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 		{
-			// 一个四角星动画结束后再执行下一个
+			// 如果当前敌机还没有出现, 不会遍历下一架敌机
 			Star_State result = (*EnemyItor)->ShowStar(mCenter_hdc, mRemainEnemyTankNumber);
-			if (result == Star_State::Star_Showing)
+			if (result != Star_State::Tank_Out)
 				break;
 		}
 
