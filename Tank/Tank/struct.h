@@ -156,7 +156,9 @@ public:
 	~BlastStruct() {}
 	void Init();
 
-	/*PlayerBase 或 EnemyBase 内调用, 循环检测坦克爆炸
+	BlastState CampBlasting(const HDC&);
+
+	/*PlayerBase 内调用, 循环检测坦克爆炸
 	爆炸完毕返回 BLAST_END
 	其余情况返回 */
 	BlastState Blasting(const HDC&);

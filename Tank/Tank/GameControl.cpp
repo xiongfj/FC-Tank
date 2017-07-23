@@ -236,8 +236,8 @@ bool GameControl::CreateMap(bool* isCreate)
 				{
 					for (j = 0; j < 26; j++)
 					{
-						// 根据 8*8 标记 4*4 格子
-						if (mBoxMarkStruct->box_8[i][j] != _EMPTY)
+						// 根据 8*8 标记 4*4 格子, 大本营值标记 box_8
+						if (mBoxMarkStruct->box_8[i][j] != _EMPTY && mBoxMarkStruct->box_8[i][j] != CAMP_SIGN)
 							SignBox_4(i, j, mBoxMarkStruct->box_8[i][j]);
 
 						// 清空敌机出现的三个位置
@@ -567,7 +567,7 @@ void GameControl::AddEnemy()
 {
 	int size = EnemyList.size();
 
-	if (mCurMovingTankNumber >= 6 || TOTAL_ENEMY_NUMBER - size <= 0)
+	if (mCurMovingTankNumber >= 16 || TOTAL_ENEMY_NUMBER - size <= 0)
 		return;
 	mCurMovingTankNumber++;
 
@@ -680,6 +680,10 @@ bool GameControl::RefreshData()
 			mGameOverY = CENTER_HEIGHT;
 			mGameOverFlag = true;
 
+			// 大本营爆炸
+			mCampDie = true;
+			mBlast.SetBlasting(11, 23);
+
 			MciSound::_PlaySound(S_CAMP_BOMB);
 			MciSound::PauseBk(true);
 			MciSound::PauseMove(true);
@@ -717,33 +721,29 @@ bool GameControl::RefreshData()
 		{
 		case BulletShootKind::Player_1:
 		case BulletShootKind::Player_2:
+			for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 			{
-				//bool all_die = true;		// 玩家都被消灭与否
-				for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
+				if ((*itor)->GetID() + PLAYER_SIGN == result)
 				{
-					if ((*itor)->GetID() + PLAYER_SIGN == result)
-					{
-						(*itor)->BeKill();
-						//if (!(*itor)->IsLifeEnd())
-							//all_die = false;
-						break;
-					}
+					(*itor)->BeKill();
+					break;
 				}
-
-				// 所有玩家被消灭
-				/*if (all_die)
-				{
-					mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
-					mGameOverY = CENTER_HEIGHT;
-					mGameOverFlag = true;
-				}*/
-					
 			}
 			break;
+
 		case BulletShootKind::Camp:
-			mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
-			mGameOverY = CENTER_HEIGHT;
-			mGameOverFlag = true;
+
+			// 如果之前没有设置过该 flag (玩家被消灭完hi设置该 flag, 此时不用再次设置)
+			if (mGameOverFlag == false)
+			{
+				mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
+				mGameOverY = CENTER_HEIGHT;
+				mGameOverFlag = true;
+			}
+
+			// 大本营爆炸
+			mCampDie = true;
+			mBlast.SetBlasting(11, 23);
 
 			MciSound::_PlaySound(S_CAMP_BOMB);
 			MciSound::PauseBk(true);
@@ -907,7 +907,7 @@ void GameControl::RefreshCenterPanel()
 		}
 
 		// 如果该敌机击中大本营
-		if (mGameOverFlag)
+		/*if (mGameOverFlag)
 		{
 			if (mBlast.canBlast == false)
 			{
@@ -918,18 +918,31 @@ void GameControl::RefreshCenterPanel()
 					mBlast.canBlast = true;
 				mCampDie = true;
 			}
-		}
+		}*/
 
+		bool player_all_die = true;
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
 			(*itor)->Bombing(mCenter_hdc);
-			if ((*itor)->Blasting(mCenter_hdc) == BlastState::BlastEnd)
+			if ((*itor)->Blasting(mCenter_hdc) == true)		// 玩家生命用光
 			{
-				// 不能 delete, 还需要显示玩家分数面板
-				//delete *itor;
-				//PlayerList.erase(itor);
-				///break;
+				// 如果是双人玩家, 并且有一个玩家还没有被消灭, 那么当前这个被消灭的玩家就显示 gameover 字样
+				if (PlayerList.size() == 2 && (PlayerList.front()->IsLifeEnd() == false || PlayerList.back()->IsLifeEnd() == false))
+					(*itor)->SetShowGameover();
 			}
+			if (!(*itor)->IsLifeEnd())
+				player_all_die = false;
+		}
+
+		// 玩家被消灭完
+		if (player_all_die && mGameOverFlag == false)
+		{
+			mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
+			mGameOverY = CENTER_HEIGHT;
+			mGameOverFlag = true;
+
+			MciSound::PauseBk(true);
+			MciSound::PauseMove(true);
 		}
 
 		// 道具闪烁, 内部自定义时钟
@@ -941,10 +954,15 @@ void GameControl::RefreshCenterPanel()
 			TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
 				GetImageHDC(&mCamp[0]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 		}
-		else if (mBlast.canBlast)	// 如果爆炸完毕, 显示被摧毁的camp
+		else	// 显示被摧毁的camp
 		{
 			TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
 				GetImageHDC(&mCamp[1]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+		}
+
+		switch (mBlast.CampBlasting(mCenter_hdc))
+		{
+			//case BlastState::
 		}
 
 		IsWinOver();
@@ -1000,7 +1018,7 @@ void GameControl::IsGameOver()
 	else if (mGameOverY < CENTER_HEIGHT * 0.45)
 		mGameOverCounter++;
 
-	if (mGameOverCounter > 300 && mShowScorePanel == false)
+	if (mGameOverCounter > 121300 && mShowScorePanel == false)
 	{
 		mShowScorePanel = true;
 		mWin = false;

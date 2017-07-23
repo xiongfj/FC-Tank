@@ -46,6 +46,23 @@ void BlastStruct::Init()
 	counter = 0;
 }
 
+BlastState BlastStruct::CampBlasting(const HDC & center_hdc)
+{
+	if (canBlast)
+	{
+		int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
+		TransparentBlt(center_hdc, blastx * BOX_SIZE, blasty * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
+			GetImageHDC(&BlastStruct::image[index[counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
+		if (timer.IsTimeOut() && counter++ == 17)
+		{
+			canBlast = false;
+			return BlastState::BlastEnd;
+		}
+		return BlastState::Blasting;
+	}
+	return BlastState::NotBlast;
+}
+
 BlastState BlastStruct::Blasting(const HDC& center_hdc)
 {
 	int index[13] = {0,1,1,2,2,3,3,4,4,3,2,1,0};

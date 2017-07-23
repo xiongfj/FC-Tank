@@ -557,7 +557,7 @@ void PlayerBase::BeKill()
 }
 
 // Íæ¼Ò±»»÷ÖÐ±¬Õ¨
-BlastState PlayerBase::Blasting(const HDC & center_hdc)
+bool PlayerBase::Blasting(const HDC & center_hdc)
 {
 	BlastState result = mBlast.Blasting(center_hdc);
 	switch (result)
@@ -573,8 +573,9 @@ BlastState PlayerBase::Blasting(const HDC & center_hdc)
 		if (mPlayerLife-- <= 0)
 		{
 			mDied = true;
-			mPlayerGameover.SetShow();
+			//mPlayerGameover.SetShow();
 			mPlayerLife = 0;
+			return true;
 		}
 		else
 			Reborn();
@@ -583,7 +584,7 @@ BlastState PlayerBase::Blasting(const HDC & center_hdc)
 	default:
 		break;
 	}
-	return result;
+	return false;
 }
 
 //
@@ -704,6 +705,10 @@ void PlayerBase::CheckShowGameOver(const HDC & center_hdc)
 	}
 	else
 		mGameOverX += mGameOver_Dev;*/
+}
+void PlayerBase::SetShowGameover()
+{
+	mPlayerGameover.SetShow();
 }
 /////////////////////////////////////////////////////////////
 
@@ -1066,6 +1071,17 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 				mBombS[i].counter = 0;
 				//mIsShootCamp = true;
 				SignBox_8(13 * BOX_SIZE, 25 * BOX_SIZE, _EMPTY);
+
+				/*int iy = (25 * BOX_SIZE / BOX_SIZE)*2 - 2;
+				int jx = (13 * BOX_SIZE / BOX_SIZE)*2 - 2;
+				for (int i = iy; i < iy + 4; i++)
+				{
+				for (int j = jx; j < jx + 4; j++)
+				{
+				printf("%d, \n", bms->box_4[i][j]);
+				}
+				}*/
+
 				return BulletShootKind::Camp;
 			}
 

@@ -77,8 +77,9 @@ public:
 	* GameControl 内循环调用
 	* BeKill 被调用后设置一个 flag = true,
 	* 该函数检测这个 flag 然后显示爆炸图
+	* 返回 true 玩家生命用光
 	*/
-	BlastState Blasting(const HDC&);
+	bool Blasting(const HDC&);
 
 	const int& GetID();
 
@@ -117,6 +118,9 @@ public:
 
 	/*GameCOntrol 内循环调用, 判断玩家生命值, 显示GAMEOVER 字样*/
 	void CheckShowGameOver(const HDC& );
+
+	/*GameControl 内玩家 blasting 结束后调用*/
+	void SetShowGameover();
 
 private:
 
