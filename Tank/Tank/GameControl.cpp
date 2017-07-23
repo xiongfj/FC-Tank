@@ -424,7 +424,7 @@ GameResult GameControl::StartGame()
 			if (msgoas_y == 66)
 				msgoas_counter++;
 
-			if (msgoas_counter > 200)
+			if (msgoas_counter > 122)
 			{
 				mShowGameOverAfterScorePanel = false;
 				msgoas_counter = 0;
@@ -804,8 +804,8 @@ void GameControl::RefreshCenterPanel()
 		for (list<EnemyBase*>::iterator EnemyItor = EnemyList.begin(); EnemyItor != EnemyList.end(); EnemyItor++)
 		{
 			// 一个四角星动画结束后再执行下一个
-			Enemy_Show_State result = (*EnemyItor)->ShowStar(mCenter_hdc, mRemainEnemyTankNumber);
-			if (result == Enemy_Show_State::Showing_Star)
+			Star_State result = (*EnemyItor)->ShowStar(mCenter_hdc, mRemainEnemyTankNumber);
+			if (result == Star_State::Star_Showing)
 				break;
 		}
 
@@ -915,7 +915,7 @@ void GameControl::RefreshCenterPanel()
 				// 不能 delete, 还需要显示玩家分数面板
 				//delete *itor;
 				//PlayerList.erase(itor);
-				//break;
+				///break;
 			}
 		}
 

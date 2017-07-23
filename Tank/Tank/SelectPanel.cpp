@@ -40,6 +40,8 @@ void SelectPanel::Init()
 //
 EnumSelectResult SelectPanel::ShowSelectPanel()
 {
+	cleardevice();		// 防止游戏失败分数面板后显示 GAMEOVER 残留屏幕
+
 	// 选择玩家面板上升动画
 	while (mSelect_player_image_y > 0)
 	{
@@ -52,8 +54,7 @@ EnumSelectResult SelectPanel::ShowSelectPanel()
 			mSelect_player_image_y = 0;
 
 		// 绘制在 mImage_hdc 上
-		TransparentBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, 
-			GetImageHDC(&mSelect_player_image), 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, 0x000000);
+		BitBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&mSelect_player_image), 0, 0, SRCCOPY);
 		
 		// 将 mImage_hdc 绘制到主窗口 mDes_hdc 上
 		StretchBlt(mDes_hdc, 0, mSelect_player_image_y, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0 , CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);

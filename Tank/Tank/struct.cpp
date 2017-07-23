@@ -110,6 +110,14 @@ bool BlastStruct::IsBlasting()
 IMAGE StarClass::mStarImage[4];
 StarClass::StarClass()
 {
+	TCHAR buf[100];
+	// 出生四角星闪烁
+	for (int i = 0; i < 4; i++)
+	{
+		_stprintf_s(buf, _T("./res/big/star%d.gif"), i);
+		loadimage(&StarClass::mStarImage[i], buf);
+	}
+
 	Init();
 }
 
@@ -120,6 +128,45 @@ void StarClass::Init()
 	mStarCounter = 0;						// 多少次更换 star 图片
 	mTankOutAfterCounter = rand() % 10 + 10;
 	mIsOuted = false;						// 坦克是否已经出现
+}
+
+Star_State StarClass::ShowStar(const HDC& center_hdc, int tankx, int tanky)
+{
+	// 坦克已经出现,不用闪烁,直接返回
+	if (mIsOuted == true)
+		return Star_State::Tank_Out;
+
+	// 开始闪烁四角星
+	if (mStarCounter++ % 2 == 0)
+	{
+		if (mStarIndex + mStarIndexDev < 0)
+		{
+			mStarIndex = 1;
+			mStarIndexDev = 1;
+		}
+		else if (mStarIndex + mStarIndexDev > 3)
+		{
+			mStarIndex = 2;
+			mStarIndexDev = -1;
+		}
+		else
+		{
+			mStarIndex += mStarIndexDev;
+		}
+		if (mStarCounter == 25)
+		{
+			mIsOuted = true;						// 结束闪烁, TankMoving() 函数开始循环, 坦克开始移动
+			/*SignBox_8(mTankX, mTankY, _EMPTY);		// 防止玩家绘制地图把坦克出现的位置遮挡住
+			SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);
+			SetShowable(3222);*/
+			return Star_State::Star_Stop;
+		}
+	}
+
+	TransparentBlt(center_hdc, tankx - BOX_SIZE, tanky - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
+		GetImageHDC(&mStarImage[mStarIndex]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+
+	return Star_State::Star_Showing;
 }
 
 //------------------------------------------

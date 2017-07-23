@@ -61,13 +61,6 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		loadimage(&BombStruct::mBombImage[i], buf);
 	}
 
-	// 出生四角星闪烁
-	for (int i = 0; i < 4; i++)
-	{
-		_stprintf_s(buf, _T("./res/big/star%d.gif"), i);
-		loadimage(&StarClass::mStarImage[i], buf);
-	}
-
 	mBombTimer.SetDrtTime(20);	// 不能设置太小..
 	//mBlastTimer.SetDrtTime(36);
 
@@ -217,8 +210,23 @@ void PlayerBase::DrawPlayerTankIco(const HDC& right_panel_hdc)
 
 bool PlayerBase::ShowStar(const HDC& center_hdc)
 {
+	switch (mStar.ShowStar(center_hdc, mTankX, mTankY))
+	{
+	case Star_State::Star_Showing:
+		break;
+
+	case Star_State::Star_Stop:
+		SignBox_8(mTankX, mTankY, _EMPTY);		// 防止玩家绘制地图把坦克出现的位置遮挡住
+		SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);
+		mRing.SetShowable(3222);
+		return STOP_SHOW_STAR;
+
+	case Star_State::Tank_Out:
+		return STOP_SHOW_STAR;
+	}
+
 	// 坦克已经出现,不用闪烁,直接返回
-	if (mStar.mIsOuted == true)
+	/*if (mStar.mIsOuted == true)
 		return STOP_SHOW_STAR;
 
 	// 开始闪烁四角星
@@ -249,7 +257,7 @@ bool PlayerBase::ShowStar(const HDC& center_hdc)
 	}
 
 	TransparentBlt(center_hdc, (int)mTankX - BOX_SIZE, (int)mTankY - BOX_SIZE, BOX_SIZE * 2, BOX_SIZE * 2,
-		GetImageHDC(&StarClass::mStarImage[mStar.mStarIndex]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
+		GetImageHDC(&StarClass::mStarImage[mStar.mStarIndex]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);*/
 
 	return SHOWING_STAR;
 }

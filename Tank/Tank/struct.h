@@ -119,8 +119,6 @@ struct BoxMarkStruct
 #define SHOWING_STAR	true		// 正在显示四角星
 #define STOP_SHOW_STAR	false		// 四角星显示结束
 
-enum Enemy_Show_State {Showing_Star, Stop_Show_Star, Enemy_Out};
-
 // 指示敌机类型道具坦克和普通坦克
 enum TANK_KIND { PROP, COMMON };
 
@@ -181,11 +179,18 @@ public:
 	TimeClock timer;
 };
 
+
+// 敌机或者玩家的四角星闪烁返回类型
+enum Star_State { Star_Showing, Star_Stop, Tank_Out };
 class StarClass
 {
 public:
 	StarClass();
 	void Init();
+
+	/*PlayerBase 或 EnemyBase 内调用, 参数是坦克坐标*/
+	Star_State ShowStar(const HDC&, int, int );
+
 
 	static IMAGE mStarImage[4];	// 四角星图片, 有玩家赋值
 	int mStarIndexDev;			// 索引的变化量, -1, 1  -1是star由小变大, 1 是star由大变小
