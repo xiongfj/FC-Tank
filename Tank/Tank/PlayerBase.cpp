@@ -709,7 +709,7 @@ void PlayerBase::ResetScorePanelData(const int& player_num, const int& stage)
 }
 bool PlayerBase::IsLifeEnd()
 {
-	return mPlayerLife <= 0;
+	return mDied;// mPlayerLife <= 0;
 }
 void PlayerBase::PlayerGameOver(const HDC & center_hdc)
 {

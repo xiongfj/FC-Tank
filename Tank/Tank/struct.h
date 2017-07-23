@@ -195,10 +195,11 @@ public:
 	StarClass();
 	void Init();
 
-	/*PlayerBase 或 EnemyBase 内调用, 参数是坦克坐标*/
+	/*PlayerBase  内调用, 参数是坦克坐标*/
 	Star_State ShowStar(const HDC&, int, int );
 	bool IsStop();
 
+	/*EnemyBase 内调用*/
 	Star_State EnemyShowStar(const HDC&, int, int, const BoxMarkStruct* );
 
 	static IMAGE mStarImage[4];	// 四角星图片, 有玩家赋值

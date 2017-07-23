@@ -216,10 +216,8 @@ private:
 	int mBullet_1_counter;					// 子弹 1 的计数, 子弹 1 发射多久后才能发射子弹 2
 	bool mMoving;							// 指示坦克是否移动, 传递到 GetTankImage() 获取移动的坦克
 
-	BombStruct mBombS[2];					// 爆炸结构体
+	BombStruct mBombS[2];			// 爆炸结构体
 	BlastStruct mBlast;				// 坦克爆炸结构, 
-
-	//bool mIsShootCamp;				// 是否击中大本营
 
 	StarClass mStar;				// 坦克出现前的四角星闪烁
 	RingClass mRing;				// 保护圈类
@@ -231,7 +229,7 @@ private:
 	bool mBombProp;					// 地雷道具, 逻辑与 mTimeProp 相同
 	static bool mShovelProp;				// 玩家是否拥有铲子道具
 	static int mShovelProp_counter;	// 
-		
+
 	TimeClock mTankTimer;			// 坦克移动计时器
 	TimeClock mBulletTimer;			// 子弹移动速度
 	TimeClock mBombTimer;	//bug?		// 子弹爆炸速度
