@@ -252,8 +252,8 @@ class PropClass
 	void SignPropBox(int val);			// 标记 prop_8 格子
 
 public:
-	PropClass(BoxMarkStruct * b);
-	void Init();
+	PropClass();
+	void Init(BoxMarkStruct * b);
 	void ShowProp(const HDC&);			// GameControl 内循环检测该函数
 
 	/*参数是左上角的坐标*/

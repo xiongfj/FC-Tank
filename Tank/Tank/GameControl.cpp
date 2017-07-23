@@ -567,7 +567,7 @@ void GameControl::AddEnemy()
 {
 	int size = EnemyList.size();
 
-	if (mCurMovingTankNumber >= 16 || TOTAL_ENEMY_NUMBER - size <= 0)
+	if (mCurMovingTankNumber >= 6 || TOTAL_ENEMY_NUMBER - size <= 0)
 		return;
 	mCurMovingTankNumber++;
 
@@ -1018,7 +1018,7 @@ void GameControl::IsGameOver()
 	else if (mGameOverY < CENTER_HEIGHT * 0.45)
 		mGameOverCounter++;
 
-	if (mGameOverCounter > 121300 && mShowScorePanel == false)
+	if (mGameOverCounter > 250 && mShowScorePanel == false)
 	{
 		mShowScorePanel = true;
 		mWin = false;

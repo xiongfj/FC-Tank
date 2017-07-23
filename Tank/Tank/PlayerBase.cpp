@@ -5,7 +5,7 @@
 //----------------- PlayerBase 类静态数据
 
 int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// 依次左上右下
-PropClass* PlayerBase::mProp = NULL;
+PropClass PlayerBase::mProp;
 bool PlayerBase::mTimeProp = false;
 bool PlayerBase::mShovelProp = false;
 int PlayerBase::mShovelProp_counter = 0;
@@ -21,10 +21,10 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	player_id = player;
 	mPlayerTank = new PlayerTank(player_id);
 	bms = b;
-	mProp = new PropClass(b);
+	//mProp.Init(b);
 
 	mPlayerLife = 2;		// 玩家 HP
-	mPlayerTankLevel = 0;
+	mPlayerTankLevel = 3;
 
 	// 不同级别坦克移动速度系数
 	int temp[4] = { 1, 1, 1, 1 };
@@ -90,7 +90,7 @@ PlayerBase::~PlayerBase()
 void PlayerBase::Init()
 {
 	//printf("adasd\n");
-	mProp->Init();
+	mProp.Init(bms);
 	mStar.Init();
 	mRing.Init();
 	mBlast.Init();
@@ -260,8 +260,8 @@ void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 
 void PlayerBase::DrawBullet(const HDC & center_hdc)
 {
-	if (mDied)
-		return;
+	//if (mDied)
+	//	return;
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -464,7 +464,7 @@ bool PlayerBase::PlayerControl()
 //
 BulletShootKind PlayerBase::BulletMoving(const HDC& center_hdc)
 {
-	if ( mDied /*|| mBlast.canBlast*/ || mBulletTimer.IsTimeOut() == false)
+	if (/* mDied*/ mBulletTimer.IsTimeOut() == false)
 		return BulletShootKind::None;
 
 
@@ -640,7 +640,7 @@ bool PlayerBase::IsGetBombProp()
 //
 void PlayerBase::ShowProp(const HDC& center_hdc)
 {
-	mProp->ShowProp(center_hdc);
+	mProp.ShowProp(center_hdc);
 }
 
 //
@@ -669,7 +669,7 @@ void PlayerBase::SetShowProp()
 			break;
 	}
 	MciSound::_PlaySound(S_PROPOUT);
-	mProp->StartShowProp(n, m);
+	mProp.StartShowProp(n, m);
 }
 void PlayerBase::AddKillEnemyNum(byte enemy_level)
 {
@@ -740,15 +740,18 @@ void PlayerBase::Reborn()
 	SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);		// 坦克出现, 将四角星标记改为坦克标记
 
 	mPlayerTankLevel = 0;				// 坦克级别 [0-3]
+	mTankTimer.SetDrtTime(mMoveSpeedDev[mPlayerTankLevel]);
+	mBulletTimer.SetDrtTime(mBulletSpeedDev[mPlayerTankLevel]);
+
 	mTankDir = DIR_UP;		// 坦克方向
 
-	for (int i = 0; i < 2; i++)
+	/*for (int i = 0; i < 2; i++)
 	{
 		mBulletStruct[i].x = SHOOTABLE_X;		// x 坐标用于判断是否可以发射
 		mBulletStruct[i].y = -1000;
 		mBulletStruct[i].dir = DIR_UP;
 		mBulletStruct[i].mKillId = 0;			// 记录击中的敌机 id
-	}
+	}*/
 
 	mBullet_1_counter = 6;				// 子弹 1 运动 N 个循环后才可以发射子弹 2 
 	mMoving = false;
@@ -758,7 +761,7 @@ void PlayerBase::Reborn()
 void PlayerBase::DispatchProp(int prop_kind)
 {
 	MciSound::_PlaySound(S_GETPROP);
-	mProp->StopShowProp(true);
+	mProp.StopShowProp(true);
 
 	switch (prop_kind)
 	{

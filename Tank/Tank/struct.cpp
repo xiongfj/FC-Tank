@@ -299,13 +299,12 @@ void RingClass::SetShowable( long drt_time)
 
 /////////////////////////////////////////////////////
 
-PropClass::PropClass(BoxMarkStruct * b)
+PropClass::PropClass()
 {
-	Init();
-	bms = b;
+	//Init();
 
-	score_counter = 0;
-	show_score = false;
+	//score_counter = 0;
+	//show_score = false;
 	loadimage(&score, _T("./res/big/500.gif"));
 
 	TCHAR buf[100];
@@ -317,8 +316,9 @@ PropClass::PropClass(BoxMarkStruct * b)
 }
 
 //
-void PropClass::Init()
+void PropClass::Init(BoxMarkStruct * b)
 {
+	bms = b;
 	leftx = -100;
 	topy = -100;
 	index_counter = 0;
@@ -364,7 +364,7 @@ void PropClass::StartShowProp(int _i, int _j)
 	leftx = _j * BOX_SIZE;// (rand() % 25 + 1) * BOX_SIZE;
 	topy = _i * BOX_SIZE; //(rand() % 25 + 1) * BOX_SIZE;
 	can_show = true;
-	prop_kind = CAP_PROP;// rand() % 6;		// 随机出现一个道具
+	prop_kind = rand() % 6;		// 随机出现一个道具
 	index_counter = 0;
 	SignPropBox(PROP_SIGN + prop_kind);
 }

@@ -38,7 +38,7 @@ void main()
 	MciSound::InitSounds();
 
 	// 灰色背景
-	initgraph(WINDOW_WIDTH, WINDOW_HEIGHT, SHOWCONSOLE);
+	initgraph(WINDOW_WIDTH, WINDOW_HEIGHT);
 	BeginBatchDraw();
 
 	// 定义 image 画布
