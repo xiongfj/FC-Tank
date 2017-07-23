@@ -109,47 +109,47 @@ Star_State EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 	Star_State result = mStar.EnemyShowStar(center_hdc, mTankX, mTankY, bms);
 	switch (result)
 	{
-	// Failed, Timing, Showing, Stop 四种情况 GameControl 内不会显示下一架敌机
-	case Star_State::Star_Failed:
-		{
-			// 重新选个随机位置
-			int tempx[3] = { BOX_SIZE, 13 * BOX_SIZE, 25 * BOX_SIZE };
-			mTankX = tempx[rand() % 3];
-		}
-		break;
+		// 当前正在计时, 未显示
+		case Star_State::Star_Timing:
+			break;
 
-	case Star_State::Star_Timing:
-		break;
+		// 当前位置显示四角星失败
+		case Star_State::Star_Failed:
+			{
+				// 重新选个随机位置
+				int tempx[3] = { BOX_SIZE, 13 * BOX_SIZE, 25 * BOX_SIZE };
+				mTankX = tempx[rand() % 3];
+			}
+			break;
 
-	case Star_State::Star_Out:
-		// 标记为 STAR_SIGN = 2000, 2000 属于坦克不能穿行的标志
-		SignBox_4(mTankX, mTankY, STAR_SIGN);
-		break;
+		// 四角星开始出现
+		case Star_State::Star_Out:
+			SignBox_4(mTankX, mTankY, STAR_SIGN);	// 标记为 STAR_SIGN = 2000, 2000 属于坦克不能穿行的标志
+			break;
 
-	case Star_State::Star_Showing:
-		break;
+		// 四角星正在出现
+		case Star_State::Star_Showing:
+			break;
 
-	case Star_State::Star_Stop:
-		// 四角星消失. 敌机出现, 剩余坦克数-1;
-		//if (mTankNumberReduce)
-		//{
+		// 四角星停止
+		case Star_State::Star_Stop:
+			// 四角星消失. 敌机出现, 剩余坦克数-1;
 			mEnemyId = TOTAL_ENEMY_NUMBER - remainnumber;
 			remainnumber -= 1;
-			//mTankNumberReduce = false;
 
-		//}
-		SignBox_4(mTankX, mTankY, ENEMY_SIGN + 1000 * mEnemyTankLevel + 100 * mEnemyTankKind + mEnemyId);		// 坦克出现, 将四角星标记改为坦克标记
-		break;
+			SignBox_4(mTankX, mTankY, ENEMY_SIGN + 1000 * mEnemyTankLevel + 100 * mEnemyTankKind + mEnemyId);		// 坦克出现, 将四角星标记改为坦克标记
+			break;
 
-	case Star_State::Tank_Out:
-		break;
+		// 坦克已经出现
+		case Star_State::Tank_Out:
+			break;
 	}
 	return result;
 }
 
 void EnemyBase::TankMoving(const HDC& center_hdc)
 {
-	if (!mStar.mIsOuted || mDied || mTankTimer.IsTimeOut() == false )
+	if (!mStar.IsStop() || mDied || mTankTimer.IsTimeOut() == false )
 		return;
 	
 	// 移动前取消标记
@@ -195,7 +195,7 @@ void EnemyBase::DrawBullet(const HDC& center_hdc)
 //
 bool EnemyBase::ShootBullet()
 {
-	if ( mPause || mBulletStruct.x != SHOOTABLE_X || mShootTimer.IsTimeOut() == false || mDied || mStar.mIsOuted == false )
+	if ( mPause || mBulletStruct.x != SHOOTABLE_X || mShootTimer.IsTimeOut() == false || mDied || mStar.IsStop() == false )
 		return false;
 
 	// 子弹发射点坐标
@@ -266,7 +266,7 @@ void EnemyBase::Bombing(const HDC & center_hdc)
 bool EnemyBase::BeKill(bool killanyway)
 {
 	// 如果敌机还没有出现
-	if (mStar.mIsOuted == false || mBlast.IsBlasting() || mDied == true)
+	if (mStar.IsStop() == false || mBlast.IsBlasting() || mDied == true)
 		return false;
 
 	MciSound::_PlaySound(S_ENEMY_BOMB);
