@@ -749,7 +749,6 @@ bool GameControl::RefreshData()
 		else if (mEnemyPauseTimer.IsTimeOut())
 		{
 			mEnemyPause = false;
-			//.mEnemyPauseCounter = 0;;
 			(*EnemyItor)->SetPause(false);
 		}
 	}
@@ -808,10 +807,6 @@ void GameControl::RefreshCenterPanel()
 			Enemy_Show_State result = (*EnemyItor)->ShowStar(mCenter_hdc, mRemainEnemyTankNumber);
 			if (result == Enemy_Show_State::Showing_Star)
 				break;
-			/*else if (result == Enemy_Show_State::Stop_Show_Star)
-			{
-				mCurMovingTankNumber++;
-			}*/
 		}
 
 		/* 开始根据数据文件绘制地图
@@ -865,18 +860,6 @@ void GameControl::RefreshCenterPanel()
 			(*itor)->DrawPlayerTank(mCenter_hdc);		// 坦克
 			(*itor)->DrawBullet(mCenter_hdc);
 			CheckKillEnemy(*itor);
-			/*if ((*itor)->IsShootCamp())
-			{
-				if (mBlast.canBlast == false)
-				{
-					int index[17] = { 0,0,0,1,1,2,2,3,3,4,4,4,4,3,2,1,0 };
-					TransparentBlt(mCenter_hdc, 11 * BOX_SIZE, 23 * BOX_SIZE, BOX_SIZE * 4, BOX_SIZE * 4,
-						GetImageHDC(&BlastStruct::image[index[mBlast.counter % 17]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
-					if (mCampTimer.IsTimeOut() && mBlast.counter++ == 17)
-						mBlast.canBlast = true;
-					mCampDie = true;
-				}
-			}*/
 			(*itor)->PlayerGameOver(mCenter_hdc);
 		}
 
@@ -895,7 +878,6 @@ void GameControl::RefreshCenterPanel()
 				x = j * BOX_SIZE;// +CENTER_X;
 				y = i * BOX_SIZE;// +CENTER_Y;
 				if (mBoxMarkStruct->box_8[i][j] == _FOREST)
-					//BitBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(), 0, 0, SRCCOPY);
 					TransparentBlt(mCenter_hdc, x, y, BOX_SIZE, BOX_SIZE, GetImageHDC(&mForestImage), 0, 0, BOX_SIZE, BOX_SIZE, 0x000000);
 			}
 		}
@@ -908,9 +890,6 @@ void GameControl::RefreshCenterPanel()
 			// 爆炸完毕, 移除敌机
 			if ((*EnemyItor)->Blasting(mCenter_hdc))
 			{
-				//delete *EnemyItor;
-				//EnemyList.erase(EnemyItor);
-				//break;
 			}
 		}
 
@@ -936,7 +915,7 @@ void GameControl::RefreshCenterPanel()
 				// 不能 delete, 还需要显示玩家分数面板
 				//delete *itor;
 				//PlayerList.erase(itor);
-				break;
+				//break;
 			}
 		}
 

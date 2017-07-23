@@ -151,7 +151,6 @@ struct BombStruct
 
 // ̹�˱�ը״̬
 enum BlastState {Blasting, BlastEnd, NotBlast};
-
 class BlastStruct
 {
 public:
