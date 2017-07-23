@@ -66,7 +66,7 @@ protected:
 	int mSpeed[4];					// mSpeed * mDevXY 得到运动速度, 下标对应 mPlayerTankLevel, 不同级别速度不一样
 
 	static bool mPause;				// 由 GameControl 控制, 然后在发射的时候检测这个值, 如果敌机被暂停则停止发射子弹
-	bool mTankNumberReduce;		// 当四角星开始, true-坦克总数减一,然后设该值=false, 只减一次
+	//bool mTankNumberReduce;		// 当四角星开始, true-坦克总数减一,然后设该值=false, 只减一次
 
 	BulletStruct mBulletStruct;
 	int mShootCounter;		// 设置一个随机数, 随机计数差后发射子弹

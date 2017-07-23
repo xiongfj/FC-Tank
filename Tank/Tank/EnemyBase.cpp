@@ -29,7 +29,7 @@ EnemyBase::EnemyBase(TANK_KIND kind, byte level, BoxMarkStruct* b)
 	for (int i = 0; i < 4; i++)
 		mSpeed[i] = temp[i];
 
-	mTankNumberReduce = true;				// 坦克总数减一标志
+	//mTankNumberReduce = true;				// 坦克总数减一标志
 
 	// 子弹初始化
 	// .. 其它数据在 PlayerBase 加载了
@@ -116,17 +116,16 @@ Star_State EnemyBase::ShowStar(const HDC& center_hdc, int& remainnumber)
 		break;
 
 	case Star_State::Star_Stop:
-
 		// 四角星消失. 敌机出现, 剩余坦克数-1;
-		if (mTankNumberReduce)
-		{
+		//if (mTankNumberReduce)
+		//{
 			mEnemyId = TOTAL_ENEMY_NUMBER - remainnumber;
 			remainnumber -= 1;
-			mTankNumberReduce = false;
+			//mTankNumberReduce = false;
 
 			// 标记为 STAR_SIGN = 2000, 2000 属于坦克不能穿行的标志
 			SignBox_4(mTankX, mTankY, STAR_SIGN);
-		}
+		//}
 		SignBox_4(mTankX, mTankY, ENEMY_SIGN + 1000 * mEnemyTankLevel + 100 * mEnemyTankKind + mEnemyId);		// 坦克出现, 将四角星标记改为坦克标记
 		break;
 
