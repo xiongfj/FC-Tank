@@ -93,7 +93,7 @@ BlastState BlastStruct::EnemyBlasting(const HDC &center_hdc, IMAGE* score )
 	return BlastState::NotBlast;
 }
 
-void BlastStruct::StartBlasting(int tankx, int tanky)
+void BlastStruct::SetBlasting(int tankx, int tanky)
 {
 	blastx = tankx;
 	blasty = tanky;

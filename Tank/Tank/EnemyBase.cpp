@@ -274,7 +274,7 @@ bool EnemyBase::BeKill(bool killanyway)
 	SignBox_4(mTankX, mTankY, _EMPTY);
 
 	// 设置开始爆炸参数
-	mBlast.StartBlasting(mTankX, mTankY);
+	mBlast.SetBlasting(mTankX, mTankY);
 
 	return true;
 }

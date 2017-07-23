@@ -553,13 +553,14 @@ void PlayerBase::BeKill()
 	//mBlast.blasty = ;
 	//mBlast.canBlast = true;
 
-	mBlast.StartBlasting(mTankX, mTankY);
+	mBlast.SetBlasting(mTankX, mTankY);
 }
 
 // 玩家被击中爆炸
-bool PlayerBase::Blasting(const HDC & center_hdc)
+BlastState PlayerBase::Blasting(const HDC & center_hdc)
 {
-	switch (mBlast.Blasting(center_hdc))
+	BlastState result = mBlast.Blasting(center_hdc);
+	switch (result)
 	{
 	case BlastState::NotBlast:
 		break;
@@ -571,50 +572,18 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 		// 检测是否可以重生
 		if (mPlayerLife-- <= 0)
 		{
-			mDied = true;/*m*/
-			//mShowGameOver = true;
+			mDied = true;
 			mPlayerGameover.SetShow();
 			mPlayerLife = 0;
-			return true;
 		}
 		else
 			Reborn();
-		return true;
+		break;
 
 	default:
 		break;
 	}
-
-	return false;
-
-	/*int index[8] = { 0,1,2,3,4,3,2,1 };
-	if (mBlast.canBlast)
-	{
-		TransparentBlt(center_hdc, mBlast.blastx - BOX_SIZE * 2, mBlast.blasty - BOX_SIZE * 2, BOX_SIZE * 4, BOX_SIZE * 4,
-			GetImageHDC(&BlastStruct::image[index[mBlast.counter % 8]]), 0, 0, BOX_SIZE * 4, BOX_SIZE * 4, 0x000000);
-		if (mBlastTimer.IsTimeOut())
-		{
-			if (mBlast.counter++ >= 7)
-			{
-				mBlast.Init();
-				//mBlast.counter = 0;
-				//mBlast.canBlast = false;
-
-				// 检测是否可以重生
-				if (mPlayerLife-- <= 0)
-				{
-					mDied = true;
-					mShowGameOver = true;
-					mPlayerLife = 0;
-					//return true;
-				}
-				else
-					Reborn();
-				return true;
-			}
-		}
-	}
-	return false;*/
+	return result;
 }
 
 //

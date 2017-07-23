@@ -717,14 +717,27 @@ bool GameControl::RefreshData()
 		{
 		case BulletShootKind::Player_1:
 		case BulletShootKind::Player_2:
-
-			for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 			{
-				if ((*itor)->GetID() + PLAYER_SIGN == result)
+				//bool all_die = true;		// 玩家都被消灭与否
+				for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 				{
-					(*itor)->BeKill();
-					break;
+					if ((*itor)->GetID() + PLAYER_SIGN == result)
+					{
+						(*itor)->BeKill();
+						//if (!(*itor)->IsLifeEnd())
+							//all_die = false;
+						break;
+					}
 				}
+
+				// 所有玩家被消灭
+				/*if (all_die)
+				{
+					mGameOverX = CENTER_WIDTH / 2 - GAMEOVER_WIDTH / 2;
+					mGameOverY = CENTER_HEIGHT;
+					mGameOverFlag = true;
+				}*/
+					
 			}
 			break;
 		case BulletShootKind::Camp:
@@ -910,7 +923,7 @@ void GameControl::RefreshCenterPanel()
 		for (list<PlayerBase*>::iterator itor = PlayerList.begin(); itor != PlayerList.end(); itor++)
 		{
 			(*itor)->Bombing(mCenter_hdc);
-			if ((*itor)->Blasting(mCenter_hdc))
+			if ((*itor)->Blasting(mCenter_hdc) == BlastState::BlastEnd)
 			{
 				// 不能 delete, 还需要显示玩家分数面板
 				//delete *itor;

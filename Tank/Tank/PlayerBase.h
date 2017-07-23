@@ -78,7 +78,7 @@ public:
 	* BeKill 被调用后设置一个 flag = true,
 	* 该函数检测这个 flag 然后显示爆炸图
 	*/
-	bool Blasting(const HDC&);
+	BlastState Blasting(const HDC&);
 
 	const int& GetID();
 
@@ -255,7 +255,7 @@ private:
 	int mAutoMove_Counter;
 	int mRandCounter;			// 每次自动移动次数随机
 
-	PlayerGameover mPlayerGameover;
+	PlayerGameover mPlayerGameover;		// 玩家被消灭消失 gameover 字样
 
 	/*TimeClock mGameOverTimer;		//
 	int mGameOver_Dev;			// X 轴移动, 玩家一是正数分量, 玩家二是负数分量
