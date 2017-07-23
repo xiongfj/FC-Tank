@@ -184,6 +184,7 @@ public:
 enum Star_State { 
 	Star_Timing,		// 只用于敌机, 表示当前还没有出现四角星, 还在计时之中
 	Star_Failed,		// 用于敌机, 表示当前位置敌机出现失败
+	Star_Out,			// 四角星刚刚出现
 	Star_Showing,		// 正在闪烁四角星
 	Star_Stop,			// 刚刚停止闪烁
 	Tank_Out };			// 坦克已经出现
@@ -208,6 +209,7 @@ public:
 
 	// Enemy 专用! Player 用不到
 	int mTankOutAfterCounter;	// 一个随机计数之后, 四角星开始闪烁,坦克出现
+	bool mStarOuted;		// 四角星刚出现, 只用于敌机
 };
 
 // 玩家坦克出现的时候显示的闪烁环状保护圈

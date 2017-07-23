@@ -128,6 +128,7 @@ void StarClass::Init()
 	mStarCounter = 0;						// 多少次更换 star 图片
 	mTankOutAfterCounter = rand() % 10 + 10;
 	mIsOuted = false;						// 坦克是否已经出现
+	mStarOuted = false;
 }
 
 Star_State StarClass::ShowStar(const HDC& center_hdc, int tankx, int tanky)
@@ -181,17 +182,27 @@ Star_State StarClass::EnemyShowStar(const HDC &center_hdc, int tankx, int tanky,
 	if (mTankOutAfterCounter-- > 0)
 		return Star_State::Star_Timing;
 
-	// 获取坦克左上角的 4*4 下标 
-	int iy = tanky / SMALL_BOX_SIZE - 2;
-	int jx = tankx / SMALL_BOX_SIZE - 2;
-	for (int i = iy; i < iy + 4; i++)
+	// 四角星还没出现才检测 box_4
+	if (mStarOuted == false)
 	{
-		for (int j = jx; j < jx + 4; j++)
+		int iy = tanky / SMALL_BOX_SIZE - 2;
+		int jx = tankx / SMALL_BOX_SIZE - 2;
+		for (int i = iy; i < iy + 4; i++)
 		{
-			// 检测四角星, 玩家,敌机,
-			if (bms->box_4[i][j] != STAR_SIGN && bms->box_4[i][j] > _FOREST)
-				return Star_State::Star_Failed;
+			for (int j = jx; j < jx + 4; j++)
+			{
+				// 检测四角星, 玩家,敌机,
+				if (bms->box_4[i][j] != STAR_SIGN && bms->box_4[i][j] > _FOREST)
+				{
+					mTankOutAfterCounter = rand() % 100 + 10;
+					return Star_State::Star_Failed;
+				}
+			}
 		}
+
+		// 四角星刚出现, 返回上层函数 标记 box_4
+		mStarOuted = true;
+		return Star_State::Star_Out;
 	}
 
 	// 开始闪烁四角星
