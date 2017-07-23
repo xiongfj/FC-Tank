@@ -860,7 +860,7 @@ void GameControl::RefreshCenterPanel()
 			(*itor)->DrawPlayerTank(mCenter_hdc);		// Ì¹¿Ë
 			(*itor)->DrawBullet(mCenter_hdc);
 			CheckKillEnemy(*itor);
-			(*itor)->PlayerGameOver(mCenter_hdc);
+			(*itor)->CheckShowGameOver(mCenter_hdc);
 		}
 
 		// µÐ»ú

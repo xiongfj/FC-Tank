@@ -325,3 +325,22 @@ private:
 	int total_score;			// 总分
 	int stage;
 };
+
+/*某个玩家被消灭单独显示的 gameover 字样*/
+class PlayerGameover
+{
+public:
+	PlayerGameover();
+	~PlayerGameover() {}
+	void Init(int p_id);
+	void SetShow();
+	void Show(const HDC& center_hdc);
+
+	TimeClock mGameoverTimer;		//
+	int mGameover_Dev;			// X 轴移动, 玩家一是正数分量, 玩家二是负数分量
+	int mGameoverX, mGameoverY;
+	int mGameover_end_x;			// 图片停止的 x 坐标
+	static IMAGE mGameoverImage;		// 玩家生命值用完, 显示一个水平移动的 GAMEOVER 字样
+	int mGameoverCounter;			// 图片停止后多久消失
+	bool mShowGameover;
+};

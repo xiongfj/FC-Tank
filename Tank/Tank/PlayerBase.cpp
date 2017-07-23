@@ -11,7 +11,7 @@ bool PlayerBase::mShovelProp = false;
 int PlayerBase::mShovelProp_counter = 0;
 list<PlayerBase*>* PlayerBase::mPList = NULL;
 BoxMarkStruct* PlayerBase::bms = NULL;
-IMAGE PlayerBase::mGameOverImage;
+//IMAGE PlayerBase::mGameOverImage;
 int PlayerBase::mMoveSpeedDev[4] = {21, 19, 17, 15};
 int PlayerBase::mBulletSpeedDev[4] = {17, 16, 15, 14};
 
@@ -67,8 +67,8 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	// 显示分数面板
 	mScorePanel = new ScorePanel(player_id);
 
-	mGameOverTimer.SetDrtTime(20);
-	loadimage(&mGameOverImage, _T("./res/big/gameover.gif") );
+	//mGameOverTimer.SetDrtTime(20);
+	//loadimage(&mGameOverImage, _T("./res/big/gameover.gif") );
 }
 
 PlayerBase::~PlayerBase()
@@ -94,6 +94,7 @@ void PlayerBase::Init()
 	mStar.Init();
 	mRing.Init();
 	mBlast.Init();
+	mPlayerGameover.Init(player_id);
 
 	mTimeProp = false;
 	mBombProp = false;
@@ -115,9 +116,9 @@ void PlayerBase::Init()
 		mBulletTimer.SetDrtTime(mBulletSpeedDev[mPlayerTankLevel]);
 
 		// 玩家die 后显示右移的 GAMEOVER 字样
-		mGameOverX = 0;
-		mGameOver_Dev = 3;
-		mGameOver_end_x = 53;
+		//mGameOverX = 0;
+		//mGameOver_Dev = 3;
+		//mGameOver_end_x = 53;
 	}
 	else
 	{
@@ -134,9 +135,9 @@ void PlayerBase::Init()
 		mBulletTimer.SetDrtTime(mBulletSpeedDev[mPlayerTankLevel]);
 
 		// 玩家die 后显示左移的 GAMEOVER 字样
-		mGameOverX = 220;
+		/*mGameOverX = 220;
 		mGameOver_Dev = -3; 
-		mGameOver_end_x = 122;
+		mGameOver_end_x = 122;*/
 	}
 
 	int i = 0;
@@ -189,9 +190,9 @@ void PlayerBase::Init()
 	mRandCounter = rand() % 6 + 3;
 
 	// 玩家被消灭后显示图片 GAMEOVER
-	mGameOverY = 191;
+	/*mGameOverY = 191;
 	mGameOverCounter = 0;
-	mShowGameOver = false;
+	mShowGameOver = false;*/
 }
 
 // 绘制玩家的一些数据: 1P\2P 坦克图标 生命
@@ -571,7 +572,8 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 		if (mPlayerLife-- <= 0)
 		{
 			mDied = true;/*m*/
-			mShowGameOver = true;
+			//mShowGameOver = true;
+			mPlayerGameover.SetShow();
 			mPlayerLife = 0;
 			return true;
 		}
@@ -711,9 +713,11 @@ bool PlayerBase::IsLifeEnd()
 {
 	return mDied;// mPlayerLife <= 0;
 }
-void PlayerBase::PlayerGameOver(const HDC & center_hdc)
+void PlayerBase::CheckShowGameOver(const HDC & center_hdc)
 {
-	if (mGameOverCounter > 70)
+	mPlayerGameover.Show(center_hdc);
+
+	/*if (mGameOverCounter > 70)
 		mShowGameOver = false;
 
 	if (!mShowGameOver)
@@ -730,7 +734,7 @@ void PlayerBase::PlayerGameOver(const HDC & center_hdc)
 		mGameOverX = mGameOver_end_x;
 	}
 	else
-		mGameOverX += mGameOver_Dev;
+		mGameOverX += mGameOver_Dev;*/
 }
 /////////////////////////////////////////////////////////////
 

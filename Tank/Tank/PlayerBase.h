@@ -116,7 +116,7 @@ public:
 	bool IsLifeEnd();
 
 	/*GameCOntrol 内循环调用, 判断玩家生命值, 显示GAMEOVER 字样*/
-	void PlayerGameOver(const HDC& );
+	void CheckShowGameOver(const HDC& );
 
 private:
 
@@ -255,13 +255,15 @@ private:
 	int mAutoMove_Counter;
 	int mRandCounter;			// 每次自动移动次数随机
 
-	TimeClock mGameOverTimer;		//
+	PlayerGameover mPlayerGameover;
+
+	/*TimeClock mGameOverTimer;		//
 	int mGameOver_Dev;			// X 轴移动, 玩家一是正数分量, 玩家二是负数分量
 	int mGameOverX, mGameOverY;	
 	int mGameOver_end_x;			// 图片停止的 x 坐标
 	static IMAGE mGameOverImage;		// 玩家生命值用完, 显示一个水平移动的 GAMEOVER 字样
 	int mGameOverCounter;			// 图片停止后多久消失
-	bool mShowGameOver;
+	bool mShowGameOver;*/
 
 	static int mMoveSpeedDev[4];	// 四个级别坦克移动时间间隔
 	static int mBulletSpeedDev[4];	// 不同级别子弹时间间隔速度

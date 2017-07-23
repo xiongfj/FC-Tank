@@ -678,3 +678,66 @@ void ScorePanel::ResetData(const int * nums, const int& players, const int& sta)
 
 	who_bunds[player_id] = total_score;
 }
+
+/////////////////////////////////////////////
+
+IMAGE PlayerGameover::mGameoverImage;
+PlayerGameover::PlayerGameover()
+{
+	mGameoverTimer.SetDrtTime(20);
+	loadimage(&mGameoverImage, _T("./res/big/gameover.gif"));
+}
+
+void PlayerGameover::Init(int player_id)
+{
+	switch (player_id)
+	{
+	case 0:
+		// 玩家die 后显示右移的 GAMEOVER 字样
+		mGameoverX = 0;
+		mGameover_Dev = 3;
+		mGameover_end_x = 53;
+		break;
+
+	case 1:
+		// 玩家die 后显示左移的 GAMEOVER 字样
+		mGameoverX = 220;
+		mGameover_Dev = -3;
+		mGameover_end_x = 122;
+		break;
+	default:
+		break;
+	}
+
+	// 玩家被消灭后显示图片 GAMEOVER
+	mGameoverY = 191;
+	mGameoverCounter = 0;
+	mShowGameover = false;
+}
+
+void PlayerGameover::SetShow()
+{
+	mShowGameover = true;
+}
+
+void PlayerGameover::Show(const HDC& center_hdc)
+{
+	if (mGameoverCounter > 70)
+		mShowGameover = false;
+
+	if (!mShowGameover)
+		return;
+
+	TransparentBlt(center_hdc, mGameoverX, mGameoverY, 31, 15, GetImageHDC(&mGameoverImage), 0, 0, 31, 15, 0x000000);
+
+	if (mGameoverTimer.IsTimeOut() == false)
+		return;
+
+	if (abs(mGameoverX - mGameover_end_x) < 5)
+	{
+		mGameoverCounter++;
+		mGameoverX = mGameover_end_x;
+	}
+	else
+		mGameoverX += mGameover_Dev;
+}
