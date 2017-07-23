@@ -173,39 +173,119 @@ bool GameControl::CreateMap(bool* isCreate)
 
 	// 按键速度
 	TimeClock click;
-	click.SetDrtTime(90);
+	click.SetDrtTime(80);
 
 	// 灰色背景
 	StretchBlt(mImage_hdc, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, GetImageHDC(&mGrayBackgroundImage), 0, 0, 66, 66, SRCCOPY);
-
+	int counter = 0;
 	while ( flag )
 	{
-		Sleep(4);
+		counter++;
+		Sleep(34);
 
-		if (click.IsTimeOut())
+		if (GetAsyncKeyState(VK_LEFT) & 0x8000 && counter > 3)
 		{
-			for (i = 0; i < 4; i++)
+			counter = 0;
+
+			lastx = mCMTImageX;
+			lasty = mCMTImageY;
+			tempx = mCMTImageX + dev[0][0] * BOX_SIZE * 2;
+			tempy = mCMTImageY + dev[0][1] * BOX_SIZE * 2;
+			if (tempx >= BOX_SIZE && tempx <= BOX_SIZE * 25 && tempy >= BOX_SIZE && tempy <= BOX_SIZE * 25)
 			{
-				if (GetAsyncKeyState(keys[i]) & 0x8000)
-				{
-					lastx = mCMTImageX;
-					lasty = mCMTImageY;
-					tempx = mCMTImageX + dev[i][0] * BOX_SIZE * 2;
-					tempy = mCMTImageY + dev[i][1] * BOX_SIZE * 2;
-					if (tempx >= BOX_SIZE && tempx <= BOX_SIZE * 25 && tempy >= BOX_SIZE && tempy <= BOX_SIZE * 25)
-					{
-						mCMTImageX += dev[i][0] * BOX_SIZE * 2;
-						mCMTImageY += dev[i][1] * BOX_SIZE * 2;
-					}
-				}
+				mCMTImageX += dev[0][0] * BOX_SIZE * 2;
+				mCMTImageY += dev[0][1] * BOX_SIZE * 2;
+			}
+		}
+		else if (GetAsyncKeyState(VK_UP) & 0x8000 && counter > 3)
+		{
+			counter = 0;
+
+			lastx = mCMTImageX;
+			lasty = mCMTImageY;
+			tempx = mCMTImageX + dev[1][0] * BOX_SIZE * 2;
+			tempy = mCMTImageY + dev[1][1] * BOX_SIZE * 2;
+			if (tempx >= BOX_SIZE && tempx <= BOX_SIZE * 25 && tempy >= BOX_SIZE && tempy <= BOX_SIZE * 25)
+			{
+				mCMTImageX += dev[1][0] * BOX_SIZE * 2;
+				mCMTImageY += dev[1][1] * BOX_SIZE * 2;
+			}
+		}
+		else if (GetAsyncKeyState(VK_RIGHT) & 0x8000 && counter > 3)
+		{
+			counter = 0;
+
+			lastx = mCMTImageX;
+			lasty = mCMTImageY;
+			tempx = mCMTImageX + dev[2][0] * BOX_SIZE * 2;
+			tempy = mCMTImageY + dev[2][1] * BOX_SIZE * 2;
+			if (tempx >= BOX_SIZE && tempx <= BOX_SIZE * 25 && tempy >= BOX_SIZE && tempy <= BOX_SIZE * 25)
+			{
+				mCMTImageX += dev[2][0] * BOX_SIZE * 2;
+				mCMTImageY += dev[2][1] * BOX_SIZE * 2;
+			}
+		}
+		else if (GetAsyncKeyState(VK_DOWN) & 0x8000 && counter > 3)
+		{
+			counter = 0;
+
+			lastx = mCMTImageX;
+			lasty = mCMTImageY;
+			tempx = mCMTImageX + dev[3][0] * BOX_SIZE * 2;
+			tempy = mCMTImageY + dev[3][1] * BOX_SIZE * 2;
+			if (tempx >= BOX_SIZE && tempx <= BOX_SIZE * 25 && tempy >= BOX_SIZE && tempy <= BOX_SIZE * 25)
+			{
+				mCMTImageX += dev[3][0] * BOX_SIZE * 2;
+				mCMTImageY += dev[3][1] * BOX_SIZE * 2;
+			}
+		}
+		else if (GetAsyncKeyState('J') & 0x8000 && counter > 3)
+		{
+			counter = 0;
+
+			if (mCMTImageX == lastx && mCMTImageY == lasty)
+				cur_index = cur_index + 1 > 13 ? 0 : cur_index + 1;
+			else
+			{
+				lastx = mCMTImageX;
+				lasty = mCMTImageY;
 			}
 
+			// 更改 16*16 的地图
+			i = mCMTImageY / BOX_SIZE - 1;
+			j = mCMTImageX / BOX_SIZE - 1;
+			mBoxMarkStruct->box_8[i][j] = sign_order[cur_index][0];
+			mBoxMarkStruct->box_8[i][j + 1] = sign_order[cur_index][1];
+			mBoxMarkStruct->box_8[i + 1][j] = sign_order[cur_index][2];
+			mBoxMarkStruct->box_8[i + 1][j + 1] = sign_order[cur_index][3];
+		}
+		else if (GetAsyncKeyState('K') & 0x8000 && counter > 3)
+		{
+			counter = 0;
+
+			if (mCMTImageX == lastx && mCMTImageY == lasty)
+				cur_index = cur_index - 1 < 0 ? 13 : cur_index - 1;
+			else
+			{
+				lastx = mCMTImageX;
+				lasty = mCMTImageY;
+			}
+
+			// 更改 16*16 的地图
+			i = mCMTImageY / BOX_SIZE - 1;
+			j = mCMTImageX / BOX_SIZE - 1;
+			mBoxMarkStruct->box_8[i][j] = sign_order[cur_index][0];
+			mBoxMarkStruct->box_8[i][j + 1] = sign_order[cur_index][1];
+			mBoxMarkStruct->box_8[i + 1][j] = sign_order[cur_index][2];
+			mBoxMarkStruct->box_8[i + 1][j + 1] = sign_order[cur_index][3];
+		}
+
 			// J,K 键一个顺序,一个逆序
-			SHORT J_KEY = GetAsyncKeyState('J') & 0x8000;
-			SHORT K_KEY = GetAsyncKeyState('K') & 0x8000;
+			/*SHORT J_KEY = ;
+			SHORT K_KEY = ;
 
 			// 放置障碍物
-			if (J_KEY || K_KEY)
+			if(J_KEY || K_KEY)
 			{
 				if (mCMTImageX == lastx && mCMTImageY == lasty)
 				{
@@ -227,40 +307,42 @@ bool GameControl::CreateMap(bool* isCreate)
 				mBoxMarkStruct->box_8[i][j + 1] = sign_order[cur_index][1];
 				mBoxMarkStruct->box_8[i + 1][j] = sign_order[cur_index][2];
 				mBoxMarkStruct->box_8[i + 1][j + 1] = sign_order[cur_index][3];
-			}
+			}*/
 
-			if (GetAsyncKeyState(VK_RETURN) & 0x8000)
+		else if (GetAsyncKeyState(VK_RETURN) & 0x8000 && counter > 3)
+		{
+			counter = 0;
+
+			// 标记 8*8 格子内部的 4*4 格子
+			for (i = 0; i < 26; i++)
 			{
-				// 标记 8*8 格子内部的 4*4 格子
-				for (i = 0; i < 26; i++)
+				for (j = 0; j < 26; j++)
 				{
-					for (j = 0; j < 26; j++)
-					{
-						// 根据 8*8 标记 4*4 格子, 大本营值标记 box_8
-						if (mBoxMarkStruct->box_8[i][j] != _EMPTY && mBoxMarkStruct->box_8[i][j] != CAMP_SIGN)
-							SignBox_4(i, j, mBoxMarkStruct->box_8[i][j]);
+					// 根据 8*8 标记 4*4 格子, 大本营值标记 box_8
+					if (mBoxMarkStruct->box_8[i][j] != _EMPTY && mBoxMarkStruct->box_8[i][j] != CAMP_SIGN)
+						SignBox_4(i, j, mBoxMarkStruct->box_8[i][j]);
 
-						// 清空敌机出现的三个位置
-						if (i <= 1 && j <= 1 || j >= 12 && j <= 13 && i <= 1 || j >= 24 && i <= 1)
-						{
-							mBoxMarkStruct->box_8[i][j] = _EMPTY;
-							SignBox_4(i, j, _EMPTY);
-						}
-						
-						// 鸟巢位置不能绘制
-						if (i >= 24 && j >= 12 && j <= 13)
-						{
-							mBoxMarkStruct->box_8[i][j] = CAMP_SIGN;
-							//SignBox_4(i, j, CAMP_SIGN);
-						}
+					// 清空敌机出现的三个位置
+					if (i <= 1 && j <= 1 || j >= 12 && j <= 13 && i <= 1 || j >= 24 && i <= 1)
+					{
+						mBoxMarkStruct->box_8[i][j] = _EMPTY;
+						SignBox_4(i, j, _EMPTY);
+					}
+
+					// 鸟巢位置不能绘制
+					if (i >= 24 && j >= 12 && j <= 13)
+					{
+						mBoxMarkStruct->box_8[i][j] = CAMP_SIGN;
+						//SignBox_4(i, j, CAMP_SIGN);
 					}
 				}
-
-				break;
 			}
 
-			if (GetAsyncKeyState(27) & 0x8000)
-				break;
+			break;
+		}
+
+		if (GetAsyncKeyState(27) & 0x8000)
+			break;
 
 			/*M键功能: 不会连续更换地图if (GetAsyncKeyState('M') & 0x8000 && M_down == false)
 			{
@@ -284,7 +366,6 @@ bool GameControl::CreateMap(bool* isCreate)
 				mBoxMarkStruct->box_8[i + 1][j + 1] = sign_order[cur_index][3];
 			}else if ( !GetAsyncKeyState('M') & 0x8000 )
 				M_down = false;*/
-		}
 
 		// 黑色背景
 		StretchBlt(mCenter_hdc, 0, 0, CENTER_WIDTH, CENTER_HEIGHT, GetImageHDC(&mBlackBackgroundImage), 0, 0, CENTER_WIDTH, CENTER_HEIGHT, SRCCOPY);
