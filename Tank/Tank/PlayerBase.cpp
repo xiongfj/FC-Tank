@@ -24,7 +24,7 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	//mProp.Init(b);
 
 	mPlayerLife = 2;		// 玩家 HP
-	mPlayerTankLevel = 3;
+	mPlayerTankLevel = 0;
 
 	// 不同级别坦克移动速度系数
 	int temp[4] = { 1, 1, 1, 1 };

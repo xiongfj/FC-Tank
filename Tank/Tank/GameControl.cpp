@@ -399,7 +399,6 @@ bool GameControl::CreateMap(bool* isCreate)
 			}
 		}
 
-
 		// ´ó±¾Óª
 		TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
 			GetImageHDC(&mCamp[0]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
@@ -1041,10 +1040,7 @@ void GameControl::RefreshCenterPanel()
 				GetImageHDC(&mCamp[1]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 		}
 
-		switch (mBlast.CampBlasting(mCenter_hdc))
-		{
-			//case BlastState::
-		}
+		mBlast.CampBlasting(mCenter_hdc);
 
 		IsWinOver();
 		IsGameOver();
