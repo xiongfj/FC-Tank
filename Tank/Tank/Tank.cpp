@@ -1,4 +1,11 @@
 
+/***************************************
+* 模拟 fc-tank 编写的 easyx 游戏
+* 编译环境：Visual C++ 2019，EasyX_20200109(beta)
+* EasyX 绘图库地址：https://easyx.cn
+* 作者：xiongfj （837943056@qq.com）
+***************************************/
+
 #include "stdafx.h"
 #include "struct.h"
 #include "SelectPanel.h"
@@ -25,10 +32,6 @@
 - 定义 SelectPanel 对象, 显示玩家选择面板
 - 定义 Gamecontrol 对象, 传入玩家选择结果
 ***/
-
-//BoxMarkStruct Q_boxmark;		// 全局变量 Q_ 开头
-
-IMAGE temp_img(600, 600);
 
 //
 void main()

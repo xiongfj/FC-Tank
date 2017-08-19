@@ -14,7 +14,7 @@ void MciSound::InitSounds()
 	mciSendString(_T("open ./res/music/shoot.wav alias			shoot3"), NULL, 0, NULL);
 
 	mciSendString(_T("open ./res/music/bin.wav alias bin"), NULL, 0, NULL);
-	mciSendString(_T("open ./res/music/bk_sound.mp3 alias bk_sound"), NULL, 0, NULL);
+	mciSendString(_T("open ./res/music/bk_sound.wav alias bk_sound"), NULL, 0, NULL);
 	mciSendString(_T("open ./res/music/get-prop.wav alias get_prop"), NULL, 0, NULL);
 	mciSendString(_T("open ./res/music/enemy-bomb.wav alias		enemy_bomb"), NULL, 0, NULL);
 	mciSendString(_T("open ./res/music/scorepanel_di.wav alias scorepanel_di"), NULL, 0, NULL);
@@ -109,15 +109,15 @@ void MciSound::_PlaySound(int kind)
 
 void MciSound::PauseBk(bool paused)
 {
-	if (paused)
+	/*if (paused)
 		mciSendString(_T("pause bk_sound"), NULL, 0, NULL);
 	else
-		mciSendString(_T("play bk_sound from 0"), NULL, 0, NULL);
+		mciSendString(_T("play bk_sound from 0"), NULL, 0, NULL);*/
 }
 
-void MciSound::PauseMove(bool paused)
+void MciSound::PlayMovingSound(bool play)
 {
-	if (paused)
+	if (!play)
 		mciSendString(_T("pause player_move"), NULL, 0, NULL);
 	else
 		mciSendString(_T("play player_move from 0"), NULL, 0, NULL);

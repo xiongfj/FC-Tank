@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "GameControl.h"
-#include "typeinfo.h"
 #include "MciSound.h"
 
 int GameControl::mCurrentStage = 1;	// [1-35]
@@ -399,7 +398,6 @@ bool GameControl::CreateMap(bool* isCreate)
 			}
 		}
 
-
 		// 大本营
 		TransparentBlt(mCenter_hdc, BOX_SIZE * 12, BOX_SIZE * 24, BOX_SIZE * 2, BOX_SIZE * 2,
 			GetImageHDC(&mCamp[0]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
@@ -434,7 +432,11 @@ void GameControl::GameLoop()
 	}
 }
 
-//
+/**********************************************
+* 有序循环体
+* 画面刷新：玩家、子弹、敌机 所有的更新都在此
+* 按键检测
+**********************************************/
 GameResult GameControl::StartGame()
 {
 	// 主绘图操作时间
@@ -702,7 +704,11 @@ void GameControl::SignBox_4(int i, int j, int sign_val)
 		mBoxMarkStruct->box_4[ temp_i[i] ][ temp_j[i] ] = sign_val;
 }
 
-// 数据更新, 不涉及绘图操作!!
+// 
+/***************************************************
+* 数据更新, 不涉及绘图操作!!
+* 更新所有东西的坐标，下一次循环体中将在新左边绘图，实现运动
+****************************************************/
 bool GameControl::RefreshData()
 {
 	if (GetAsyncKeyState(27) & 0x8000)
@@ -767,7 +773,7 @@ bool GameControl::RefreshData()
 
 			MciSound::_PlaySound(S_CAMP_BOMB);
 			MciSound::PauseBk(true);
-			MciSound::PauseMove(true);
+			MciSound::PlayMovingSound(false);
 			break;
 
 		// 遍历被击中的玩家 然后暂停它
@@ -828,7 +834,7 @@ bool GameControl::RefreshData()
 
 			MciSound::_PlaySound(S_CAMP_BOMB);
 			MciSound::PauseBk(true);
-			MciSound::PauseMove(true);
+			MciSound::PlayMovingSound(false);
 			break;
 
 		default:
@@ -1023,7 +1029,7 @@ void GameControl::RefreshCenterPanel()
 			mGameOverFlag = true;
 
 			MciSound::PauseBk(true);
-			MciSound::PauseMove(true);
+			MciSound::PlayMovingSound(false);
 		}
 
 		// 道具闪烁, 内部自定义时钟
@@ -1041,10 +1047,7 @@ void GameControl::RefreshCenterPanel()
 				GetImageHDC(&mCamp[1]), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 		}
 
-		switch (mBlast.CampBlasting(mCenter_hdc))
-		{
-			//case BlastState::
-		}
+		mBlast.CampBlasting(mCenter_hdc);
 
 		IsWinOver();
 		IsGameOver();

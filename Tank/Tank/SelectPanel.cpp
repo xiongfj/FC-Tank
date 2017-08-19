@@ -37,7 +37,7 @@ void SelectPanel::Init()
 	mCounter = 1;
 }
 
-//
+// 显示游戏开始控制面板
 EnumSelectResult SelectPanel::ShowSelectPanel()
 {
 	cleardevice();		// 防止游戏失败分数面板后显示 GAMEOVER 残留屏幕
@@ -45,6 +45,7 @@ EnumSelectResult SelectPanel::ShowSelectPanel()
 	// 选择玩家面板上升动画
 	while (mSelect_player_image_y > 0)
 	{
+		// 如果上升过程按下回车键，直接结束动画，显示最后定格的页面
 		if (GetAsyncKeyState(VK_RETURN) & 0x8000)
 			mSelect_player_image_y = 0;
 
@@ -58,10 +59,11 @@ EnumSelectResult SelectPanel::ShowSelectPanel()
 		
 		// 将 mImage_hdc 绘制到主窗口 mDes_hdc 上
 		StretchBlt(mDes_hdc, 0, mSelect_player_image_y, WINDOW_WIDTH, WINDOW_HEIGHT, mImage_hdc, 0, 0 , CANVAS_WIDTH, CANVAS_HEIGHT, SRCCOPY);
-		FlushBatchDraw();
+		FlushBatchDraw();	// 输出从 Tank.cpp BeginBatchDraw(); 开始到此处的缓存绘图，才能显示到窗口，目的：避免闪烁
 	}
 
 	int temp = 0;					// 控制按键响应速度,不能太快!
+	// 玩家可以进行 上下、回车操作，选择游戏模式
 	// 玩家开始选择游戏功能
 	while ( true )
 	{

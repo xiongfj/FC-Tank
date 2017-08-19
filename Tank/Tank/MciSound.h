@@ -32,5 +32,5 @@ public:
 	static void _PlaySound(int kind);
 
 	static void PauseBk(bool);		// 开始或暂停背景音乐
-	static void PauseMove(bool);		// 玩家坦克移动声音
+	static void PlayMovingSound(bool);		// 玩家坦克移动声音
 };

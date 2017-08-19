@@ -24,12 +24,12 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	//mProp.Init(b);
 
 	mPlayerLife = 2;		// 玩家 HP
-	mPlayerTankLevel = 3;
+	mPlayerTankLevel = 0;
 
-	// 不同级别坦克移动速度系数
-	int temp[4] = { 1, 1, 1, 1 };
-	for (i = 0; i < 4; i++)
-		mSpeed[i] = temp[i];
+	//// 不同级别坦克移动速度系数
+	//int temp[4] = { 1, 1, 1, 1 };
+	//for (i = 0; i < 4; i++)
+	//	mSpeed[i] = temp[i];
 
 	Init();
 
@@ -301,14 +301,14 @@ bool PlayerBase::PlayerControl()
 		if (GetAsyncKeyState('A') & 0x8000)
 		{
 			// 同方向移动才开启自动移动
-			if (mOnIce && mTankDir == DIR_LEFT )
+			if (mOnIce && mTankDir == DIR_LEFT )	// 如果坦克朝向是 左
 			{
 				mAutoMove = true;
 				mAutoMove_Counter = 0;
 				mRandCounter = rand() % 8 + 7;
 			}
 			if (mMoving == false) {
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			}
 			mMoving = true;
 			Move(DIR_LEFT);
@@ -324,7 +324,7 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			mMoving = true;
 			Move(DIR_UP);
 		}
@@ -339,7 +339,7 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			mMoving = true;
 			Move(DIR_RIGHT);
 		}
@@ -353,14 +353,14 @@ bool PlayerBase::PlayerControl()
 				mRandCounter = rand() % 8 + 7;
 			}
 			if (mMoving == false)
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			mMoving = true;
 			Move(DIR_DOWN);
 		}
-		else if (mMoving)
+		else if (mMoving)		// 松开按键，停止播放移动声音；如果按下并快速松开，声音播放后又立即被暂停，所以听不到声音
 		{
 			mMoving = false;
-			MciSound::PauseMove(true);
+			MciSound::PlayMovingSound(false);
 		}
 
 		// 不能加 else if, 不然移动时候无法发射子弹
@@ -388,7 +388,7 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			mMoving = true;
 			Move(DIR_LEFT);
 		}
@@ -403,7 +403,7 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			mMoving = true;
 			Move(DIR_UP);
 		}
@@ -418,7 +418,7 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			mMoving = true;
 			Move(DIR_RIGHT);
 		}
@@ -433,13 +433,13 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			mMoving = true;
 			Move(DIR_DOWN);
 		}
 		else if (mMoving)
 		{
-			MciSound::PauseMove(true);
+			MciSound::PlayMovingSound(false);
 			mMoving = false;
 		}
 
@@ -791,7 +791,21 @@ void PlayerBase::DispatchProp(int prop_kind)
 	}
 }
 
-// 变向的同时调整坦克所在格子. 必须保证坦克中心在格子线上
+/*
+* 变向的同时调整坦克所在格子. 必须保证坦克中心在格子线上
+ * 玩家移动计时器 mTankTimer 未到时	不能移动
+ * 玩家生命值用光后					不能移动
+ * 玩家坦克正在爆炸					不能移动
+ * 玩家被另一个玩家击中后				不能移动
+
+ * 移动前清除坦克 mTankX,mTankY 所在的 box_4 四个格子 = 空，表示该处没有东西存在
+ * 如果是变向，那么调整 mTankX,mTankY 到正确的格子位置上
+ * 检测是否可以移动
+ * 如果可以移动，计算新的 mTankX, mTankY 坐标
+ * 移动后标记 box_4 四个格子 = PLAYER_SIGN + player_id；表示该玩家坦克处于新位置
+
+ * 新的坐标 mTankX, mTankY 已经更新完毕，函数返回，待循环体根据这个坐标重新绘制坦克，从而实现移动效果。
+ */
 void PlayerBase::Move(int new_dir)
 {
 	if (!mTankTimer.IsTimeOut() || mDied || mBlast.IsBlasting())
@@ -831,8 +845,8 @@ void PlayerBase::Move(int new_dir)
 	{
 		if (CheckMoveable())
 		{
-			mTankX += mDevXY[mTankDir][0] * mSpeed[mPlayerTankLevel];
-			mTankY += mDevXY[mTankDir][1] * mSpeed[mPlayerTankLevel];
+			mTankX += mDevXY[mTankDir][0];// *mSpeed[mPlayerTankLevel];
+			mTankY += mDevXY[mTankDir][1];// *mSpeed[mPlayerTankLevel];
 		}
 	}
 	SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);
@@ -847,7 +861,7 @@ void PlayerBase::Move(int new_dir)
 	----a----
 	| 3 | 4	|
 	---------
-* 如果 (x,y) 在 a 点出, 转换后的 i,j 属于格子 4
+* 如果 (x,y) 在 a 点, 转换后的 i,j 属于格子 4
 * 如果 x 值在 a 点左边, 则转换后的 j 属于 1或3; 右边则属于 2或4
 * 如果 y 值在 a 点以上, 则转换后的 i 属于 1或2; 以下则属于 3或4
 ** 如果 tempx,tempy 跨越了格子又遇到障碍, 那么就将 mTankX 或 mTankY 调整到格子线上,
@@ -855,9 +869,11 @@ void PlayerBase::Move(int new_dir)
 bool PlayerBase::CheckMoveable()
 {
 	// 坦克中心坐标
-	int tempx = mTankX + mDevXY[mTankDir][0] * mSpeed[mPlayerTankLevel];
-	int tempy = mTankY + mDevXY[mTankDir][1] * mSpeed[mPlayerTankLevel];
+	int tempx = mTankX + mDevXY[mTankDir][0];// *mSpeed[mPlayerTankLevel];
+	int tempy = mTankY + mDevXY[mTankDir][1];// *mSpeed[mPlayerTankLevel];
 
+	// 游戏是运行在一个 208*208 的画布上的，所以实际游戏区域大小是 208*208
+	// 如果新坐标 tempx < 8 即坦克中心坐标 < 8 ，说明此时已经越界（因为是中心点），就是说坦克已经移动到边界了
 	if (tempx < BOX_SIZE || tempy < BOX_SIZE || tempy > CENTER_WIDTH - BOX_SIZE || tempx > CENTER_HEIGHT - BOX_SIZE)
 	{
 		// 如果遇到障碍物,将坦克坐标调整到格子线上. 不然坦克和障碍物会有几个像素点间隔
