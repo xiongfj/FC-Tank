@@ -1,6 +1,6 @@
 
 // TODO: 在此处引用程序需要的其他头文件
-#include "./easyx/graphics.h"
+#include "graphics.h"
 #include <list>
 #include <time.h>
 #include <stdlib.h>

@@ -1,4 +1,11 @@
 
+/***************************************
+* 模拟 fc-tank 编写的 easyx 游戏
+* Easyx 版本：	EasyX_20170421(beta)
+* 编译环境：		Vs2017
+* 作者：			837943056@qq.com
+***************************************/
+
 #include "stdafx.h"
 #include "struct.h"
 #include "SelectPanel.h"
