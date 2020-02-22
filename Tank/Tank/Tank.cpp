@@ -33,10 +33,6 @@
 - 定义 Gamecontrol 对象, 传入玩家选择结果
 ***/
 
-//BoxMarkStruct Q_boxmark;		// 全局变量 Q_ 开头
-
-IMAGE temp_img(600, 600);
-
 //
 void main()
 {
