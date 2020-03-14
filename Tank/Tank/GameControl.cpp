@@ -773,7 +773,7 @@ bool GameControl::RefreshData()
 
 			MciSound::_PlaySound(S_CAMP_BOMB);
 			MciSound::PauseBk(true);
-			MciSound::PauseMove(true);
+			MciSound::PlayMovingSound(false);
 			break;
 
 		// 遍历被击中的玩家 然后暂停它
@@ -834,7 +834,7 @@ bool GameControl::RefreshData()
 
 			MciSound::_PlaySound(S_CAMP_BOMB);
 			MciSound::PauseBk(true);
-			MciSound::PauseMove(true);
+			MciSound::PlayMovingSound(false);
 			break;
 
 		default:
@@ -1029,7 +1029,7 @@ void GameControl::RefreshCenterPanel()
 			mGameOverFlag = true;
 
 			MciSound::PauseBk(true);
-			MciSound::PauseMove(true);
+			MciSound::PlayMovingSound(false);
 		}
 
 		// 道具闪烁, 内部自定义时钟
