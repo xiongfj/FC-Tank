@@ -1,6 +1,0 @@
-解压得到 include、lib 文件夹
-打开 Tank.sln 项目，右击项目->属性
-找到 VC++ Directories 设置项
-在子项 Include Directories 添加一个指向 EasyX_20170421(beta)\include 文件夹的路径
-在子项 Library Directories 添加一个指向 EasyX_20170421(beta)\lib\.. 文件夹的路径（根据你的计算机系统 X64 X86 选择\lib\x64 或者\lib\x86）
-vs2019 选择 \lib\vs2017\ 版本

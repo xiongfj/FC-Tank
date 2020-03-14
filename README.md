@@ -1,8 +1,8 @@
 # FC-Tank
 
 使用 c++、easyx 绘图库编写的 fc-tank 小游戏
-* Easyx 版本：	EasyX_20170421(beta)
-* 编译环境：		Vs2017
+* Easyx 版本：	https://easyx.cn/downloads/view.aspx?id=10
+* 编译环境：		Vs2019
 * 作者：			837943056@qq.com
 
 # 文档说明
