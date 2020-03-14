@@ -1,9 +1,9 @@
 
 /***************************************
 * 模拟 fc-tank 编写的 easyx 游戏
-* Easyx 版本：	https://easyx.cn/downloads/view.aspx?id=10
-* 编译环境：		Vs2019
-* 作者：			837943056@qq.com
+* 编译环境：Visual C++ 2019，EasyX_20200109(beta)
+* EasyX 绘图库地址：https://easyx.cn
+* 作者：xiongfj （837943056@qq.com）
 ***************************************/
 
 #include "stdafx.h"

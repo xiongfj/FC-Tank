@@ -308,7 +308,7 @@ bool PlayerBase::PlayerControl()
 				mRandCounter = rand() % 8 + 7;
 			}
 			if (mMoving == false) {
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			}
 			mMoving = true;
 			Move(DIR_LEFT);
@@ -324,7 +324,7 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			mMoving = true;
 			Move(DIR_UP);
 		}
@@ -339,7 +339,7 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			mMoving = true;
 			Move(DIR_RIGHT);
 		}
@@ -353,14 +353,14 @@ bool PlayerBase::PlayerControl()
 				mRandCounter = rand() % 8 + 7;
 			}
 			if (mMoving == false)
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			mMoving = true;
 			Move(DIR_DOWN);
 		}
-		else if (mMoving)
+		else if (mMoving)		// 松开按键，停止播放移动声音；如果按下并快速松开，声音播放后又立即被暂停，所以听不到声音
 		{
 			mMoving = false;
-			MciSound::PauseMove(true);
+			MciSound::PlayMovingSound(false);
 		}
 
 		// 不能加 else if, 不然移动时候无法发射子弹
@@ -388,7 +388,7 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			mMoving = true;
 			Move(DIR_LEFT);
 		}
@@ -403,7 +403,7 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			mMoving = true;
 			Move(DIR_UP);
 		}
@@ -418,7 +418,7 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			mMoving = true;
 			Move(DIR_RIGHT);
 		}
@@ -433,13 +433,13 @@ bool PlayerBase::PlayerControl()
 			}
 
 			if (mMoving == false)
-				MciSound::PauseMove(false);
+				MciSound::PlayMovingSound(true);
 			mMoving = true;
 			Move(DIR_DOWN);
 		}
 		else if (mMoving)
 		{
-			MciSound::PauseMove(true);
+			MciSound::PlayMovingSound(false);
 			mMoving = false;
 		}
 
