@@ -7,7 +7,7 @@
 
 # 文档说明
 * Map 项目包含地图制作代码，可以自行设计地图，目前包含同原版的 35 副地图。
-* 项目地址链接：https://codebus.cn/xiongfj/post/fc-tank
+* 项目地址链接：https://codebus.cn/xiongfj/a/fc-tank
 
 # 截图
 ![image](https://raw.githubusercontent.com/xiongfj/FC-Tank/master/Screenshot/1.png)
