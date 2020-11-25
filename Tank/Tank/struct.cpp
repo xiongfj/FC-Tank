@@ -305,14 +305,15 @@ PropClass::PropClass()
 
 	//score_counter = 0;
 	//show_score = false;
-	loadimage(&score, _T("./res/big/500.gif"));
 
-	TCHAR buf[100];
-	for (int i = 0; i < 6; i++)
-	{
-		_stprintf_s(buf, _T("./res/big/prop/p%d.gif"), i);
-		loadimage(&image[i], buf);
-	}
+	//loadimage(&score, _T("./res/big/500.gif"));
+
+	//TCHAR buf[100];
+	//for (int i = 0; i < 6; i++)
+	//{不能在此加载，IMAGE 在 堆里面还没有初始化！！
+	//	_stprintf_s(buf, _T("./res/big/prop/p%d.gif"), i);
+	//	loadimage(&image[i], buf);
+	//}
 }
 
 //
@@ -325,6 +326,15 @@ void PropClass::Init(BoxMarkStruct * b)
 	can_show = false;
 	show_score = false;
 	score_counter = 0;
+
+	loadimage(&score, _T("./res/big/500.gif"));
+
+	TCHAR buf[100];
+	for (int i = 0; i < 6; i++)
+	{
+		_stprintf_s(buf, _T("./res/big/prop/p%d.gif"), i);
+		loadimage(&image[i], buf);
+	}
 }
 
 // GameControl 内循环检测该函数
