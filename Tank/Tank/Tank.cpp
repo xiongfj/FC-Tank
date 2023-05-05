@@ -1,9 +1,9 @@
-
+ï»¿
 /***************************************
-* Ä£Äâ fc-tank ±àĞ´µÄ easyx ÓÎÏ·
-* ±àÒë»·¾³£ºVisual C++ 2019£¬EasyX_20200109(beta)
-* EasyX »æÍ¼¿âµØÖ·£ºhttps://easyx.cn
-* ×÷Õß£ºxiongfj £¨837943056@qq.com£©
+* æ¨¡æ‹Ÿ FC-Tank ç¼–å†™çš„ EasyX æ¸¸æˆ
+* ç¼–è¯‘ç¯å¢ƒï¼šVS2022 + EasyX_20220901
+* EasyX ç»˜å›¾åº“åœ°å€ï¼šhttps://easyx.cn
+* ä½œè€…ï¼šxiongfj ï¼ˆ837943056@qq.comï¼‰
 ***************************************/
 
 #include "stdafx.h"
@@ -12,52 +12,52 @@
 #include "GameControl.h"
 #include "MciSound.h"
 
-#define ONE_PLAYER	1		// ²»ÄÜĞŞ¸Ä¸ÃÖµ!! ÒÑ¾­ÓÃÓÚÊı×éÏÂ±ê!!
+#define ONE_PLAYER	1		// ä¸èƒ½ä¿®æ”¹è¯¥å€¼!! å·²ç»ç”¨äºæ•°ç»„ä¸‹æ ‡!!
 #define TWO_PLAYER	2
 
 /***
-* TankClass.PlayerBase Àà
-- ¸Ã¶ÔÏóÔÚ GameControl ÄÚÊµÀı»¯,´æ´¢
+* TankClass.PlayerBase ç±»
+- è¯¥å¯¹è±¡åœ¨ GameControl å†…å®ä¾‹åŒ–,å­˜å‚¨
 
-* TankClass.EnemyTank Àà
+* TankClass.EnemyTank ç±»
 
-* SelectPanel Àà
-- µ¥¶ÀÏÔÊ¾Ñ¡ÔñÃæ°å
+* SelectPanel ç±»
+- å•ç‹¬æ˜¾ç¤ºé€‰æ‹©é¢æ¿
 
-* GameConrol Àà
-- ½ÓÊÕ main ´«µİ½øÀ´µÄÊı¾İ, ´æ´¢ PlayerBase ¶ÔÏóÁ´±í
-- ½« Graphics* ´«-> PlayerBase ÄÚÍæ¼Ò×ÔĞĞ»æÖÆ
+* GameConrol ç±»
+- æ¥æ”¶ main ä¼ é€’è¿›æ¥çš„æ•°æ®, å­˜å‚¨ PlayerBase å¯¹è±¡é“¾è¡¨
+- å°† Graphics* ä¼ -> PlayerBase å†…ç©å®¶è‡ªè¡Œç»˜åˆ¶
 
-* Ö÷º¯Êı main()
-- ¶¨Òå SelectPanel ¶ÔÏó, ÏÔÊ¾Íæ¼ÒÑ¡ÔñÃæ°å
-- ¶¨Òå Gamecontrol ¶ÔÏó, ´«ÈëÍæ¼ÒÑ¡Ôñ½á¹û
+* ä¸»å‡½æ•° main()
+- å®šä¹‰ SelectPanel å¯¹è±¡, æ˜¾ç¤ºç©å®¶é€‰æ‹©é¢æ¿
+- å®šä¹‰ Gamecontrol å¯¹è±¡, ä¼ å…¥ç©å®¶é€‰æ‹©ç»“æœ
 ***/
 
 //
 void main()
 {
 	srand((unsigned)time(0));
-	bool isCustomMap = false;		// ×Ô¶¨ÒåµØÍ¼
+	bool isCustomMap = false;		// è‡ªå®šä¹‰åœ°å›¾
 	MciSound::InitSounds();
 
-	// »ÒÉ«±³¾°
+	// ç°è‰²èƒŒæ™¯
 	initgraph(WINDOW_WIDTH, WINDOW_HEIGHT);
 	BeginBatchDraw();
 
-	// ¶¨Òå image »­²¼
+	// å®šä¹‰ image ç”»å¸ƒ
 	IMAGE canvas_img(CANVAS_WIDTH, CANVAS_HEIGHT);
 
-	// »ñÈ¡ graphics »æÍ¼¶ÔÏó
+	// è·å– graphics ç»˜å›¾å¯¹è±¡
 	HDC des_hdc = GetImageHDC();
 	HDC canvas_hdc = GetImageHDC(&canvas_img);
 
-	SelectPanel* selecter = new SelectPanel(des_hdc, canvas_hdc);	// ÏÔÊ¾Íæ¼Ò¹¦ÄÜÑ¡ÔñÃæ°å
+	SelectPanel* selecter = new SelectPanel(des_hdc, canvas_hdc);	// æ˜¾ç¤ºç©å®¶åŠŸèƒ½é€‰æ‹©é¢æ¿
 	GameControl* control = NULL;// new GameControl(des_hdc, canvas_hdc/*, &Q_boxmark*/);
 	EnumSelectResult result;
 
 	while (_kbhit() != 27)
 	{
-		result = selecter->ShowSelectPanel();		// »ñÈ¡Íæ¼ÒÑ¡Ôñ½á¹û
+		result = selecter->ShowSelectPanel();		// è·å–ç©å®¶é€‰æ‹©ç»“æœ
 
 		if (!isCustomMap)
 		{
@@ -69,7 +69,7 @@ void main()
 		switch (result)
 		{
 			case OnePlayer:
-				control->AddPlayer(ONE_PLAYER);		// Ò»¸öÍæ¼Ò
+				control->AddPlayer(ONE_PLAYER);		// ä¸€ä¸ªç©å®¶
 
 				if (isCustomMap)
 					control->GameLoop();
@@ -78,11 +78,11 @@ void main()
 					control->LoadMap();
 					control->GameLoop();
 				}
-				isCustomMap = false;		// ×Ô¶¨ÒåµØÍ¼¹Ø¿¨¹ıºó×Ô¶¯½øĞĞºóÃæµÄ¹Ø¿¨
+				isCustomMap = false;		// è‡ªå®šä¹‰åœ°å›¾å…³å¡è¿‡åè‡ªåŠ¨è¿›è¡Œåé¢çš„å…³å¡
 				break;
 
 			case TwoPlayer:
-				control->AddPlayer(TWO_PLAYER);		// Á½¸öÍæ¼Ò
+				control->AddPlayer(TWO_PLAYER);		// ä¸¤ä¸ªç©å®¶
 
 				if (isCustomMap)
 					control->GameLoop();
@@ -94,7 +94,7 @@ void main()
 				isCustomMap = false;
 				break;
 
-			case Custom:							// Íæ¼Ò×Ô¶¨ÒåµØÍ¼
+			case Custom:							// ç©å®¶è‡ªå®šä¹‰åœ°å›¾
 				control->CreateMap(&isCustomMap);
 				break;
 
@@ -107,5 +107,5 @@ void main()
 }
 
 /*
-* _WALL ±»Ïû³ıºó±êÖ¾Îª _CLEAR = -1;
+* _WALL è¢«æ¶ˆé™¤åæ ‡å¿—ä¸º _CLEAR = -1;
 */

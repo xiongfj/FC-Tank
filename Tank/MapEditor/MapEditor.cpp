@@ -27,11 +27,8 @@ void TestRead();
 
 void main()
 {
-	writeMap();
-
-
-
-	//TestRead();	// ≤‚ ‘∂¡»°µÿÕº
+	//writeMap();
+	TestRead();	// ≤‚ ‘∂¡»°µÿÕº
 	_getch();
 }
 
@@ -76,7 +73,7 @@ void writeMap()
 	map[33].map_34();
 	map[34].map_35();
 	FILE* fp = NULL;
-	fopen_s(&fp, "map.dat", "ab+");
+	fopen_s(&fp, "map.dat", "wb");
 	for (int i = 0; i < 35; i++)
 		fwrite(&map[i], sizeof(MAP), 1, fp);
 	fclose(fp);
