@@ -1,10 +1,10 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "PlayerBase.h"
 #include "MciSound.h"
 
-//----------------- PlayerBase Àà¾²Ì¬Êı¾İ
+//----------------- PlayerBase ç±»é™æ€æ•°æ®
 
-int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// ÒÀ´Î×óÉÏÓÒÏÂ
+int PlayerBase::mDevXY[4][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };	// ä¾æ¬¡å·¦ä¸Šå³ä¸‹
 PropClass PlayerBase::mProp;
 bool PlayerBase::mTimeProp = false;
 bool PlayerBase::mShovelProp = false;
@@ -23,30 +23,30 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 	bms = b;
 	//mProp.Init(b);
 
-	mPlayerLife = 2;		// Íæ¼Ò HP
+	mPlayerLife = 2;		// ç©å®¶ HP
 	mPlayerTankLevel = 0;
 
-	//// ²»Í¬¼¶±ğÌ¹¿ËÒÆ¶¯ËÙ¶ÈÏµÊı
+	//// ä¸åŒçº§åˆ«å¦å…‹ç§»åŠ¨é€Ÿåº¦ç³»æ•°
 	//int temp[4] = { 1, 1, 1, 1 };
 	//for (i = 0; i < 4; i++)
 	//	mSpeed[i] = temp[i];
 
 	Init();
 
-	// ²»Í¬Íæ¼ÒÊı¾İ²»Í¬
+	// ä¸åŒç©å®¶æ•°æ®ä¸åŒ
 	if (player_id == 0)
-		loadimage(&m12PImage, _T("./res/big/1P.gif"));		// 1P\2PÍ¼±ê
+		loadimage(&m12PImage, _T("./res/big/1P.gif"));		// 1P\2På›¾æ ‡
 	else
 		loadimage(&m12PImage, _T("./res/big/2P.gif"));
 
-	// ¹²Í¬µÄÊı¾İ
-	loadimage(&mPlayerTankIcoImage, _T("./res/big/playertank-ico.gif"	));	// Íæ¼ÒÌ¹¿ËÍ¼±ê
-	loadimage(&mBlackNumberImage,	_T("./res/big/black-number.gif"		));	// ºÚÉ«Êı×Ö
+	// å…±åŒçš„æ•°æ®
+	loadimage(&mPlayerTankIcoImage, _T("./res/big/playertank-ico.gif"	));	// ç©å®¶å¦å…‹å›¾æ ‡
+	loadimage(&mBlackNumberImage,	_T("./res/big/black-number.gif"		));	// é»‘è‰²æ•°å­—
 		
 	/*********************************
-	* BulletStruct Êı¾İ³õÊ¼»¯
+	* BulletStruct æ•°æ®åˆå§‹åŒ–
 	*********************************/
-	// ¼ÓÔØ×Óµ¯Í¼Æ¬
+	// åŠ è½½å­å¼¹å›¾ç‰‡
 	TCHAR buf[100];
 	for (i = 0; i < 4; i++)
 	{
@@ -54,17 +54,17 @@ PlayerBase::PlayerBase(byte player, BoxMarkStruct* b/*, PropClass* pc*/)
 		loadimage(&BulletStruct::mBulletImage[i], buf);
 	}
 
-	// ±¬Õ¨Í¼Æ¬
+	// çˆ†ç‚¸å›¾ç‰‡
 	for (i = 0; i < 3; i++)
 	{
 		_stprintf_s(buf, _T("./res/big/bumb%d.gif"), i);
 		loadimage(&BombStruct::mBombImage[i], buf);
 	}
 
-	mBombTimer.SetDrtTime(20);	// ²»ÄÜÉèÖÃÌ«Ğ¡..
+	mBombTimer.SetDrtTime(20);	// ä¸èƒ½è®¾ç½®å¤ªå°..
 	//mBlastTimer.SetDrtTime(36);
 
-	// ÏÔÊ¾·ÖÊıÃæ°å
+	// æ˜¾ç¤ºåˆ†æ•°é¢æ¿
 	mScorePanel = new ScorePanel(player_id);
 
 	//mGameOverTimer.SetDrtTime(20);
@@ -76,8 +76,8 @@ PlayerBase::~PlayerBase()
 	delete mPlayerTank;
 	delete mScorePanel;
 
-	// ¾²Ì¬Êı¾İ·ÅÖÃ¶à´Î delete
-	/*²»ÄÜÕâÑùÊÍ·Å, µ± delete µ¥¸ö¶ÔÏóµÄÊ±ºò, ÆäËü¶ÔÏó»¹»áÓÃµ½Õâ¸ö¾²Ì¬Êı¾İ!!!
+	// é™æ€æ•°æ®æ”¾ç½®å¤šæ¬¡ delete
+	/*ä¸èƒ½è¿™æ ·é‡Šæ”¾, å½“ delete å•ä¸ªå¯¹è±¡çš„æ—¶å€™, å…¶å®ƒå¯¹è±¡è¿˜ä¼šç”¨åˆ°è¿™ä¸ªé™æ€æ•°æ®!!!
 	if (mProp != NULL)
 	{
 		delete mProp;
@@ -100,22 +100,22 @@ void PlayerBase::Init()
 	mBombProp = false;
 	mShovelProp = false;
 
-	// ²»Í¬Íæ¼ÒÊı¾İ²»Í¬
+	// ä¸åŒç©å®¶æ•°æ®ä¸åŒ
 	if (player_id == 0)
 	{
-		m12PImage_x = 233;									// 1P\2P ×ø±ê
+		m12PImage_x = 233;									// 1P\2P åæ ‡
 		m12PImage_y = 129;
-		mPlayerTankIcoImage_x = 232;						// Íæ¼ÒÌ¹¿ËÍ¼±ê×ø±ê
+		mPlayerTankIcoImage_x = 232;						// ç©å®¶å¦å…‹å›¾æ ‡åæ ‡
 		mPlayerTankIcoImage_y = 137;
-		mPlayerLife_x = 240;								// Íæ¼ÒÉúÃüÖµ×ø±ê
+		mPlayerLife_x = 240;								// ç©å®¶ç”Ÿå‘½å€¼åæ ‡
 		mPlayerLife_y = 137;
-		mTankX = 4 * 16 + BOX_SIZE;							// Ì¹¿ËÊ×´Î³öÏÖÊ±ºòµÄÖĞĞÄ×ø±ê
+		mTankX = 4 * 16 + BOX_SIZE;							// å¦å…‹é¦–æ¬¡å‡ºç°æ—¶å€™çš„ä¸­å¿ƒåæ ‡
 		mTankY = 12 * 16 + BOX_SIZE;
 
-		mTankTimer.SetDrtTime(mMoveSpeedDev[mPlayerTankLevel]);		// Ì¹¿ËÒÆ¶¯ËÙ¶È, ²»Í¬¼¶±ğ²»Í¬Íæ¼Ò ²»Ò»Ñù
+		mTankTimer.SetDrtTime(mMoveSpeedDev[mPlayerTankLevel]);		// å¦å…‹ç§»åŠ¨é€Ÿåº¦, ä¸åŒçº§åˆ«ä¸åŒç©å®¶ ä¸ä¸€æ ·
 		mBulletTimer.SetDrtTime(mBulletSpeedDev[mPlayerTankLevel]);
 
-		// Íæ¼Òdie ºóÏÔÊ¾ÓÒÒÆµÄ GAMEOVER ×ÖÑù
+		// ç©å®¶die åæ˜¾ç¤ºå³ç§»çš„ GAMEOVER å­—æ ·
 		//mGameOverX = 0;
 		//mGameOver_Dev = 3;
 		//mGameOver_end_x = 53;
@@ -134,7 +134,7 @@ void PlayerBase::Init()
 		mTankTimer.SetDrtTime(mMoveSpeedDev[mPlayerTankLevel]);
 		mBulletTimer.SetDrtTime(mBulletSpeedDev[mPlayerTankLevel]);
 
-		// Íæ¼Òdie ºóÏÔÊ¾×óÒÆµÄ GAMEOVER ×ÖÑù
+		// ç©å®¶die åæ˜¾ç¤ºå·¦ç§»çš„ GAMEOVER å­—æ ·
 		/*mGameOverX = 220;
 		mGameOver_Dev = -3; 
 		mGameOver_end_x = 122;*/
@@ -142,26 +142,26 @@ void PlayerBase::Init()
 
 	int i = 0;
 	mDied = false;		
-	mTankDir = DIR_UP;		// Ì¹¿Ë·½Ïò
+	mTankDir = DIR_UP;		// å¦å…‹æ–¹å‘
 
-	// ×Óµ¯½á¹¹Êı¾İ
-	int temp_speed[4] = { 2,3,3,4 };			// ²»ÄÜ³¬¹ı 4 !! »áÌøÔ¾¸ñ×ÓÅĞ¶Ï.¸ù¾İÌ¹¿Ë¼¶±ğ·ÖÅä×Óµ¯ËÙ¶ÈÏµÊı
+	// å­å¼¹ç»“æ„æ•°æ®
+	int temp_speed[4] = { 2,3,3,4 };			// ä¸èƒ½è¶…è¿‡ 4 !! ä¼šè·³è·ƒæ ¼å­åˆ¤æ–­.æ ¹æ®å¦å…‹çº§åˆ«åˆ†é…å­å¼¹é€Ÿåº¦ç³»æ•°
 	for (i = 0; i < 2; i++)
 	{
-		mBulletStruct[i].x = SHOOTABLE_X;		// x ×ø±êÓÃÓÚÅĞ¶ÏÊÇ·ñ¿ÉÒÔ·¢Éä
+		mBulletStruct[i].x = SHOOTABLE_X;		// x åæ ‡ç”¨äºåˆ¤æ–­æ˜¯å¦å¯ä»¥å‘å°„
 		mBulletStruct[i].y = -1000;
 		mBulletStruct[i].dir = DIR_UP;
-		mBulletStruct[i].mKillId = 0;			// ¼ÇÂ¼»÷ÖĞµÄµĞ»ú id
+		mBulletStruct[i].mKillId = 0;			// è®°å½•å‡»ä¸­çš„æ•Œæœº id
 
-												// ¸ù¾İÌ¹¿Ë¼¶±ğ·ÖÅä×Óµ¯ËÙ¶ÈÏµÊı
+												// æ ¹æ®å¦å…‹çº§åˆ«åˆ†é…å­å¼¹é€Ÿåº¦ç³»æ•°
 		for (int j = 0; j < 4; j++)
 			mBulletStruct[i].speed[j] = temp_speed[j];
 	}
 
-	mBullet_1_counter = 9;				// ×Óµ¯ 1 ÔË¶¯ N ¸öÑ­»·ºó²Å¿ÉÒÔ·¢Éä×Óµ¯ 2 
+	mBullet_1_counter = 9;				// å­å¼¹ 1 è¿åŠ¨ N ä¸ªå¾ªç¯åæ‰å¯ä»¥å‘å°„å­å¼¹ 2 
 	mMoving = false;
 
-	// ±¬Õ¨Í¼Æ¬
+	// çˆ†ç‚¸å›¾ç‰‡
 	for (i = 0; i < 2; i++)
 	{
 		mBombS[i].mBombX = -100;
@@ -170,41 +170,41 @@ void PlayerBase::Init()
 		mBombS[i].counter = 0;
 	}
 
-	// SendKillNumToScorePanel() ÄÚÊ¹ÓÃ
+	// SendKillNumToScorePanel() å†…ä½¿ç”¨
 	mHasSendKillNumToScorePanel = false;
 
-	// ÊÇ·ñ»÷ÖĞ´ó±¾Óª
+	// æ˜¯å¦å‡»ä¸­å¤§æœ¬è¥
 	//mIsShootCamp = false;
 
-	// É±µĞÊı
+	// æ€æ•Œæ•°
 	for (i = 0; i< 4; i++)
 		mKillEnemyNumber[i] = 0;
 
 	mPause = false;
 	mPauseCounter = 0;
 
-	// Ì¹¿ËÊÇ·ñÔÚ±ùÉÏÒÆ¶¯
+	// å¦å…‹æ˜¯å¦åœ¨å†°ä¸Šç§»åŠ¨
 	mOnIce = false;
 	mAutoMove = false;
 	mAutoMove_Counter = 0;
 	mRandCounter = rand() % 6 + 3;
 
-	// Íæ¼Ò±»ÏûÃğºóÏÔÊ¾Í¼Æ¬ GAMEOVER
+	// ç©å®¶è¢«æ¶ˆç­åæ˜¾ç¤ºå›¾ç‰‡ GAMEOVER
 	/*mGameOverY = 191;
 	mGameOverCounter = 0;
 	mShowGameOver = false;*/
 }
 
-// »æÖÆÍæ¼ÒµÄÒ»Ğ©Êı¾İ: 1P\2P Ì¹¿ËÍ¼±ê ÉúÃü
+// ç»˜åˆ¶ç©å®¶çš„ä¸€äº›æ•°æ®: 1P\2P å¦å…‹å›¾æ ‡ ç”Ÿå‘½
 void PlayerBase::DrawPlayerTankIco(const HDC& right_panel_hdc)
 {
-	// »æÖÆ1P/2P
+	// ç»˜åˆ¶1P/2P
 	TransparentBlt(right_panel_hdc, m12PImage_x, m12PImage_y, PLAYER_12_ICO_SIZE_X, PLAYER_12_ICO_SIZE_Y,
 							GetImageHDC(&m12PImage), 0, 0, PLAYER_12_ICO_SIZE_X, PLAYER_12_ICO_SIZE_Y, 0xffffff);
-	// »æÖÆÌ¹¿ËÍ¼±ê
+	// ç»˜åˆ¶å¦å…‹å›¾æ ‡
 	TransparentBlt(right_panel_hdc, mPlayerTankIcoImage_x, mPlayerTankIcoImage_y, PLAYER_TANK_ICO_SIZE_X, PLAYER_TANK_ICO_SIZE_Y,
 									GetImageHDC(&mPlayerTankIcoImage), 0, 0, PLAYER_TANK_ICO_SIZE_X, PLAYER_TANK_ICO_SIZE_Y, 0x000000);
-	// »æÖÆÍæ¼ÒÉúÃüÊı×Ö
+	// ç»˜åˆ¶ç©å®¶ç”Ÿå‘½æ•°å­—
 	TransparentBlt(right_panel_hdc, mPlayerLife_x, mPlayerLife_y, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE,
 		GetImageHDC(&mBlackNumberImage), BLACK_NUMBER_SIZE * mPlayerLife, 0, BLACK_NUMBER_SIZE, BLACK_NUMBER_SIZE, 0xffffff );
 }
@@ -217,7 +217,7 @@ bool PlayerBase::ShowStar(const HDC& center_hdc)
 		break;
 
 	case Star_State::Star_Stop:
-		SignBox_8(mTankX, mTankY, _EMPTY);		// ·ÀÖ¹Íæ¼Ò»æÖÆµØÍ¼°ÑÌ¹¿Ë³öÏÖµÄÎ»ÖÃÕÚµ²×¡
+		SignBox_8(mTankX, mTankY, _EMPTY);		// é˜²æ­¢ç©å®¶ç»˜åˆ¶åœ°å›¾æŠŠå¦å…‹å‡ºç°çš„ä½ç½®é®æŒ¡ä½
 		SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);
 		mRing.SetShowable(3222);
 		return STOP_SHOW_STAR;
@@ -235,7 +235,7 @@ void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 	if (!mStar.IsStop() || mDied || mBlast.IsBlasting())
 		return;
 
-	// 0-5²»ÏÔÊ¾Ì¹¿Ë. 6-11 ÏÔÊ¾.. ÒÀ´ÎÀàÍÆ
+	// 0-5ä¸æ˜¾ç¤ºå¦å…‹. 6-11 æ˜¾ç¤º.. ä¾æ¬¡ç±»æ¨
 	if (mPause && mPauseCounter++ / 10 % 2 != 0)
 	{
 		//printf("adas3432\n");
@@ -247,12 +247,12 @@ void PlayerBase::DrawPlayerTank(const HDC& canvas_hdc)
 	IMAGE tank = mPlayerTank->GetTankImage(mPlayerTankLevel, mTankDir, mMoving);
 	TransparentBlt(canvas_hdc, (int)(mTankX - BOX_SIZE), (int)(mTankY - BOX_SIZE), BOX_SIZE * 2, BOX_SIZE * 2, GetImageHDC(&tank), 0, 0, BOX_SIZE * 2, BOX_SIZE * 2, 0x000000);
 
-	// // ÏÔÊ¾±£»¤»·
+	// // æ˜¾ç¤ºä¿æŠ¤ç¯
 	if (mRing.canshow)
 	{
 		if (mRing.ShowRing(canvas_hdc, mTankX, mTankY) == false)
 		{
-			// ·ÀÖ¹Íæ¼Ò±¬Õ¨µ½½áÊøµÄÊ±ºò,ÖØÉúÎ»ÖÃ±»µĞ»úÕ¼ÓÃ,È»ºóÍæ¼Ò±ê¼Ç±»²Á³ı
+			// é˜²æ­¢ç©å®¶çˆ†ç‚¸åˆ°ç»“æŸçš„æ—¶å€™,é‡ç”Ÿä½ç½®è¢«æ•Œæœºå ç”¨,ç„¶åç©å®¶æ ‡è®°è¢«æ“¦é™¤
 			SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);
 		}
 	}
@@ -265,7 +265,7 @@ void PlayerBase::DrawBullet(const HDC & center_hdc)
 
 	for (int i = 0; i < 2; i++)
 	{
-		// ×Óµ¯ÔÚÒÆ¶¯
+		// å­å¼¹åœ¨ç§»åŠ¨
 		if (mBulletStruct[i].x != SHOOTABLE_X)
 		{
 			int dir = mBulletStruct[i].dir;
@@ -297,11 +297,11 @@ bool PlayerBase::PlayerControl()
 
 	switch (player_id)
 	{
-	case 0:										// Íæ¼ÒÒ»
+	case 0:										// ç©å®¶ä¸€
 		if (GetAsyncKeyState('A') & 0x8000)
 		{
-			// Í¬·½ÏòÒÆ¶¯²Å¿ªÆô×Ô¶¯ÒÆ¶¯
-			if (mOnIce && mTankDir == DIR_LEFT )	// Èç¹ûÌ¹¿Ë³¯ÏòÊÇ ×ó
+			// åŒæ–¹å‘ç§»åŠ¨æ‰å¼€å¯è‡ªåŠ¨ç§»åŠ¨
+			if (mOnIce && mTankDir == DIR_LEFT )	// å¦‚æœå¦å…‹æœå‘æ˜¯ å·¦
 			{
 				mAutoMove = true;
 				mAutoMove_Counter = 0;
@@ -315,7 +315,7 @@ bool PlayerBase::PlayerControl()
 		}
 		else if (GetAsyncKeyState('W') & 0x8000)
 		{
-			// Í¬·½ÏòÒÆ¶¯²Å¿ªÆô×Ô¶¯ÒÆ¶¯
+			// åŒæ–¹å‘ç§»åŠ¨æ‰å¼€å¯è‡ªåŠ¨ç§»åŠ¨
 			if (mOnIce && mTankDir == DIR_UP)
 			{
 				mAutoMove = true;
@@ -330,7 +330,7 @@ bool PlayerBase::PlayerControl()
 		}
 		else if (GetAsyncKeyState('D') & 0x8000)
 		{
-			// Í¬·½ÏòÒÆ¶¯²Å¿ªÆô×Ô¶¯ÒÆ¶¯
+			// åŒæ–¹å‘ç§»åŠ¨æ‰å¼€å¯è‡ªåŠ¨ç§»åŠ¨
 			if (mOnIce && mTankDir == DIR_RIGHT)
 			{
 				mAutoMove = true;
@@ -345,7 +345,7 @@ bool PlayerBase::PlayerControl()
 		}
 		else if (GetAsyncKeyState('S') & 0x8000)
 		{
-			// Í¬·½ÏòÒÆ¶¯²Å¿ªÆô×Ô¶¯ÒÆ¶¯
+			// åŒæ–¹å‘ç§»åŠ¨æ‰å¼€å¯è‡ªåŠ¨ç§»åŠ¨
 			if (mOnIce && mTankDir == DIR_DOWN)
 			{
 				mAutoMove = true;
@@ -357,14 +357,14 @@ bool PlayerBase::PlayerControl()
 			mMoving = true;
 			Move(DIR_DOWN);
 		}
-		else if (mMoving)		// ËÉ¿ª°´¼ü£¬Í£Ö¹²¥·ÅÒÆ¶¯ÉùÒô£»Èç¹û°´ÏÂ²¢¿ìËÙËÉ¿ª£¬ÉùÒô²¥·ÅºóÓÖÁ¢¼´±»ÔİÍ££¬ËùÒÔÌı²»µ½ÉùÒô
+		else if (mMoving)		// æ¾å¼€æŒ‰é”®ï¼Œåœæ­¢æ’­æ”¾ç§»åŠ¨å£°éŸ³ï¼›å¦‚æœæŒ‰ä¸‹å¹¶å¿«é€Ÿæ¾å¼€ï¼Œå£°éŸ³æ’­æ”¾ååˆç«‹å³è¢«æš‚åœï¼Œæ‰€ä»¥å¬ä¸åˆ°å£°éŸ³
 		{
 			mMoving = false;
 			MciSound::PlayMovingSound(false);
 		}
 
-		// ²»ÄÜ¼Ó else if, ²»È»ÒÆ¶¯Ê±ºòÎŞ·¨·¢Éä×Óµ¯
-		if (GetAsyncKeyState('J') & 0x8000)	// ·¢Éä×Óµ¯
+		// ä¸èƒ½åŠ  else if, ä¸ç„¶ç§»åŠ¨æ—¶å€™æ— æ³•å‘å°„å­å¼¹
+		if (GetAsyncKeyState('J') & 0x8000)	// å‘å°„å­å¼¹
 		{
 			if (!ShootBullet(0))
 			{
@@ -376,10 +376,10 @@ bool PlayerBase::PlayerControl()
 		}
 		break;
 
-	case 1:										// Íæ¼Ò¶ş
+	case 1:										// ç©å®¶äºŒ
 		if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 		{
-			// Í¬·½ÏòÒÆ¶¯²Å¿ªÆô×Ô¶¯ÒÆ¶¯
+			// åŒæ–¹å‘ç§»åŠ¨æ‰å¼€å¯è‡ªåŠ¨ç§»åŠ¨
 			if (mOnIce && mTankDir == DIR_LEFT)
 			{
 				mAutoMove = true;
@@ -394,7 +394,7 @@ bool PlayerBase::PlayerControl()
 		}
 		else if (GetAsyncKeyState(VK_UP) & 0x8000)
 		{
-			// Í¬·½ÏòÒÆ¶¯²Å¿ªÆô×Ô¶¯ÒÆ¶¯
+			// åŒæ–¹å‘ç§»åŠ¨æ‰å¼€å¯è‡ªåŠ¨ç§»åŠ¨
 			if (mOnIce && mTankDir == DIR_UP)
 			{
 				mAutoMove = true;
@@ -409,7 +409,7 @@ bool PlayerBase::PlayerControl()
 		}
 		else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 		{
-			// Í¬·½ÏòÒÆ¶¯²Å¿ªÆô×Ô¶¯ÒÆ¶¯
+			// åŒæ–¹å‘ç§»åŠ¨æ‰å¼€å¯è‡ªåŠ¨ç§»åŠ¨
 			if (mOnIce && mTankDir == DIR_RIGHT)
 			{
 				mAutoMove = true;
@@ -424,7 +424,7 @@ bool PlayerBase::PlayerControl()
 		}
 		else if (GetAsyncKeyState(VK_DOWN) & 0x8000)
 		{
-			// Í¬·½ÏòÒÆ¶¯²Å¿ªÆô×Ô¶¯ÒÆ¶¯
+			// åŒæ–¹å‘ç§»åŠ¨æ‰å¼€å¯è‡ªåŠ¨ç§»åŠ¨
 			if (mOnIce && mTankDir == DIR_DOWN)
 			{
 				mAutoMove = true;
@@ -443,7 +443,7 @@ bool PlayerBase::PlayerControl()
 			mMoving = false;
 		}
 
-		// Êı×Ö¼ü 1 ·¢Éä×Óµ¯
+		// æ•°å­—é”® 1 å‘å°„å­å¼¹
 		if (GetAsyncKeyState(VK_NUMPAD1) & 0x8000)
 		{
 			if (!ShootBullet(0))
@@ -470,25 +470,25 @@ BulletShootKind PlayerBase::BulletMoving(const HDC& center_hdc)
 
 	for (int i = 0; i < 2; i++)
 	{
-		// ×Óµ¯ÔÚÒÆ¶¯
+		// å­å¼¹åœ¨ç§»åŠ¨
 		if (mBulletStruct[i].x != SHOOTABLE_X)
 		{
 			int dir = mBulletStruct[i].dir;
 
-			// ¼ì²â´òÖĞÕÏ°­ÎïÓë·ñ
+			// æ£€æµ‹æ‰“ä¸­éšœç¢ç‰©ä¸å¦
 			BulletShootKind kind = CheckBomb(i);
 			if (kind == BulletShootKind::Camp || kind == BulletShootKind::Player_1 || kind == BulletShootKind::Player_2)
 				return kind;
 			else if (kind == BulletShootKind::Other )
 				continue;
 
-			// ÏÈ¼ì²âÔÙÈ¡Ïû±ê¼Ç
+			// å…ˆæ£€æµ‹å†å–æ¶ˆæ ‡è®°
 			SignBullet(mBulletStruct[i].x, mBulletStruct[i].y, dir, _EMPTY);
 
 			mBulletStruct[i].x += mDevXY[dir][0] * mBulletStruct[i].speed[mPlayerTankLevel];
 			mBulletStruct[i].y += mDevXY[dir][1] * mBulletStruct[i].speed[mPlayerTankLevel];
 
-			// ¼ÇÂ¼×Óµ¯ 1 µÄ²½Êı, ¾ö¶¨¿É·ñ·¢Éä×Óµ¯ 2
+			// è®°å½•å­å¼¹ 1 çš„æ­¥æ•°, å†³å®šå¯å¦å‘å°„å­å¼¹ 2
 			if ( i == 0 )
 				mBullet_1_counter--;
 
@@ -521,13 +521,13 @@ void PlayerBase::Bombing(const HDC& center_hdc)
 	}
 }
 
-// GameControl ÄÚµ÷ÓÃ, Í¨¹ı²ÎÊı½« mBulletStruct.mKillId ´«µİ½øÈ¥
+// GameControl å†…è°ƒç”¨, é€šè¿‡å‚æ•°å°† mBulletStruct.mKillId ä¼ é€’è¿›å»
 void PlayerBase::GetKillEnemy(int& bullet1, int& bullet2)
 {
 	bullet1 = mBulletStruct[0].mKillId;
 	bullet2 = mBulletStruct[1].mKillId;
 	
-	// ÖØÖÃ±êÖ¾
+	// é‡ç½®æ ‡å¿—
 	mBulletStruct[0].mKillId = 0;
 	mBulletStruct[1].mKillId = 0;
 }
@@ -540,15 +540,15 @@ void PlayerBase::GetKillEnemy(int& bullet1, int& bullet2)
 
 void PlayerBase::BeKill()
 {
-	// Èç¹ûÏÔÊ¾×Å±£»¤»·²»»áÊÜµ½¹¥»÷
+	// å¦‚æœæ˜¾ç¤ºç€ä¿æŠ¤ç¯ä¸ä¼šå—åˆ°æ”»å‡»
 	if (mRing.canshow)
 		return;
 	
 	MciSound::_PlaySound(S_PLAYER_BOMB);
 	SignBox_4(mTankX, mTankY, _EMPTY);
-	/*m mDied = true;*/		// ±ØĞëÁ¢¼´ flag , Íæ¼ÒÒÆ¶¯¼ì²â¸ÃÖµ!!
+	/*m mDied = true;*/		// å¿…é¡»ç«‹å³ flag , ç©å®¶ç§»åŠ¨æ£€æµ‹è¯¥å€¼!!
 
-	// ÉèÖÃ±¬Õ¨×ø±ê
+	// è®¾ç½®çˆ†ç‚¸åæ ‡
 	//mBlast.blastx = ;
 	//mBlast.blasty = ;
 	//mBlast.canBlast = true;
@@ -556,7 +556,7 @@ void PlayerBase::BeKill()
 	mBlast.SetBlasting(mTankX, mTankY);
 }
 
-// Íæ¼Ò±»»÷ÖĞ±¬Õ¨
+// ç©å®¶è¢«å‡»ä¸­çˆ†ç‚¸
 bool PlayerBase::Blasting(const HDC & center_hdc)
 {
 	BlastState result = mBlast.Blasting(center_hdc);
@@ -569,7 +569,7 @@ bool PlayerBase::Blasting(const HDC & center_hdc)
 		break;
 
 	case BlastState::BlastEnd:
-		// ¼ì²âÊÇ·ñ¿ÉÒÔÖØÉú
+		// æ£€æµ‹æ˜¯å¦å¯ä»¥é‡ç”Ÿ
 		if (mPlayerLife-- <= 0)
 		{
 			mDied = true;
@@ -593,7 +593,7 @@ const int& PlayerBase::GetID()
 	return player_id;
 }
 
-/*GameControl ÄÚÑ­»·µ÷ÓÃ*/
+/*GameControl å†…å¾ªç¯è°ƒç”¨*/
 bool PlayerBase::IsGetTimeProp()
 {
 	bool temp = mTimeProp;
@@ -603,33 +603,34 @@ bool PlayerBase::IsGetTimeProp()
 
 bool PlayerBase::IsGetShvelProp()
 {
+	static int split = 3000;
 	if (mShovelProp)
 	{
-		// ¸Õ»ñµÃ²ù×ÓµÀ¾ß
+		// åˆšè·å¾—é“²å­é“å…·
 		if (mShovelProp_counter++ == 0)
 		{
 			ProtectCamp(_STONE);
 		}
-		else if (mShovelProp_counter > 31000 && mShovelProp_counter < 35400 )		// ÏÔÊ¾Ò»¶ÎÊ±¼äºóÉÁË¸
+		else if (mShovelProp_counter > split - 800 && mShovelProp_counter < split)		// æ˜¾ç¤ºä¸€æ®µæ—¶é—´åé—ªçƒ
 		{
 			int val = _STONE;
-			if (mShovelProp_counter % 12 < 6)
-				val = _STONE;
-			else
+			if (mShovelProp_counter % 12 >= 6)
 				val = _WALL;
 
 			ProtectCamp(val);
-		}else if (mShovelProp_counter > 35400)
+		}else if (mShovelProp_counter >= split)
 		{
 			mShovelProp = false;
 			mShovelProp_counter = 0;
 			ProtectCamp(_WALL);
 		}
+
+		printf("%d,,, \n", mShovelProp_counter);
 	}
 	return false;
 }
 
-/*GameControl ÄÚÑ­»·µ÷ÓÃ*/
+/*GameControl å†…å¾ªç¯è°ƒç”¨*/
 bool PlayerBase::IsGetBombProp()
 {
 	bool temp = mBombProp;
@@ -646,7 +647,7 @@ void PlayerBase::ShowProp(const HDC& center_hdc)
 //
 bool PlayerBase::ShowScorePanel(const HDC& image_hdc)
 {
-	return mScorePanel->show(image_hdc);// ÕûÕÅ»­²¼Ëõ·ÅÏÔÊ¾ image µ½Ö÷´°¿Ú
+	return mScorePanel->show(image_hdc);// æ•´å¼ ç”»å¸ƒç¼©æ”¾æ˜¾ç¤º image åˆ°ä¸»çª—å£
 }
 
 //
@@ -715,16 +716,16 @@ void PlayerBase::SetShowGameover()
 
 void PlayerBase::SignBullet(int lx, int ty, byte dir, int val)
 {
-	// ×ª»»µ¯Í·×ø±ê
+	// è½¬æ¢å¼¹å¤´åæ ‡
 	int hx = lx + BulletStruct::devto_head[dir][0];
 	int hy = ty + BulletStruct::devto_head[dir][1];
 
-	// ×ª»»³É 4*4 ¸ñ×ÓÏÂ±êË÷Òı
+	// è½¬æ¢æˆ 4*4 æ ¼å­ä¸‹æ ‡ç´¢å¼•
 	int b4i = hy / SMALL_BOX_SIZE;
 	int b4j = hx / SMALL_BOX_SIZE;
 	if (b4i > 51 || b4j > 51 || b4i < 0 || b4j < 0)
 	{
-		//printf("adad²èË®¼ä  %d, %d\n", lx, ty);
+		//printf("adadèŒ¶æ°´é—´  %d, %d\n", lx, ty);
 		return;
 	}
 
@@ -735,27 +736,27 @@ void PlayerBase::SignBullet(int lx, int ty, byte dir, int val)
 void PlayerBase::Reborn()
 {
 	/*m mDied = false;*/
-	mTankX = (4 + 4 * player_id) * 16 + BOX_SIZE;				// Ì¹¿ËÊ×´Î³öÏÖÊ±ºòµÄÖĞĞÄ×ø±ê
+	mTankX = (4 + 4 * player_id) * 16 + BOX_SIZE;				// å¦å…‹é¦–æ¬¡å‡ºç°æ—¶å€™çš„ä¸­å¿ƒåæ ‡
 	mTankY = 12 * 16 + BOX_SIZE;
-	SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);		// Ì¹¿Ë³öÏÖ, ½«ËÄ½ÇĞÇ±ê¼Ç¸ÄÎªÌ¹¿Ë±ê¼Ç
+	SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);		// å¦å…‹å‡ºç°, å°†å››è§’æ˜Ÿæ ‡è®°æ”¹ä¸ºå¦å…‹æ ‡è®°
 
-	mPlayerTankLevel = 0;				// Ì¹¿Ë¼¶±ğ [0-3]
+	mPlayerTankLevel = 0;				// å¦å…‹çº§åˆ« [0-3]
 	mTankTimer.SetDrtTime(mMoveSpeedDev[mPlayerTankLevel]);
 	mBulletTimer.SetDrtTime(mBulletSpeedDev[mPlayerTankLevel]);
 
-	mTankDir = DIR_UP;		// Ì¹¿Ë·½Ïò
+	mTankDir = DIR_UP;		// å¦å…‹æ–¹å‘
 
 	/*for (int i = 0; i < 2; i++)
 	{
-		mBulletStruct[i].x = SHOOTABLE_X;		// x ×ø±êÓÃÓÚÅĞ¶ÏÊÇ·ñ¿ÉÒÔ·¢Éä
+		mBulletStruct[i].x = SHOOTABLE_X;		// x åæ ‡ç”¨äºåˆ¤æ–­æ˜¯å¦å¯ä»¥å‘å°„
 		mBulletStruct[i].y = -1000;
 		mBulletStruct[i].dir = DIR_UP;
-		mBulletStruct[i].mKillId = 0;			// ¼ÇÂ¼»÷ÖĞµÄµĞ»ú id
+		mBulletStruct[i].mKillId = 0;			// è®°å½•å‡»ä¸­çš„æ•Œæœº id
 	}*/
 
-	mBullet_1_counter = 6;				// ×Óµ¯ 1 ÔË¶¯ N ¸öÑ­»·ºó²Å¿ÉÒÔ·¢Éä×Óµ¯ 2 
+	mBullet_1_counter = 6;				// å­å¼¹ 1 è¿åŠ¨ N ä¸ªå¾ªç¯åæ‰å¯ä»¥å‘å°„å­å¼¹ 2 
 	mMoving = false;
-	mRing.SetShowable(3222);			// ÏÔÊ¾±£»¤»·
+	mRing.SetShowable(3222);			// æ˜¾ç¤ºä¿æŠ¤ç¯
 }
 
 void PlayerBase::DispatchProp(int prop_kind)
@@ -765,25 +766,26 @@ void PlayerBase::DispatchProp(int prop_kind)
 
 	switch (prop_kind)
 	{
-	case ADD_PROP:			// ¼Ó»ú
+	case ADD_PROP:			// åŠ æœº
 		MciSound::_PlaySound(S_ADDLIFE);
 		mPlayerLife = mPlayerLife + 1 > 5 ? 5 : mPlayerLife + 1;
 		break;
-	case STAR_PROP:			// Îå½ÇĞÇ
+	case STAR_PROP:			// äº”è§’æ˜Ÿ
 		mPlayerTankLevel = mPlayerTankLevel + 1 > 3 ? 3 : mPlayerTankLevel + 1;
 		mTankTimer.SetDrtTime(mMoveSpeedDev[mPlayerTankLevel]);
 		mBulletTimer.SetDrtTime(mBulletSpeedDev[mPlayerTankLevel]);
 		break;
-	case TIME_PROP:			// Ê±ÖÓ
+	case TIME_PROP:			// æ—¶é’Ÿ
 		mTimeProp = true;
 		break;
-	case  BOMB_PROP:		// µØÀ×
+	case  BOMB_PROP:		// åœ°é›·
 		mBombProp = true;
 		break;
-	case SHOVEL_PROP:		// ²ù×Ó
+	case SHOVEL_PROP:		// é“²å­
 		mShovelProp = true;
+		mShovelProp_counter = 0;
 		break;
-	case  CAP_PROP:			// Ã±×Ó
+	case  CAP_PROP:			// å¸½å­
 		mRing.SetShowable(12000);
 		break;
 	default:
@@ -792,26 +794,26 @@ void PlayerBase::DispatchProp(int prop_kind)
 }
 
 /*
-* ±äÏòµÄÍ¬Ê±µ÷ÕûÌ¹¿ËËùÔÚ¸ñ×Ó. ±ØĞë±£Ö¤Ì¹¿ËÖĞĞÄÔÚ¸ñ×ÓÏßÉÏ
- * Íæ¼ÒÒÆ¶¯¼ÆÊ±Æ÷ mTankTimer Î´µ½Ê±	²»ÄÜÒÆ¶¯
- * Íæ¼ÒÉúÃüÖµÓÃ¹âºó					²»ÄÜÒÆ¶¯
- * Íæ¼ÒÌ¹¿ËÕıÔÚ±¬Õ¨					²»ÄÜÒÆ¶¯
- * Íæ¼Ò±»ÁíÒ»¸öÍæ¼Ò»÷ÖĞºó				²»ÄÜÒÆ¶¯
+* å˜å‘çš„åŒæ—¶è°ƒæ•´å¦å…‹æ‰€åœ¨æ ¼å­. å¿…é¡»ä¿è¯å¦å…‹ä¸­å¿ƒåœ¨æ ¼å­çº¿ä¸Š
+ * ç©å®¶ç§»åŠ¨è®¡æ—¶å™¨ mTankTimer æœªåˆ°æ—¶	ä¸èƒ½ç§»åŠ¨
+ * ç©å®¶ç”Ÿå‘½å€¼ç”¨å…‰å					ä¸èƒ½ç§»åŠ¨
+ * ç©å®¶å¦å…‹æ­£åœ¨çˆ†ç‚¸					ä¸èƒ½ç§»åŠ¨
+ * ç©å®¶è¢«å¦ä¸€ä¸ªç©å®¶å‡»ä¸­å				ä¸èƒ½ç§»åŠ¨
 
- * ÒÆ¶¯Ç°Çå³ıÌ¹¿Ë mTankX,mTankY ËùÔÚµÄ box_4 ËÄ¸ö¸ñ×Ó = ¿Õ£¬±íÊ¾¸Ã´¦Ã»ÓĞ¶«Î÷´æÔÚ
- * Èç¹ûÊÇ±äÏò£¬ÄÇÃ´µ÷Õû mTankX,mTankY µ½ÕıÈ·µÄ¸ñ×ÓÎ»ÖÃÉÏ
- * ¼ì²âÊÇ·ñ¿ÉÒÔÒÆ¶¯
- * Èç¹û¿ÉÒÔÒÆ¶¯£¬¼ÆËãĞÂµÄ mTankX, mTankY ×ø±ê
- * ÒÆ¶¯ºó±ê¼Ç box_4 ËÄ¸ö¸ñ×Ó = PLAYER_SIGN + player_id£»±íÊ¾¸ÃÍæ¼ÒÌ¹¿Ë´¦ÓÚĞÂÎ»ÖÃ
+ * ç§»åŠ¨å‰æ¸…é™¤å¦å…‹ mTankX,mTankY æ‰€åœ¨çš„ box_4 å››ä¸ªæ ¼å­ = ç©ºï¼Œè¡¨ç¤ºè¯¥å¤„æ²¡æœ‰ä¸œè¥¿å­˜åœ¨
+ * å¦‚æœæ˜¯å˜å‘ï¼Œé‚£ä¹ˆè°ƒæ•´ mTankX,mTankY åˆ°æ­£ç¡®çš„æ ¼å­ä½ç½®ä¸Š
+ * æ£€æµ‹æ˜¯å¦å¯ä»¥ç§»åŠ¨
+ * å¦‚æœå¯ä»¥ç§»åŠ¨ï¼Œè®¡ç®—æ–°çš„ mTankX, mTankY åæ ‡
+ * ç§»åŠ¨åæ ‡è®° box_4 å››ä¸ªæ ¼å­ = PLAYER_SIGN + player_idï¼›è¡¨ç¤ºè¯¥ç©å®¶å¦å…‹å¤„äºæ–°ä½ç½®
 
- * ĞÂµÄ×ø±ê mTankX, mTankY ÒÑ¾­¸üĞÂÍê±Ï£¬º¯Êı·µ»Ø£¬´ıÑ­»·Ìå¸ù¾İÕâ¸ö×ø±êÖØĞÂ»æÖÆÌ¹¿Ë£¬´Ó¶øÊµÏÖÒÆ¶¯Ğ§¹û¡£
+ * æ–°çš„åæ ‡ mTankX, mTankY å·²ç»æ›´æ–°å®Œæ¯•ï¼Œå‡½æ•°è¿”å›ï¼Œå¾…å¾ªç¯ä½“æ ¹æ®è¿™ä¸ªåæ ‡é‡æ–°ç»˜åˆ¶å¦å…‹ï¼Œä»è€Œå®ç°ç§»åŠ¨æ•ˆæœã€‚
  */
 void PlayerBase::Move(int new_dir)
 {
 	if (!mTankTimer.IsTimeOut() || mDied || mBlast.IsBlasting())
 		return;
 
-	// Èç¹ûÍæ¼Ò±»ÁíÒ»¸öÍæ¼Ò»÷ÖĞÔİÍ£
+	// å¦‚æœç©å®¶è¢«å¦ä¸€ä¸ªç©å®¶å‡»ä¸­æš‚åœ
 	if (mPause)
 	{
 		return;
@@ -821,27 +823,27 @@ void PlayerBase::Move(int new_dir)
 
 	if (mTankDir != new_dir)
 	{
-		// Ô­×óÓÒ±äÉÏÏÂ·½Ïò
+		// åŸå·¦å³å˜ä¸Šä¸‹æ–¹å‘
 		if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
 		{
-			if (mTankX > (mTankX / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2 - 1)	// Èç¹ûÊÇ¿¿½ü¸ñ×ÓÏßÉÏµÄÓÒ±ß½Úµã, -1ÊÇĞŞÕı
+			if (mTankX > (mTankX / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2 - 1)	// å¦‚æœæ˜¯é è¿‘æ ¼å­çº¿ä¸Šçš„å³è¾¹èŠ‚ç‚¹, -1æ˜¯ä¿®æ­£
 				mTankX = (mTankX / BOX_SIZE + 1) * BOX_SIZE;
 			else
-				mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;					// ¿¿½ü¸ñ×ÓÏßÉÏµÄ×ó±ß½Úµã
+				mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;					// é è¿‘æ ¼å­çº¿ä¸Šçš„å·¦è¾¹èŠ‚ç‚¹
 		}
-		// ÉÏÏÂ±ä×óÓÒ
+		// ä¸Šä¸‹å˜å·¦å³
 		else
 		{
-			if (mTankY > (mTankY / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2 - 1)	// Èç¹ûÊÇ¿¿½ü¸ñ×ÓÏßÉÏµÄÏÂ±ß½Úµã, -1ÊÇĞŞÕı
+			if (mTankY > (mTankY / BOX_SIZE) * BOX_SIZE + BOX_SIZE / 2 - 1)	// å¦‚æœæ˜¯é è¿‘æ ¼å­çº¿ä¸Šçš„ä¸‹è¾¹èŠ‚ç‚¹, -1æ˜¯ä¿®æ­£
 				mTankY = (mTankY / BOX_SIZE + 1) * BOX_SIZE;
 			else
-				mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;					// ¿¿½ü¸ñ×ÓÏßÉÏµÄÉÏ±ß½Úµã
+				mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;					// é è¿‘æ ¼å­çº¿ä¸Šçš„ä¸Šè¾¹èŠ‚ç‚¹
 		}
 
-		// ¸ü¸Ä·½Ïò, ±ØĞëÏÈµ÷ÕıÎ»ÖÃºó²ÅÄÜÉèÖÃ·½Ïò!!
+		// æ›´æ”¹æ–¹å‘, å¿…é¡»å…ˆè°ƒæ­£ä½ç½®åæ‰èƒ½è®¾ç½®æ–¹å‘!!
 		mTankDir = new_dir;
 	}
-	else								// ÒÆ¶¯
+	else								// ç§»åŠ¨
 	{
 		if (CheckMoveable())
 		{
@@ -852,34 +854,34 @@ void PlayerBase::Move(int new_dir)
 	SignBox_4(mTankX, mTankY, PLAYER_SIGN + player_id);
 }
 
-/* ÅĞ¶Ïµ±Ç°·½Ïò¿É·ñÒÆ¶¯
+/* åˆ¤æ–­å½“å‰æ–¹å‘å¯å¦ç§»åŠ¨
 	box_8[i][j]
-	i = y / BOX_SIZE		// y ×ø±ê¶ÔÓ¦µÄÊÇ i Öµ
-	j = x / BOX_SIZE		// x ×ø±ê¶ÔÓ¦µÄÊÇ j Öµ
+	i = y / BOX_SIZE		// y åæ ‡å¯¹åº”çš„æ˜¯ i å€¼
+	j = x / BOX_SIZE		// x åæ ‡å¯¹åº”çš„æ˜¯ j å€¼
 	---------
 	| 1 | 2	|
 	----a----
 	| 3 | 4	|
 	---------
-* Èç¹û (x,y) ÔÚ a µã, ×ª»»ºóµÄ i,j ÊôÓÚ¸ñ×Ó 4
-* Èç¹û x ÖµÔÚ a µã×ó±ß, Ôò×ª»»ºóµÄ j ÊôÓÚ 1»ò3; ÓÒ±ßÔòÊôÓÚ 2»ò4
-* Èç¹û y ÖµÔÚ a µãÒÔÉÏ, Ôò×ª»»ºóµÄ i ÊôÓÚ 1»ò2; ÒÔÏÂÔòÊôÓÚ 3»ò4
-** Èç¹û tempx,tempy ¿çÔ½ÁË¸ñ×ÓÓÖÓöµ½ÕÏ°­, ÄÇÃ´¾Í½« mTankX »ò mTankY µ÷Õûµ½¸ñ×ÓÏßÉÏ,
+* å¦‚æœ (x,y) åœ¨ a ç‚¹, è½¬æ¢åçš„ i,j å±äºæ ¼å­ 4
+* å¦‚æœ x å€¼åœ¨ a ç‚¹å·¦è¾¹, åˆ™è½¬æ¢åçš„ j å±äº 1æˆ–3; å³è¾¹åˆ™å±äº 2æˆ–4
+* å¦‚æœ y å€¼åœ¨ a ç‚¹ä»¥ä¸Š, åˆ™è½¬æ¢åçš„ i å±äº 1æˆ–2; ä»¥ä¸‹åˆ™å±äº 3æˆ–4
+** å¦‚æœ tempx,tempy è·¨è¶Šäº†æ ¼å­åˆé‡åˆ°éšœç¢, é‚£ä¹ˆå°±å°† mTankX æˆ– mTankY è°ƒæ•´åˆ°æ ¼å­çº¿ä¸Š,
 */
 bool PlayerBase::CheckMoveable()
 {
-	// Ì¹¿ËÖĞĞÄ×ø±ê
+	// å¦å…‹ä¸­å¿ƒåæ ‡
 	int tempx = mTankX + mDevXY[mTankDir][0];// *mSpeed[mPlayerTankLevel];
 	int tempy = mTankY + mDevXY[mTankDir][1];// *mSpeed[mPlayerTankLevel];
 
-	// ÓÎÏ·ÊÇÔËĞĞÔÚÒ»¸ö 208*208 µÄ»­²¼ÉÏµÄ£¬ËùÒÔÊµ¼ÊÓÎÏ·ÇøÓò´óĞ¡ÊÇ 208*208
-	// Èç¹ûĞÂ×ø±ê tempx < 8 ¼´Ì¹¿ËÖĞĞÄ×ø±ê < 8 £¬ËµÃ÷´ËÊ±ÒÑ¾­Ô½½ç£¨ÒòÎªÊÇÖĞĞÄµã£©£¬¾ÍÊÇËµÌ¹¿ËÒÑ¾­ÒÆ¶¯µ½±ß½çÁË
+	// æ¸¸æˆæ˜¯è¿è¡Œåœ¨ä¸€ä¸ª 208*208 çš„ç”»å¸ƒä¸Šçš„ï¼Œæ‰€ä»¥å®é™…æ¸¸æˆåŒºåŸŸå¤§å°æ˜¯ 208*208
+	// å¦‚æœæ–°åæ ‡ tempx < 8 å³å¦å…‹ä¸­å¿ƒåæ ‡ < 8 ï¼Œè¯´æ˜æ­¤æ—¶å·²ç»è¶Šç•Œï¼ˆå› ä¸ºæ˜¯ä¸­å¿ƒç‚¹ï¼‰ï¼Œå°±æ˜¯è¯´å¦å…‹å·²ç»ç§»åŠ¨åˆ°è¾¹ç•Œäº†
 	if (tempx < BOX_SIZE || tempy < BOX_SIZE || tempy > CENTER_WIDTH - BOX_SIZE || tempx > CENTER_HEIGHT - BOX_SIZE)
 	{
-		// Èç¹ûÓöµ½ÕÏ°­Îï,½«Ì¹¿Ë×ø±êµ÷Õûµ½¸ñ×ÓÏßÉÏ. ²»È»Ì¹¿ËºÍÕÏ°­Îï»áÓĞ¼¸¸öÏñËØµã¼ä¸ô
+		// å¦‚æœé‡åˆ°éšœç¢ç‰©,å°†å¦å…‹åæ ‡è°ƒæ•´åˆ°æ ¼å­çº¿ä¸Š. ä¸ç„¶å¦å…‹å’Œéšœç¢ç‰©ä¼šæœ‰å‡ ä¸ªåƒç´ ç‚¹é—´éš”
 		switch (mTankDir)
 		{
-		case DIR_LEFT:	mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;	break;	// mTankX Óë tempx Ö®¼ä¿çÔ½ÁË¸ñ×Ó, ½«Ì¹¿Ë·Åµ½mTankXËùÔÚµÄ¸ñ×ÓÏßÉÏ
+		case DIR_LEFT:	mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;	break;	// mTankX ä¸ tempx ä¹‹é—´è·¨è¶Šäº†æ ¼å­, å°†å¦å…‹æ”¾åˆ°mTankXæ‰€åœ¨çš„æ ¼å­çº¿ä¸Š
 		case DIR_UP:	mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;	break;
 		case DIR_RIGHT: mTankX = (tempx  / BOX_SIZE) * BOX_SIZE;	break;
 		case DIR_DOWN:	mTankY = (tempy  / BOX_SIZE) * BOX_SIZE;	break;
@@ -887,19 +889,19 @@ bool PlayerBase::CheckMoveable()
 		}
 		return false;
 	}
-	// ×ª»»ÏñËØµãËùÔÚµÄ xy[26][26] ÏÂ±ê
+	// è½¬æ¢åƒç´ ç‚¹æ‰€åœ¨çš„ xy[26][26] ä¸‹æ ‡
 	int index_i = tempy / BOX_SIZE;
 	int index_j = tempx / BOX_SIZE;
 
-	// ËÄ¸ö·½ÏòÌ¹¿ËÖĞĞÄµãÏà¶ÔÓÚÒª¼ì²âµÄÁ½¸ö 8*8 ¸ñ×ÓµÄÏÂ±êÆ«ÒÆÁ¿
+	// å››ä¸ªæ–¹å‘å¦å…‹ä¸­å¿ƒç‚¹ç›¸å¯¹äºè¦æ£€æµ‹çš„ä¸¤ä¸ª 8*8 æ ¼å­çš„ä¸‹æ ‡åç§»é‡
 	int dev[4][2][2] = { {{-1,-1},{0,-1}},  {{-1,-1},{-1,0}},  {{-1,1},{0,1}}, { {1,-1},{1,0}} };
 
-	// 8*8 ÕÏ°­Îï¸ñ×Ó¼ì²â
+	// 8*8 éšœç¢ç‰©æ ¼å­æ£€æµ‹
 	int temp1 = bms->box_8[index_i + dev[mTankDir][0][0]][index_j + dev[mTankDir][0][1]];
 	int temp2 = bms->box_8[index_i + dev[mTankDir][1][0]][index_j + dev[mTankDir][1][1]];
 
-	// prop_8µÀ¾ß¸ñ×Ó¼ì²â
-	int curi = mTankY / BOX_SIZE;	// µ±Ç°Ì¹¿ËËùÔÚµÄ×ø±ê, ²»ÊÇÏÂÒ»²½µÄ×ø±ê, ÓÃÓÚÅĞ¶ÏµÀ¾ß
+	// prop_8é“å…·æ ¼å­æ£€æµ‹
+	int curi = mTankY / BOX_SIZE;	// å½“å‰å¦å…‹æ‰€åœ¨çš„åæ ‡, ä¸æ˜¯ä¸‹ä¸€æ­¥çš„åæ ‡, ç”¨äºåˆ¤æ–­é“å…·
 	int curj = mTankX / BOX_SIZE;
 	int prop[4] = { bms->prop_8[curi][curj],	 bms->prop_8[curi - 1][curj], 
 					bms->prop_8[curi][curj - 1], bms->prop_8[curi - 1][curj - 1] };
@@ -912,27 +914,27 @@ bool PlayerBase::CheckMoveable()
 		}
 	}
 
-	// ¼ì²âÌ¹¿Ë 4*4 ¸ñ×Ó
-	// ËÄ¸ö·½ÏòĞèÒª¼ì²âµÄÁ½¸ö 4*4 µÄ¸ñ×ÓÓëÌ¹¿ËÖĞĞÄËùÔÚ 4*4 ¸ñ×ÓµÄÏÂ±êÆ«ÒÆÁ¿
+	// æ£€æµ‹å¦å…‹ 4*4 æ ¼å­
+	// å››ä¸ªæ–¹å‘éœ€è¦æ£€æµ‹çš„ä¸¤ä¸ª 4*4 çš„æ ¼å­ä¸å¦å…‹ä¸­å¿ƒæ‰€åœ¨ 4*4 æ ¼å­çš„ä¸‹æ ‡åç§»é‡
 	int  dev_4[4][4][2] = { {{-2,-2},{1,-2},{-1,-2},{0,-2}}, {{-2,-2},{-2,1},{-2,-1},{-2,0}},
 							{{-2,2},{1,2},{-1,2},{0,2}}, {{2,-2},{2,1},{2,-1},{2,0}} };
-	// ×ª»»³É [52][52] ÏÂ±ê
+	// è½¬æ¢æˆ [52][52] ä¸‹æ ‡
 	int index_4i = tempy / SMALL_BOX_SIZE;
 	int index_4j = tempx / SMALL_BOX_SIZE;
 	
-	// -1, 0, 1, 2 ¶¼¿ÉÒÔÒÆ¶¯
+	// -1, 0, 1, 2 éƒ½å¯ä»¥ç§»åŠ¨
 	bool tank1 = bms->box_4[index_4i + dev_4[mTankDir][0][0]][index_4j + dev_4[mTankDir][0][1]] <= _ICE;
 	bool tank2 = bms->box_4[index_4i + dev_4[mTankDir][1][0]][index_4j + dev_4[mTankDir][1][1]] <= _ICE;
 	bool tank3 = bms->box_4[index_4i + dev_4[mTankDir][2][0]][index_4j + dev_4[mTankDir][2][1]] <= _ICE;
 	bool tank4 = bms->box_4[index_4i + dev_4[mTankDir][3][0]][index_4j + dev_4[mTankDir][3][1]] <= _ICE;
 
-	// Óöµ½ÕÏ°­Îïµ÷½Ú×ø±ê
+	// é‡åˆ°éšœç¢ç‰©è°ƒèŠ‚åæ ‡
 	if (temp1 > 2 || temp2 > 2)
 	{
-		// Èç¹ûÓöµ½ÕÏ°­Îï,½«Ì¹¿Ë×ø±êµ÷Õûµ½¸ñ×ÓÏßÉÏ. ²»È»Ì¹¿ËºÍÕÏ°­Îï»áÓĞ¼¸¸öÏñËØµã¼ä¸ô
+		// å¦‚æœé‡åˆ°éšœç¢ç‰©,å°†å¦å…‹åæ ‡è°ƒæ•´åˆ°æ ¼å­çº¿ä¸Š. ä¸ç„¶å¦å…‹å’Œéšœç¢ç‰©ä¼šæœ‰å‡ ä¸ªåƒç´ ç‚¹é—´éš”
 		switch (mTankDir)
 		{
-		case DIR_LEFT:	mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;	break;	// mTankX Óë tempx Ö®¼ä¿çÔ½ÁË¸ñ×Ó, ½«Ì¹¿Ë·Åµ½mTankXËùÔÚµÄ¸ñ×ÓÏßÉÏ
+		case DIR_LEFT:	mTankX = (mTankX / BOX_SIZE) * BOX_SIZE;	break;	// mTankX ä¸ tempx ä¹‹é—´è·¨è¶Šäº†æ ¼å­, å°†å¦å…‹æ”¾åˆ°mTankXæ‰€åœ¨çš„æ ¼å­çº¿ä¸Š
 		case DIR_UP:	mTankY = (mTankY / BOX_SIZE) * BOX_SIZE;	break;
 		case DIR_RIGHT: mTankX = (tempx / BOX_SIZE) * BOX_SIZE;		break;
 		case DIR_DOWN:	mTankY = (tempy / BOX_SIZE) * BOX_SIZE;		break;
@@ -940,11 +942,11 @@ bool PlayerBase::CheckMoveable()
 		}
 		return false;
 	}
-	// Óöµ½Íæ¼Ò²»ÓÃµ÷½Ú
+	// é‡åˆ°ç©å®¶ä¸ç”¨è°ƒèŠ‚
 	else if (!tank1 || !tank2 || !tank3 || !tank4)
 		return false;
 
-	//. Èç¹ûÊÇµÚÒ»´Î½øÈë _ICE ÉÏÃæ
+	//. å¦‚æœæ˜¯ç¬¬ä¸€æ¬¡è¿›å…¥ _ICE ä¸Šé¢
 	if ( !mOnIce && (temp1 == _ICE || temp2 == _ICE))
 		mOnIce = true;
 	if (mOnIce && temp1 != _ICE && temp2 != _ICE)
@@ -952,17 +954,17 @@ bool PlayerBase::CheckMoveable()
 	return true;
 }
 
-// ·¢Éä×Óµ¯
+// å‘å°„å­å¼¹
 bool PlayerBase::ShootBullet( int bullet_id )
 {
 	switch (bullet_id)
 	{
 		case 0:
-			// 1ºÅ×Óµ¯·¢ÉäÊ§°Ü, ±¬Õ¨Î´Íê³ÉÇ°²»ÄÜ·¢Éä
+			// 1å·å­å¼¹å‘å°„å¤±è´¥, çˆ†ç‚¸æœªå®Œæˆå‰ä¸èƒ½å‘å°„
 			if (mBulletStruct[0].x != SHOOTABLE_X || mBombS[0].canBomb == true)		
 				return false;
 
-			// ×Óµ¯·¢Éäµã×ø±ê
+			// å­å¼¹å‘å°„ç‚¹åæ ‡
 			mBulletStruct[0].x = (int)(mTankX + BulletStruct::devto_tank[mTankDir][0]);
 			mBulletStruct[0].y = (int)(mTankY + BulletStruct::devto_tank[mTankDir][1]);
 			mBulletStruct[0].dir = mTankDir;
@@ -973,11 +975,11 @@ bool PlayerBase::ShootBullet( int bullet_id )
 			return true;
 
 		case 1:
-			// 2 ºÅ×Óµ¯·¢ÉäÊ§°Ü
+			// 2 å·å­å¼¹å‘å°„å¤±è´¥
 			if (mPlayerTankLevel < 2 || mBulletStruct[1].x != SHOOTABLE_X || mBullet_1_counter > 0 || mBombS[1].canBomb == true)
 				return false;
 
-			// ×Óµ¯·¢Éäµã×ø±ê
+			// å­å¼¹å‘å°„ç‚¹åæ ‡
 			mBulletStruct[1].x = (int)(mTankX + BulletStruct::devto_tank[mTankDir][0]);
 			mBulletStruct[1].y = (int)(mTankY + BulletStruct::devto_tank[mTankDir][1]);
 			mBulletStruct[1].dir = mTankDir;
@@ -999,18 +1001,18 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 	//	return true;
 	int dir = mBulletStruct[i].dir;
 
-	// ×Óµ¯Í·½Ó´¥µ½ÕÏ°­ÎïµÄÄÇ¸öµã, ×óÓÒ·½ÏòµãÔÚÉÏ, ÉÏÏÂ·½ÏòµãÔÚÓÒ
+	// å­å¼¹å¤´æ¥è§¦åˆ°éšœç¢ç‰©çš„é‚£ä¸ªç‚¹, å·¦å³æ–¹å‘ç‚¹åœ¨ä¸Š, ä¸Šä¸‹æ–¹å‘ç‚¹åœ¨å³
 	int bombx = mBulletStruct[i].x + BulletStruct::devto_head[dir][0];
 	int bomby = mBulletStruct[i].y + BulletStruct::devto_head[dir][1];
 
 	bool flag = false;
-	int adjust_x = 0, adjust_y = 0;		// ĞŞÕı±¬ÕÕÍ¼Æ¬ÏÔÊ¾µÄ×ø±ê
+	int adjust_x = 0, adjust_y = 0;		// ä¿®æ­£çˆ†ç…§å›¾ç‰‡æ˜¾ç¤ºçš„åæ ‡
 
-	// ²»ÄÜÓÃ bombx ´úÌæ mBulletStruct[i].x,·ñÔò»á¸²¸ÇÕÏ°­ÎïµÄ¼ì²â
+	// ä¸èƒ½ç”¨ bombx ä»£æ›¿ mBulletStruct[i].x,å¦åˆ™ä¼šè¦†ç›–éšœç¢ç‰©çš„æ£€æµ‹
 	if (mBulletStruct[i].x < 0 && mBulletStruct[i].dir == DIR_LEFT)
 	{
 		flag = true;
-		adjust_x = 5;					// ½«±¬Õ¨Í¼Æ¬ÏòÓÒÒÆÒ»µã
+		adjust_x = 5;					// å°†çˆ†ç‚¸å›¾ç‰‡å‘å³ç§»ä¸€ç‚¹
 	}
 	else if (mBulletStruct[i].y < 0 && mBulletStruct[i].dir == DIR_UP)
 	{
@@ -1018,7 +1020,7 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 		adjust_y = 5;
 	}
 
-	// ±ØĞë¼õÈ¥×Óµ¯µÄ¿í 4, ²»È»×Óµ¯Ô½½ç, ºóÃæ¼ì²âµ¼ÖÂ box_8 ÏÂ±êÔ½½ç
+	// å¿…é¡»å‡å»å­å¼¹çš„å®½ 4, ä¸ç„¶å­å¼¹è¶Šç•Œ, åé¢æ£€æµ‹å¯¼è‡´ box_8 ä¸‹æ ‡è¶Šç•Œ
 	else if (mBulletStruct[i].x >= CENTER_WIDTH - 4 && mBulletStruct[i].dir == DIR_RIGHT)
 	{
 		flag = true;
@@ -1031,7 +1033,7 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 	}
 	if (flag)
 	{
-		// Éè¶¨±¬Õ¨²ÎÊı, ĞŞÕı±¬Õ¨ÖĞĞÄËùÔÚµÄ¸ñ×Ó,×óÓÒ»òÉÏÏÂÆ«ÒÆÒ»¸ö¸ñ×ÓÖ®ÀàµÄ..
+		// è®¾å®šçˆ†ç‚¸å‚æ•°, ä¿®æ­£çˆ†ç‚¸ä¸­å¿ƒæ‰€åœ¨çš„æ ¼å­,å·¦å³æˆ–ä¸Šä¸‹åç§»ä¸€ä¸ªæ ¼å­ä¹‹ç±»çš„..
 		mBulletStruct[i].x = SHOOTABLE_X;
 		mBombS[i].canBomb = true;
 		mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
@@ -1045,24 +1047,24 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 
 	int tempi, tempj;
 
-	// ×ø±êËùÔÚ 8*8 ¸ñ×ÓµÄË÷Òı
+	// åæ ‡æ‰€åœ¨ 8*8 æ ¼å­çš„ç´¢å¼•
 	int b8i = bomby / BOX_SIZE;
 	int b8j = bombx / BOX_SIZE;
 
-	// ½«×ø±ê×ª»»³É 4*4 ¸ñ×ÓË÷Òı
+	// å°†åæ ‡è½¬æ¢æˆ 4*4 æ ¼å­ç´¢å¼•
 	int b4i = bomby / SMALL_BOX_SIZE;
 	int b4j = bombx / SMALL_BOX_SIZE;
 
 	//if (b4i > 51 || b4j > 51 || b4i < 0 || b4j < 0)
 	//	printf("22222222\n");
 
-	// Èç¹û»÷ÖĞÁíÍâÒ»¸öÍæ¼Ò×Óµ¯
+	// å¦‚æœå‡»ä¸­å¦å¤–ä¸€ä¸ªç©å®¶å­å¼¹
 	if (bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 0 || 
 		bms->bullet_4[b4i][b4j] == P_B_SIGN + (1 - player_id) * 10 + 1 ||
 		bms->bullet_4[b4i][b4j] == E_B_SIGN )
 	{
 		mBulletStruct[i].x = SHOOTABLE_X;
-		bms->bullet_4[b4i][b4j] = WAIT_UNSIGN;		// ÏÈ±ê¼ÇÖĞ¼äÖµ, µÈ´ı±»»÷ÖĞµÄ×Óµ¯²Á³ı¸Ã±ê¼Ç
+		bms->bullet_4[b4i][b4j] = WAIT_UNSIGN;		// å…ˆæ ‡è®°ä¸­é—´å€¼, ç­‰å¾…è¢«å‡»ä¸­çš„å­å¼¹æ“¦é™¤è¯¥æ ‡è®°
 		return BulletShootKind::Other;
 	}
 	else if (bms->bullet_4[b4i][b4j] == WAIT_UNSIGN)
@@ -1077,11 +1079,11 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 	case DIR_LEFT:
 	case DIR_RIGHT:
 	{
-		// ×ÔÉí¸ñ×ÓºÍÉÏÒ»¸ö
+		// è‡ªèº«æ ¼å­å’Œä¸Šä¸€ä¸ª
 		int temp[2][2] = { {0, 0}, {-1, 0} };
 		for (int n = 0; n < 2; n++)
 		{
-			// 8*8 ¸ñ×Ó, ÅĞ¶ÏÊÇ·ñ»÷ÖĞµĞ»ú
+			// 8*8 æ ¼å­, åˆ¤æ–­æ˜¯å¦å‡»ä¸­æ•Œæœº
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
 			if (bms->box_8[tempi][tempj] == CAMP_SIGN)
@@ -1104,15 +1106,15 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 				return BulletShootKind::Camp;
 			}
 
-			// ×óÓÒ¼ì²â×Óµ¯Í·ËùÔÚµÄ4*4¸ñ×ÓºÍËüÉÏÃæÏàÁÚµÄÄÇ¸ö
-			// ¼ì²â 4*4 ¸ñ×Ó, ÓÉ´ËÅĞ¶ÏÕÏ°­Îï
+			// å·¦å³æ£€æµ‹å­å¼¹å¤´æ‰€åœ¨çš„4*4æ ¼å­å’Œå®ƒä¸Šé¢ç›¸é‚»çš„é‚£ä¸ª
+			// æ£€æµ‹ 4*4 æ ¼å­, ç”±æ­¤åˆ¤æ–­éšœç¢ç‰©
 			tempi = b4i + temp[n][0];
 			tempj = b4j + temp[n][1];
 			if (bms->box_4[tempi][tempj] == _WALL || bms->box_4[tempi][tempj] == _STONE)
 			{
-				// Éè¶¨±¬Õ¨²ÎÊı, ĞŞÕı±¬Õ¨ÖĞĞÄËùÔÚµÄ¸ñ×Ó,×óÓÒ»òÉÏÏÂÆ«ÒÆÒ»¸ö¸ñ×ÓÖ®ÀàµÄ..
+				// è®¾å®šçˆ†ç‚¸å‚æ•°, ä¿®æ­£çˆ†ç‚¸ä¸­å¿ƒæ‰€åœ¨çš„æ ¼å­,å·¦å³æˆ–ä¸Šä¸‹åç§»ä¸€ä¸ªæ ¼å­ä¹‹ç±»çš„..
 				mBulletStruct[i].x = SHOOTABLE_X;
-				mBombS[i].canBomb = true;				// Ö¸Ê¾ i bomb ±¬Õ¨
+				mBombS[i].canBomb = true;				// æŒ‡ç¤º i bomb çˆ†ç‚¸
 				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
 				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 				mBombS[i].counter = 0;
@@ -1122,14 +1124,14 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 			else if (bms->box_4[tempi][tempj] >= ENEMY_SIGN /*&& bms->box_4[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER*/)
 			{
 				mBulletStruct[i].x = SHOOTABLE_X;
-				mBombS[i].canBomb = true;				// Ö¸Ê¾ i bomb ±¬Õ¨
+				mBombS[i].canBomb = true;				// æŒ‡ç¤º i bomb çˆ†ç‚¸
 				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
 				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 				mBombS[i].counter = 0;
 
-				// ±ê¼Ç»÷ÖĞÁËµĞ»úµÄ id
+				// æ ‡è®°å‡»ä¸­äº†æ•Œæœºçš„ id
 				mBulletStruct[i].mKillId = bms->box_4[tempi][tempj];
-				//mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000]++;	// ¼ÇÂ¼ÏûÃğµĞ»úµÄ¼¶±ğÖÖÀàµÄÊıÁ¿
+				//mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000]++;	// è®°å½•æ¶ˆç­æ•Œæœºçš„çº§åˆ«ç§ç±»çš„æ•°é‡
 
 				//	mProp->StartShowProp(100, 100);
 				return BulletShootKind::Other;
@@ -1137,7 +1139,7 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN && player_id != 0 || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1 && player_id != 1)
 			{
 				mBulletStruct[i].x = SHOOTABLE_X;
-				mBombS[i].canBomb = true;				// Ö¸Ê¾ i bomb ±¬Õ¨
+				mBombS[i].canBomb = true;				// æŒ‡ç¤º i bomb çˆ†ç‚¸
 				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
 				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 				mBombS[i].counter = 0;
@@ -1147,15 +1149,15 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 	}
 	break;
 
-	// ÉÏÏÂÖ»¼ì²â×óÓÒÏàÁÚµÄÁ½¸ö¸ñ×Ó
+	// ä¸Šä¸‹åªæ£€æµ‹å·¦å³ç›¸é‚»çš„ä¸¤ä¸ªæ ¼å­
 	case DIR_UP:
 	case DIR_DOWN:
 	{
-		// ×ÔÉí¸ñ×ÓºÍ×ó±ßÄÇÒ»¸ö¸ñ×Ó
+		// è‡ªèº«æ ¼å­å’Œå·¦è¾¹é‚£ä¸€ä¸ªæ ¼å­
 		int temp[2][2] = { { 0, 0 },{ 0, -1 } };
 		for (int n = 0; n < 2; n++)
 		{
-			// 8*8 ¸ñ×Ó, ÅĞ¶ÏÊÇ·ñ»÷ÖĞµĞ»ú
+			// 8*8 æ ¼å­, åˆ¤æ–­æ˜¯å¦å‡»ä¸­æ•Œæœº
 			tempi = b8i + temp[n][0];
 			tempj = b8j + temp[n][1];
 
@@ -1168,14 +1170,14 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 				return BulletShootKind::Camp;
 			}
 
-			// ¼ì²â 4*4 ÊÇ·ñ»÷ÖĞÕÏ°­
+			// æ£€æµ‹ 4*4 æ˜¯å¦å‡»ä¸­éšœç¢
 			tempi = b4i + temp[n][0];
 			tempj = b4j + temp[n][1];
 			if (bms->box_4[tempi][tempj] == _WALL || bms->box_4[tempi][tempj] == _STONE)
 			{
-				// Éè¶¨±¬Õ¨²ÎÊı, ĞŞÕı±¬Õ¨ÖĞĞÄËùÔÚµÄ¸ñ×Ó,×óÓÒ»òÉÏÏÂÆ«ÒÆÒ»¸ö¸ñ×ÓÖ®ÀàµÄ..
+				// è®¾å®šçˆ†ç‚¸å‚æ•°, ä¿®æ­£çˆ†ç‚¸ä¸­å¿ƒæ‰€åœ¨çš„æ ¼å­,å·¦å³æˆ–ä¸Šä¸‹åç§»ä¸€ä¸ªæ ¼å­ä¹‹ç±»çš„..
 				mBulletStruct[i].x = SHOOTABLE_X;
-				mBombS[i].canBomb = true;				// Ö¸Ê¾ i bomb ±¬Õ¨
+				mBombS[i].canBomb = true;				// æŒ‡ç¤º i bomb çˆ†ç‚¸
 				mBombS[i].mBombX =( bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
 				mBombS[i].mBombY =( bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 				mBombS[i].counter = 0;
@@ -1185,21 +1187,21 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 			else if (bms->box_4[tempi][tempj] >= ENEMY_SIGN/* && bms->box_4[tempi][tempj] < ENEMY_SIGN + TOTAL_ENEMY_NUMBER*/)
 			{
 				mBulletStruct[i].x = SHOOTABLE_X;
-				mBombS[i].canBomb = true;				// Ö¸Ê¾ i bomb ±¬Õ¨
+				mBombS[i].canBomb = true;				// æŒ‡ç¤º i bomb çˆ†ç‚¸
 				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
 				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 				mBombS[i].counter = 0;
 
-				// ±ê¼Ç»÷ÖĞÁËµĞ»úµÄ id
+				// æ ‡è®°å‡»ä¸­äº†æ•Œæœºçš„ id
 				mBulletStruct[i].mKillId = bms->box_4[tempi][tempj];
-				//mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000]++;		// ¼ÇÂ¼ÏûÃğµĞ»úµÄÖÖÀàµÄÊıÁ¿
+				//mKillEnemyNumber[bms->box_4[tempi][tempj] % 10000 / 1000]++;		// è®°å½•æ¶ˆç­æ•Œæœºçš„ç§ç±»çš„æ•°é‡
 				//mProp->StartShowProp(100, 100);
 				return BulletShootKind::Other;
 			}
 			else if (bms->box_4[tempi][tempj] == PLAYER_SIGN && player_id != 0 || bms->box_4[tempi][tempj] == PLAYER_SIGN + 1 && player_id != 1)
 			{
 				mBulletStruct[i].x = SHOOTABLE_X;
-				mBombS[i].canBomb = true;				// Ö¸Ê¾ i bomb ±¬Õ¨
+				mBombS[i].canBomb = true;				// æŒ‡ç¤º i bomb çˆ†ç‚¸
 				mBombS[i].mBombX = (bombx / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][0]) * SMALL_BOX_SIZE;
 				mBombS[i].mBombY = (bomby / SMALL_BOX_SIZE + BulletStruct::bomb_center_dev[mBulletStruct[i].dir][1]) * SMALL_BOX_SIZE;
 				mBombS[i].counter = 0;
@@ -1214,7 +1216,7 @@ BulletShootKind PlayerBase::CheckBomb(int i)
 	return BulletShootKind::None;
 }
 
-// ×Óµ¯»÷ÖĞÕÏ°­Îï±¬Õ¨µ÷ÓÃ¸Ãº¯Êı, »÷ÖĞ±ß½ç²»¿Éµ÷ÓÃ, ÏÂ±ê»áÔ½½ç[52][52]
+// å­å¼¹å‡»ä¸­éšœç¢ç‰©çˆ†ç‚¸è°ƒç”¨è¯¥å‡½æ•°, å‡»ä¸­è¾¹ç•Œä¸å¯è°ƒç”¨, ä¸‹æ ‡ä¼šè¶Šç•Œ[52][52]
 void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 {
 	int boxi = bullety / SMALL_BOX_SIZE;
@@ -1225,16 +1227,16 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 	case DIR_LEFT:
 	case DIR_RIGHT:
 	{
-		bool bin_once = false;		// ¶à´ÎÑ­»·ÖĞÖ»²¥·ÅÒ»´ÎÉùÒô
+		bool bin_once = false;		// å¤šæ¬¡å¾ªç¯ä¸­åªæ’­æ”¾ä¸€æ¬¡å£°éŸ³
 
-		// ÔÚÍ¬Ò»Ö±ÏßÏàÁÚµÄËÄ¸ö 4*4 ¸ñ×Ó, Ë³Ğò²»ÄÜ±ä, ºóÃæÓÃµ½ÏÂ±êÅĞ¶Ï
+		// åœ¨åŒä¸€ç›´çº¿ç›¸é‚»çš„å››ä¸ª 4*4 æ ¼å­, é¡ºåºä¸èƒ½å˜, åé¢ç”¨åˆ°ä¸‹æ ‡åˆ¤æ–­
 		int temp[4][2] = { { -2, 0 },{ -1, 0 },{ 0, 0 },{ 1, 0 } };
 		for (int i = 0; i < 4; i++)
 		{
 			tempx = boxi + temp[i][0];
 			tempy = boxj + temp[i][1];
 
-			// ×ªµ½ tempx,tempyËùÔÚµÄ 8*8 ¸ñ×ÓË÷Òı
+			// è½¬åˆ° tempx,tempyæ‰€åœ¨çš„ 8*8 æ ¼å­ç´¢å¼•
 			int n = tempx / 2;
 			int m = tempy / 2;
 
@@ -1242,7 +1244,7 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 			{
 				bms->box_4[tempx][tempy] = _CLEAR;
 
-				// ¼ì²â 8*8 ¸ñ×ÓÄÚµÄ4¸ö 4*4 µÄĞ¡¸ñ×ÓÊÇ·ñÈ«²¿±»Çå³ı,
+				// æ£€æµ‹ 8*8 æ ¼å­å†…çš„4ä¸ª 4*4 çš„å°æ ¼å­æ˜¯å¦å…¨éƒ¨è¢«æ¸…é™¤,
 				bool isClear = true;
 				for (int a = 2 * n; a < 2 * n + 2; a++)
 				{
@@ -1262,7 +1264,7 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 				MciSound::_PlaySound(S_BIN);
 				bin_once = true;
 			}
-			else if (mPlayerTankLevel == 3 && bms->box_4[tempx][tempy] == _STONE && i % 2 == 0)	// %2==0 ·ÀÖ¹¶àÓàÑ­»·ÅĞ¶Ï
+			else if (mPlayerTankLevel == 3 && bms->box_4[tempx][tempy] == _STONE && i % 2 == 0)	// %2==0 é˜²æ­¢å¤šä½™å¾ªç¯åˆ¤æ–­
 			{
 				bms->box_8[n][m] = _EMPTY;
 				for (int a = 2 * n; a < 2 * n + 2; a++)
@@ -1280,16 +1282,16 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 	case DIR_UP:
 	case DIR_DOWN:
 	{
-		bool bin_once = false;		// ¶à´ÎÑ­»·ÖĞÖ»²¥·ÅÒ»´ÎÉùÒô
+		bool bin_once = false;		// å¤šæ¬¡å¾ªç¯ä¸­åªæ’­æ”¾ä¸€æ¬¡å£°éŸ³
 
-		// ÏàÁÚµÄËÄ¸ö 4*4 ¸ñ×Ó, Ë³Ğò²»ÄÜ±ä, ºóÃæÓÃµ½ÏÂ±êÅĞ¶Ï
+		// ç›¸é‚»çš„å››ä¸ª 4*4 æ ¼å­, é¡ºåºä¸èƒ½å˜, åé¢ç”¨åˆ°ä¸‹æ ‡åˆ¤æ–­
 		int temp[4][2] = { {0, -2}, {0, -1}, {0, 0}, {0, 1} };
 		for (int i = 0; i < 4; i++)
 		{
 			tempx = boxi + temp[i][0];
 			tempy = boxj + temp[i][1];
 
-			// ×ªµ½ tempx,tempyËùÔÚµÄ 8*8 ¸ñ×ÓË÷Òı
+			// è½¬åˆ° tempx,tempyæ‰€åœ¨çš„ 8*8 æ ¼å­ç´¢å¼•
 			int n = tempx / 2;
 			int m = tempy / 2;
 
@@ -1297,7 +1299,7 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 			{
 				bms->box_4[tempx][tempy] = _CLEAR;
 
-				// ¼ì²â 8*8 ¸ñ×ÓÄÚµÄ4¸ö 4*4 µÄĞ¡¸ñ×ÓÊÇ·ñÈ«²¿±»Çå³ı,
+				// æ£€æµ‹ 8*8 æ ¼å­å†…çš„4ä¸ª 4*4 çš„å°æ ¼å­æ˜¯å¦å…¨éƒ¨è¢«æ¸…é™¤,
 				bool isClear = true;
 				for (int a = 2 * n; a < 2 * n + 2; a++)
 				{
@@ -1317,7 +1319,7 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 				MciSound::_PlaySound(S_BIN);
 				bin_once = true;
 			}
-			else if (mPlayerTankLevel == 3 && bms->box_4[tempx][tempy] == _STONE && i % 2 == 0)	// %2==0 ·ÀÖ¹¶àÓàÑ­»·ÅĞ¶Ï
+			else if (mPlayerTankLevel == 3 && bms->box_4[tempx][tempy] == _STONE && i % 2 == 0)	// %2==0 é˜²æ­¢å¤šä½™å¾ªç¯åˆ¤æ–­
 			{
 				bms->box_8[n][m] = _EMPTY;
 				for (int a = 2 * n; a < 2 * n + 2; a++)
@@ -1329,7 +1331,7 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 				}
 			}
 
-			// ¼ì²â 8*8 ¸ñ×ÓÄÚµÄ4¸ö 4*4 µÄĞ¡¸ñ×ÓÊÇ·ñÈ«²¿±»Çå³ı,
+			// æ£€æµ‹ 8*8 æ ¼å­å†…çš„4ä¸ª 4*4 çš„å°æ ¼å­æ˜¯å¦å…¨éƒ¨è¢«æ¸…é™¤,
 			/*bool isClear = true;
 			for (int a = 2 * n; a < 2 * n + 2; a++)
 			{
@@ -1352,10 +1354,10 @@ void PlayerBase::ClearWallOrStone(int bulletid, int bulletx, int bullety)
 	}
 }
 
-// ²ÎÊıÊÇ 16 * 16 ÖĞĞÄµãÏñËØ×ø±ê, ÓëÌ¹¿ËÖĞĞÄ×ø±êÏàÍ¬
+// å‚æ•°æ˜¯ 16 * 16 ä¸­å¿ƒç‚¹åƒç´ åæ ‡, ä¸å¦å…‹ä¸­å¿ƒåæ ‡ç›¸åŒ
 void PlayerBase::SignBox_8(int x, int y, int val)
 {
-	// ÓÒÌ¹¿ËÖĞĞÄË÷Òı×ªµ½×óÉÏ½ÇÄÇ¸öµÄ ¸ñ×ÓË÷Òı
+	// å³å¦å…‹ä¸­å¿ƒç´¢å¼•è½¬åˆ°å·¦ä¸Šè§’é‚£ä¸ªçš„ æ ¼å­ç´¢å¼•
 	int iy = y / BOX_SIZE - 1;
 	int jx = x / BOX_SIZE - 1;
 	for (int i = iy; i < iy + 2; i++)
@@ -1367,30 +1369,30 @@ void PlayerBase::SignBox_8(int x, int y, int val)
 	}
 }
 
-// ¸ù¾İÌ¹¿ËÖĞĞÄ×ø±ê, ±ê¼Ç16¸ö 4*4 ¸ñ×Ó
+// æ ¹æ®å¦å…‹ä¸­å¿ƒåæ ‡, æ ‡è®°16ä¸ª 4*4 æ ¼å­
 void PlayerBase::SignBox_4(int cx, int cy, int val)
 {
-	// ×óÓÒµ÷Õû cs,cy µ½Õ¼¾İ°Ù·Ö±È×î¶àµÄ 16 ¸ö 4*4 µÄ¸ñ×ÓÖĞĞÄ
+	// å·¦å³è°ƒæ•´ cs,cy åˆ°å æ®ç™¾åˆ†æ¯”æœ€å¤šçš„ 16 ä¸ª 4*4 çš„æ ¼å­ä¸­å¿ƒ
 	if (mTankDir == DIR_LEFT || mTankDir == DIR_RIGHT)
 	{
-		if (cx > (cx / SMALL_BOX_SIZE) * SMALL_BOX_SIZE + SMALL_BOX_SIZE / 2)	// Èç¹ûÊÇ¿¿½üÓÒ±ß½Úµã, 
+		if (cx > (cx / SMALL_BOX_SIZE) * SMALL_BOX_SIZE + SMALL_BOX_SIZE / 2)	// å¦‚æœæ˜¯é è¿‘å³è¾¹èŠ‚ç‚¹, 
 		{
 			cx = (cx / SMALL_BOX_SIZE + 1) * SMALL_BOX_SIZE;
 		}
 		else {
-			cx = (cx / SMALL_BOX_SIZE) * SMALL_BOX_SIZE;					// ¿¿½ü¸ñ×ÓÏßÉÏµÄ×ó±ß½Úµã
+			cx = (cx / SMALL_BOX_SIZE) * SMALL_BOX_SIZE;					// é è¿‘æ ¼å­çº¿ä¸Šçš„å·¦è¾¹èŠ‚ç‚¹
 		}
 	}
-	// ÉÏÏÂ
+	// ä¸Šä¸‹
 	else
 	{
-		if (cy > (cy / SMALL_BOX_SIZE) * SMALL_BOX_SIZE + SMALL_BOX_SIZE / 2 )	// Èç¹ûÊÇ¿¿½ü¸ñ×ÓÏÂ±ß½Úµã,
+		if (cy > (cy / SMALL_BOX_SIZE) * SMALL_BOX_SIZE + SMALL_BOX_SIZE / 2 )	// å¦‚æœæ˜¯é è¿‘æ ¼å­ä¸‹è¾¹èŠ‚ç‚¹,
 			cy = (cy / SMALL_BOX_SIZE + 1) * SMALL_BOX_SIZE;
 		else
-			cy = (cy / SMALL_BOX_SIZE) * SMALL_BOX_SIZE;					// ¿¿½ü¸ñ×ÓÏßÉÏµÄÉÏ±ß½Úµã
+			cy = (cy / SMALL_BOX_SIZE) * SMALL_BOX_SIZE;					// é è¿‘æ ¼å­çº¿ä¸Šçš„ä¸Šè¾¹èŠ‚ç‚¹
 	}
 
-	// ÓÒÌ¹¿ËÖĞĞÄË÷Òı×ªµ½×óÉÏ½ÇÄÇ¸öµÄ ¸ñ×ÓË÷Òı
+	// å³å¦å…‹ä¸­å¿ƒç´¢å¼•è½¬åˆ°å·¦ä¸Šè§’é‚£ä¸ªçš„ æ ¼å­ç´¢å¼•
 	int iy = cy / SMALL_BOX_SIZE - 2;
 	int jx = cx / SMALL_BOX_SIZE - 2;
 	for (int i = iy; i < iy + 4; i++)
@@ -1402,21 +1404,21 @@ void PlayerBase::SignBox_4(int cx, int cy, int val)
 	}
 }
 
-// ¼ì²â4¸ö8*8 ¸ñ×Ó, ²ÎÊıÊÇ×óÉÏ½Ç¸ñ×ÓË÷Òı
+// æ£€æµ‹4ä¸ª8*8 æ ¼å­, å‚æ•°æ˜¯å·¦ä¸Šè§’æ ¼å­ç´¢å¼•
 bool PlayerBase::CheckBox_8(int iy, int jx)
 {
 	for (int i = iy; i < iy + 2; i++)
 	{
 		for (int j = jx; j < jx + 2; j++)
 		{
-			if (bms->box_8[i][j] < _RIVER)		// Èç¹ûÓĞÒ»¸ö 8*8 Ì¹¿Ë¿ÉÒÔ½øÀ´
+			if (bms->box_8[i][j] < _RIVER)		// å¦‚æœæœ‰ä¸€ä¸ª 8*8 å¦å…‹å¯ä»¥è¿›æ¥
 				return true;
 		}
 	}
 	return false;
 }
 
-/*»ñµÃ²ù×ÓµÀ¾ß±£»¤camp ÄÚ²¿Ê¹ÓÃ*/
+/*è·å¾—é“²å­é“å…·ä¿æŠ¤camp å†…éƒ¨ä½¿ç”¨*/
 void PlayerBase::ProtectCamp(int val)
 {
 	for (int i = 23; i < 26; i++)
@@ -1425,7 +1427,7 @@ void PlayerBase::ProtectCamp(int val)
 		{
 			if (i < 24 || j < 12 || j > 13)
 			{
-				bms->box_8[i][j] = val;			// Äñ³²ÖÜÎ§ÊÇ _WALL
+				bms->box_8[i][j] = val;			// é¸Ÿå·¢å‘¨å›´æ˜¯ _WALL
 				for (int m = 2 * i; m < 2 * i + 2; m++)
 				{
 					for (int n = 2 * j; n < 2 * j + 2; n++)

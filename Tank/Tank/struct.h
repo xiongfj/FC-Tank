@@ -1,98 +1,98 @@
-#pragma once
+ï»¿#pragma once
 #include "TimeClock.h"
 
-#define WINDOW_WIDTH	512		// ´°¿Ú´óĞ¡£¬¿ÉÒÔÓÉÍæ¼ÒĞŞ¸Ä£¬
+#define WINDOW_WIDTH	512		// çª—å£å¤§å°ï¼Œå¯ä»¥ç”±ç©å®¶ä¿®æ”¹ï¼Œ
 #define WINDOW_HEIGHT	448
-#define CANVAS_WIDTH	256		// »­²¼ image ´óĞ¡£¬²»»á¸Ä±ä£¬×óÓÒ»æÍ¼¶¼ÔÚ image ÉÏ²Ù×÷£¬È»ºóÒ»´ÎĞÔ»æÖÆµ½Ö÷´°¿Ú
+#define CANVAS_WIDTH	256		// ç”»å¸ƒ image å¤§å°ï¼Œä¸ä¼šæ”¹å˜ï¼Œå·¦å³ç»˜å›¾éƒ½åœ¨ image ä¸Šæ“ä½œï¼Œç„¶åä¸€æ¬¡æ€§ç»˜åˆ¶åˆ°ä¸»çª—å£
 #define CANVAS_HEIGHT	224
-#define CENTER_WIDTH	208		// ÖĞ¼äºÚÉ«ÓÎÏ·ÇøÓò
+#define CENTER_WIDTH	208		// ä¸­é—´é»‘è‰²æ¸¸æˆåŒºåŸŸ
 #define CENTER_HEIGHT	208
-#define CENTER_X		16		// ºÚÉ«ÓÎÏ·ÇøÓòÏà¶Ô×óÉÏ½ÇµÄ×ø±ê
+#define CENTER_X		16		// é»‘è‰²æ¸¸æˆåŒºåŸŸç›¸å¯¹å·¦ä¸Šè§’çš„åæ ‡
 #define CENTER_Y		9
 
-// GameOver ×ÖÑù´óĞ¡
+// GameOver å­—æ ·å¤§å°
 #define GAMEOVER_WIDTH	31
 #define GAMEOVER_HEIGHT	15
 
-// <<box_8>>, <<box_4>> Í¬Ê±±ê¼Ç
-#define _CLEAR		-1		// ±ê¼ÇÕÏ°­Îï±»Ïû³ıµÄ¸ñ×Ó, ÓÃÓÚÉ¨ÃèÊ±Óë 0 Çø·Ö¿ª, È»ºó»æÖÆºÚÉ«Í¼Æ¬, ±ÜÃâ¶Ô 0 Ò²½øĞĞ¶àÓà²Ù×÷
-#define _EMPTY		0		// ¿ÕµØ
-#define _FOREST		1		// É­ÁÖ
-#define _ICE		2		// ±ù
-// ------ ÒÔÉÏ < 3 Ì¹¿Ë¿ÉÒÔ´©ĞĞ
-#define _WALL		3		// Ç½
-#define _RIVER		4		// ºÓÁ÷
-#define _STONE		5		// Ê¯Í·
+// <<box_8>>, <<box_4>> åŒæ—¶æ ‡è®°
+#define _CLEAR		-1		// æ ‡è®°éšœç¢ç‰©è¢«æ¶ˆé™¤çš„æ ¼å­, ç”¨äºæ‰«ææ—¶ä¸ 0 åŒºåˆ†å¼€, ç„¶åç»˜åˆ¶é»‘è‰²å›¾ç‰‡, é¿å…å¯¹ 0 ä¹Ÿè¿›è¡Œå¤šä½™æ“ä½œ
+#define _EMPTY		0		// ç©ºåœ°
+#define _FOREST		1		// æ£®æ—
+#define _ICE		2		// å†°
+// ------ ä»¥ä¸Š < 3 å¦å…‹å¯ä»¥ç©¿è¡Œ
+#define _WALL		3		// å¢™
+#define _RIVER		4		// æ²³æµ
+#define _STONE		5		// çŸ³å¤´
 
-//* <<box_8 ±ê¼Ç>> */
-#define CAMP_SIGN	200			// ´ó±¾Óª±ê¼Ç
-#define STAR_SIGN	2000		// µĞ»ú³öÏÖËÄ½ÇĞÇ±ê¼Ç, ´ËÊ±µĞ»ú²»ÄÜ½øÀ´
+//* <<box_8 æ ‡è®°>> */
+#define CAMP_SIGN	200			// å¤§æœ¬è¥æ ‡è®°
+#define STAR_SIGN	2000		// æ•Œæœºå‡ºç°å››è§’æ˜Ÿæ ‡è®°, æ­¤æ—¶æ•Œæœºä¸èƒ½è¿›æ¥
 
-/* <<box_4 ±ê¼Ç>> */
+/* <<box_4 æ ‡è®°>> */
 #define PLAYER_SIGN	100
 
-/*  <<box_4 ±ê¼Ç>> 
-* ÖØĞÂ¶¨Òå¹æÔò:
-	¹æ¶¨±ê¼ÇÊÇ 10000 + 1000*mEnemyTankLevel + 100*menemyKind + enemy_id 
+/*  <<box_4 æ ‡è®°>> 
+* é‡æ–°å®šä¹‰è§„åˆ™:
+	è§„å®šæ ‡è®°æ˜¯ 10000 + 1000*mEnemyTankLevel + 100*menemyKind + enemy_id 
 */
-#define ENEMY_SIGN	10000		// 4*4 »ò 8*8 ¸ñ×Ó±ê¼Ç, ¼ÓÉÏµĞ»ú×ÔÉí idÔÙ±ê¼Ç
+#define ENEMY_SIGN	10000		// 4*4 æˆ– 8*8 æ ¼å­æ ‡è®°, åŠ ä¸Šæ•Œæœºè‡ªèº« idå†æ ‡è®°
 
 /* 
-* <<bullet_4 ±ê¼Ç>>
-* µĞ»ú×Óµ¯±ê¼Ç
+* <<bullet_4 æ ‡è®°>>
+* æ•Œæœºå­å¼¹æ ‡è®°
 * box_4[i][j] = E_B_SIGN + enemy_id
-* Ö»±ê¼Çµ¯Í·×ø±êËùÔÚµÄÄÇÒ»¸ö 4*4 ¸ñ×Ó
+* åªæ ‡è®°å¼¹å¤´åæ ‡æ‰€åœ¨çš„é‚£ä¸€ä¸ª 4*4 æ ¼å­
 */
 #define E_B_SIGN	300
 
 /* 
-* <<bullet_4>> ±ê¼Ç
-* Íæ¼Ò×Óµ¯±ê¼Ç
+* <<bullet_4>> æ ‡è®°
+* ç©å®¶å­å¼¹æ ‡è®°
 * bullet_4[i][j] = P_B_SIGN + player_id*10 + bullet_id 
-* Ö»±ê¼Çµ¯Í·×ø±êËùÔÚµÄÄÇÒ»¸ö 4*4 ¸ñ×Ó
+* åªæ ‡è®°å¼¹å¤´åæ ‡æ‰€åœ¨çš„é‚£ä¸€ä¸ª 4*4 æ ¼å­
 */
 #define P_B_SIGN	400
 
 /*
-* <<bullet_4>> ±ê¼Ç
-×Óµ¯»÷ÖĞ×Óµ¯,½«×ÔÉíËùÔÚbox_4 ±ê¼ÇÎª wait_unsign, µÈ´ı¶Ô·½²Á³ı
+* <<bullet_4>> æ ‡è®°
+å­å¼¹å‡»ä¸­å­å¼¹,å°†è‡ªèº«æ‰€åœ¨box_4 æ ‡è®°ä¸º wait_unsign, ç­‰å¾…å¯¹æ–¹æ“¦é™¤
 */
 #define WAIT_UNSIGN	444
 
-// prop_8 ±ê¼Ç
-#define PROP_SIGN	3000		// µÀ¾ßÔÚ prop_8 µÄ±ê¼Ç
+// prop_8 æ ‡è®°
+#define PROP_SIGN	3000		// é“å…·åœ¨ prop_8 çš„æ ‡è®°
 
 
-#define BOX_SIZE					8		// 26*26 µÄ¸ñ×Ó
-#define SMALL_BOX_SIZE				4		// 52*52 ¸ñ×Ó´óĞ¡
-#define BLACK_NUMBER_SIZE			7		// ºÚÉ«Êı×Ö´óĞ¡
+#define BOX_SIZE					8		// 26*26 çš„æ ¼å­
+#define SMALL_BOX_SIZE				4		// 52*52 æ ¼å­å¤§å°
+#define BLACK_NUMBER_SIZE			7		// é»‘è‰²æ•°å­—å¤§å°
 
-#define ENEMY_TANK_ICO_SIZE			7		// µĞ»úÍ¼±ê´óĞ¡
-#define PLAYER_TANK_ICO_SIZE_X		7		// Íæ¼ÒÍ¼±ê´óĞ¡
+#define ENEMY_TANK_ICO_SIZE			7		// æ•Œæœºå›¾æ ‡å¤§å°
+#define PLAYER_TANK_ICO_SIZE_X		7		// ç©å®¶å›¾æ ‡å¤§å°
 #define PLAYER_TANK_ICO_SIZE_Y		8
-#define PLAYER_12_ICO_SIZE_X		14		// 1P\2P Í¼±ê´óĞ¡
+#define PLAYER_12_ICO_SIZE_X		14		// 1P\2P å›¾æ ‡å¤§å°
 #define PLAYER_12_ICO_SIZE_Y		7
-#define FLAG_ICO_SIZE_X				16		// Æì×Ó´óĞ¡
+#define FLAG_ICO_SIZE_X				16		// æ——å­å¤§å°
 #define FLAG_ICO_SIZE_Y				15
-#define PLAYER_LIFE_NUMBER_SIZE		7		// Íæ¼ÒÉúÃüÊı×Ö´óĞ¡
+#define PLAYER_LIFE_NUMBER_SIZE		7		// ç©å®¶ç”Ÿå‘½æ•°å­—å¤§å°
 
 #define DIR_LEFT	0
 #define DIR_UP		1
 #define DIR_RIGHT	2
 #define DIR_DOWN	3
 
-#define GRAY_TANK	0		// »ÒÉ«Ì¹¿Ë
-#define RED_TANK	1		// ºìÉ«Ì¹¿Ë
+#define GRAY_TANK	0		// ç°è‰²å¦å…‹
+#define RED_TANK	1		// çº¢è‰²å¦å…‹
 #define YELLOW_TANK	2		// 
 #define GREEN_TANK	3
 
 
-#define SHOOTABLE_X		-100	// ¹æ¶¨×Óµ¯×ø±ê x = -100 ×Óµ¯¿ÉÒÔ·¢Éä
+#define SHOOTABLE_X		-100	// è§„å®šå­å¼¹åæ ‡ x = -100 å­å¼¹å¯ä»¥å‘å°„
 
-// ×Óµ¯»÷ÖĞµÄÕÏ°­ÎïµÄÀàĞÍ, ÓÃÔÚ EnemyBase::CheckBomb ·µ»ØÖµ
+// å­å¼¹å‡»ä¸­çš„éšœç¢ç‰©çš„ç±»å‹, ç”¨åœ¨ EnemyBase::CheckBomb è¿”å›å€¼
 enum BulletShootKind {None, Player_1 = PLAYER_SIGN, Player_2 = PLAYER_SIGN + 1, Camp, Other};
 
-/* ¶ÔÓ¦ÊıÖµ
+/* å¯¹åº”æ•°å€¼
 * 	#defien _EMPTY		0
 #define _WALL		3
 #define _FOREST		1
@@ -100,54 +100,54 @@ enum BulletShootKind {None, Player_1 = PLAYER_SIGN, Player_2 = PLAYER_SIGN + 1, 
 #define _RIVER		4
 #define _STONE		5
 -------------------------------
-* ¶ÔÓ¦×ø±ê¹ØÏµ
-box[0][0-25] : µÚÒ»ĞĞ( y=0; x=[0-25] )
-box[1][0-25] : µÚ¶şĞĞ( y=1; x=[0-25] )
+* å¯¹åº”åæ ‡å…³ç³»
+box[0][0-25] : ç¬¬ä¸€è¡Œ( y=0; x=[0-25] )
+box[1][0-25] : ç¬¬äºŒè¡Œ( y=1; x=[0-25] )
 ...
 box[y/BOX_SIZE][x/BOX_SIZE]
 -------------------------------
 */
 struct BoxMarkStruct
 {
-	int box_8[26][26];			// 8*8 ¸ñ×ÓµÄ±ê¼Ç, Ì¹¿ËÒÆ¶¯,»÷ÖĞÓÃ¸Ã¸ñ×Ó¼ì²â
-	int box_4[52][52];			// 4*4 ¸ñ×ÓµÄ±ê¼Ç, Ç½±»»÷ÖĞÓÃ¸Ã±ê¼Ç¼ì²â
-	int prop_8[26][26];			// µÀ¾ßµÄ¸ñ×Ó±ê¼Ç
-	int bullet_4[52][52];		// ×Óµ¯²ã±ê¼Ç
+	int box_8[26][26];			// 8*8 æ ¼å­çš„æ ‡è®°, å¦å…‹ç§»åŠ¨,å‡»ä¸­ç”¨è¯¥æ ¼å­æ£€æµ‹
+	int box_4[52][52];			// 4*4 æ ¼å­çš„æ ‡è®°, å¢™è¢«å‡»ä¸­ç”¨è¯¥æ ‡è®°æ£€æµ‹
+	int prop_8[26][26];			// é“å…·çš„æ ¼å­æ ‡è®°
+	int bullet_4[52][52];		// å­å¼¹å±‚æ ‡è®°
 };
 
 #define TOTAL_ENEMY_NUMBER	20
-#define SHOWING_STAR	true		// ÕıÔÚÏÔÊ¾ËÄ½ÇĞÇ
-#define STOP_SHOW_STAR	false		// ËÄ½ÇĞÇÏÔÊ¾½áÊø
+#define SHOWING_STAR	true		// æ­£åœ¨æ˜¾ç¤ºå››è§’æ˜Ÿ
+#define STOP_SHOW_STAR	false		// å››è§’æ˜Ÿæ˜¾ç¤ºç»“æŸ
 
-// Ö¸Ê¾µĞ»úÀàĞÍµÀ¾ßÌ¹¿ËºÍÆÕÍ¨Ì¹¿Ë
+// æŒ‡ç¤ºæ•Œæœºç±»å‹é“å…·å¦å…‹å’Œæ™®é€šå¦å…‹
 enum TANK_KIND { PROP, COMMON };
 
 struct BulletStruct
 {
-	int x, y;					// ×Óµ¯Í¼Æ¬×óÉÏ½Ç×ø±ê, ¸ù¾İ²»Í¬·½ÏòÖ¸¶¨²»Í¬µÄÎ»ÖÃ´ú±í x,y, Ö¸¶¨ x=SHOOTABLE_X µÄÊ±ºò¿ÉÒÔ·¢Éä×Óµ¯
-	int dir;					// ×Óµ¯·½Ïò
-	int speed[4];				// ×Óµ¯ËÙ¶È, ¸ù¾İÌ¹¿Ë¼¶±ğ¸øÓè²»Í¬ËÙ¶ÈÏµÊı. Ã¿´ÎÒÆ¶¯²»ÄÜ³¬¹ı4¸öÏñËØµã!! ²»È»»á¿çÔ½ 4*4 µÄ¸ñ×Ó!!¼ì²âbug
+	int x, y;					// å­å¼¹å›¾ç‰‡å·¦ä¸Šè§’åæ ‡, æ ¹æ®ä¸åŒæ–¹å‘æŒ‡å®šä¸åŒçš„ä½ç½®ä»£è¡¨ x,y, æŒ‡å®š x=SHOOTABLE_X çš„æ—¶å€™å¯ä»¥å‘å°„å­å¼¹
+	int dir;					// å­å¼¹æ–¹å‘
+	int speed[4];				// å­å¼¹é€Ÿåº¦, æ ¹æ®å¦å…‹çº§åˆ«ç»™äºˆä¸åŒé€Ÿåº¦ç³»æ•°. æ¯æ¬¡ç§»åŠ¨ä¸èƒ½è¶…è¿‡4ä¸ªåƒç´ ç‚¹!! ä¸ç„¶ä¼šè·¨è¶Š 4*4 çš„æ ¼å­!!æ£€æµ‹bug
 
-	/* Èç¹ûÍæ¼Ò»÷ÖĞµĞ»ú,ÉèÖÃ¸ÃÖµÎªµĞ»úµÄid, GameControl Ñ­»·ÄÚ¼ì²â¸ÃÖµ, È»ºóÉ¾³ı¸ÃµĞ»ú
-	* Èç¹ûÊÇµĞ»ú»÷ÖĞÍæ¼Ò, ÉèÖÃ¸ÃÖµÎªÍæ¼Òid, ÓÎÏ·Ñ­»·ÄÚÔÙ¼ì²â¸ÃÖµ´¦ÀíÍæ¼ÒÊı¾İ*/
-	int mKillId;				// ¼ÇÂ¼×Óµ¯»÷ÖĞµÄµĞ»ú/Íæ¼Ò id
+	/* å¦‚æœç©å®¶å‡»ä¸­æ•Œæœº,è®¾ç½®è¯¥å€¼ä¸ºæ•Œæœºçš„id, GameControl å¾ªç¯å†…æ£€æµ‹è¯¥å€¼, ç„¶ååˆ é™¤è¯¥æ•Œæœº
+	* å¦‚æœæ˜¯æ•Œæœºå‡»ä¸­ç©å®¶, è®¾ç½®è¯¥å€¼ä¸ºç©å®¶id, æ¸¸æˆå¾ªç¯å†…å†æ£€æµ‹è¯¥å€¼å¤„ç†ç©å®¶æ•°æ®*/
+	int mKillId;				// è®°å½•å­å¼¹å‡»ä¸­çš„æ•Œæœº/ç©å®¶ id
 
-	static IMAGE mBulletImage[4];		// Í¼Æ¬
-	static int mBulletSize[4][2];		// {{4,3},{3,4},{4,3},{3,4}} ³ß´ç: ÉÏÏÂ-3*4 / ×óÓÒ-4*3
-	static int devto_tank[4][2];		// ¹æ¶¨×Óµ¯µÄ×ø±êÏà¶ÔÓÚtankÖĞĞÄµãµÄÆ«ÒÆÁ¿
-	static int devto_head[4][2];		// ¹æ¶¨×Óµ¯Í¼Æ¬×óÉÏ½ÇÏà¶ÔÓÚµ¯Í·×ø±êµÄÆ«ÒÆÁ¿;ÉÏÏÂ·½Ïòµ¯Í·×ø±êÔÚµ¯Í·µÄÓÒ±ß;×óÓÒÔòÔÚµ¯Í·µÄÉÏÃæÄÇ¸öµã
-	static int bomb_center_dev[4][2];	// ±¬Õ¨ÖĞĞÄÏà¶ÔÓÚ×Óµ¯Í·µÄÆ«ÒÆÁ¿
+	static IMAGE mBulletImage[4];		// å›¾ç‰‡
+	static int mBulletSize[4][2];		// {{4,3},{3,4},{4,3},{3,4}} å°ºå¯¸: ä¸Šä¸‹-3*4 / å·¦å³-4*3
+	static int devto_tank[4][2];		// è§„å®šå­å¼¹çš„åæ ‡ç›¸å¯¹äºtankä¸­å¿ƒç‚¹çš„åç§»é‡
+	static int devto_head[4][2];		// è§„å®šå­å¼¹å›¾ç‰‡å·¦ä¸Šè§’ç›¸å¯¹äºå¼¹å¤´åæ ‡çš„åç§»é‡;ä¸Šä¸‹æ–¹å‘å¼¹å¤´åæ ‡åœ¨å¼¹å¤´çš„å³è¾¹;å·¦å³åˆ™åœ¨å¼¹å¤´çš„ä¸Šé¢é‚£ä¸ªç‚¹
+	static int bomb_center_dev[4][2];	// çˆ†ç‚¸ä¸­å¿ƒç›¸å¯¹äºå­å¼¹å¤´çš„åç§»é‡
 };
 
 struct BombStruct
 {
-	static IMAGE mBombImage[3];				// ×Óµ¯±¬Õ¨Í¼
-	int mBombX, mBombY;						// ±¬Õ¨µãÖĞĞÄ×ø±ê
-	bool canBomb;							// ÊÇ·ñ¿ªÊ¼ÏÔÊ¾±¬Õ¨Í¼Æ¬ flag
-	int counter;						// È¡Ä£¼ÆÊıÆ÷, ¶àÉÙ´ÎÑ­»·¸ü»»Ò»ÕÅÍ¼Æ¬
+	static IMAGE mBombImage[3];				// å­å¼¹çˆ†ç‚¸å›¾
+	int mBombX, mBombY;						// çˆ†ç‚¸ç‚¹ä¸­å¿ƒåæ ‡
+	bool canBomb;							// æ˜¯å¦å¼€å§‹æ˜¾ç¤ºçˆ†ç‚¸å›¾ç‰‡ flag
+	int counter;						// å–æ¨¡è®¡æ•°å™¨, å¤šå°‘æ¬¡å¾ªç¯æ›´æ¢ä¸€å¼ å›¾ç‰‡
 };
 
-// Ì¹¿Ë±¬Õ¨×´Ì¬
+// å¦å…‹çˆ†ç‚¸çŠ¶æ€
 enum BlastState {Blasting, BlastEnd, NotBlast};
 class BlastStruct
 {
@@ -158,38 +158,38 @@ public:
 
 	BlastState CampBlasting(const HDC&);
 
-	/*PlayerBase ÄÚµ÷ÓÃ, Ñ­»·¼ì²âÌ¹¿Ë±¬Õ¨
-	±¬Õ¨Íê±Ï·µ»Ø BLAST_END
-	ÆäÓàÇé¿ö·µ»Ø */
+	/*PlayerBase å†…è°ƒç”¨, å¾ªç¯æ£€æµ‹å¦å…‹çˆ†ç‚¸
+	çˆ†ç‚¸å®Œæ¯•è¿”å› BLAST_END
+	å…¶ä½™æƒ…å†µè¿”å› */
 	BlastState Blasting(const HDC&);
 
-	/*µĞ»ú±¬Õ¨²»Ò»Ñù, »¹ÒªÏÔÊ¾·ÖÊı*/
+	/*æ•Œæœºçˆ†ç‚¸ä¸ä¸€æ ·, è¿˜è¦æ˜¾ç¤ºåˆ†æ•°*/
 	BlastState EnemyBlasting(const HDC&, IMAGE*);
 
-	/*ÉèÖÃ¿ªÊ¼±¬Õ¨±êÖ¾ ºÍ ´«µİ×ø±ê*/
+	/*è®¾ç½®å¼€å§‹çˆ†ç‚¸æ ‡å¿— å’Œ ä¼ é€’åæ ‡*/
 	void SetBlasting(int tankx, int tanky);
 
-	/*·µ»Øµ±Ç°ÊÇ·ñ·ñÔÚ±¬Õ¨*/
+	/*è¿”å›å½“å‰æ˜¯å¦å¦åœ¨çˆ†ç‚¸*/
 	bool IsBlasting();
 
 
 	static IMAGE image[5];
-	int blastx, blasty;			// ÖĞĞÄ×ø±ê, 32*32
+	int blastx, blasty;			// ä¸­å¿ƒåæ ‡, 32*32
 	bool canBlast;
-	int counter;				// ¼ÆÊı¶àÉÙ´Î»»Ò»ÕÅÍ¼Æ¬
+	int counter;				// è®¡æ•°å¤šå°‘æ¬¡æ¢ä¸€å¼ å›¾ç‰‡
 
 	TimeClock timer;
 };
 
 
-// µĞ»ú»òÕßÍæ¼ÒµÄËÄ½ÇĞÇÉÁË¸·µ»ØÀàĞÍ
+// æ•Œæœºæˆ–è€…ç©å®¶çš„å››è§’æ˜Ÿé—ªçƒè¿”å›ç±»å‹
 enum Star_State { 
-	Star_Timing,		// Ö»ÓÃÓÚµĞ»ú, ±íÊ¾µ±Ç°»¹Ã»ÓĞ³öÏÖËÄ½ÇĞÇ, »¹ÔÚ¼ÆÊ±Ö®ÖĞ
-	Star_Failed,		// ÓÃÓÚµĞ»ú, ±íÊ¾µ±Ç°Î»ÖÃµĞ»ú³öÏÖÊ§°Ü
-	Star_Out,			// ËÄ½ÇĞÇ¸Õ¸Õ³öÏÖ
-	Star_Showing,		// ÕıÔÚÉÁË¸ËÄ½ÇĞÇ
-	Star_Stop,			// ¸Õ¸ÕÍ£Ö¹ÉÁË¸
-	Tank_Out };			// Ì¹¿ËÒÑ¾­³öÏÖ
+	Star_Timing,		// åªç”¨äºæ•Œæœº, è¡¨ç¤ºå½“å‰è¿˜æ²¡æœ‰å‡ºç°å››è§’æ˜Ÿ, è¿˜åœ¨è®¡æ—¶ä¹‹ä¸­
+	Star_Failed,		// ç”¨äºæ•Œæœº, è¡¨ç¤ºå½“å‰ä½ç½®æ•Œæœºå‡ºç°å¤±è´¥
+	Star_Out,			// å››è§’æ˜Ÿåˆšåˆšå‡ºç°
+	Star_Showing,		// æ­£åœ¨é—ªçƒå››è§’æ˜Ÿ
+	Star_Stop,			// åˆšåˆšåœæ­¢é—ªçƒ
+	Tank_Out };			// å¦å…‹å·²ç»å‡ºç°
 
 class StarClass
 {
@@ -197,25 +197,25 @@ public:
 	StarClass();
 	void Init();
 
-	/*PlayerBase  ÄÚµ÷ÓÃ, ²ÎÊıÊÇÌ¹¿Ë×ø±ê*/
+	/*PlayerBase  å†…è°ƒç”¨, å‚æ•°æ˜¯å¦å…‹åæ ‡*/
 	Star_State ShowStar(const HDC&, int, int );
 	bool IsStop();
 
-	/*EnemyBase ÄÚµ÷ÓÃ*/
+	/*EnemyBase å†…è°ƒç”¨*/
 	Star_State EnemyShowStar(const HDC&, int, int, const BoxMarkStruct* );
 
-	static IMAGE mStarImage[4];	// ËÄ½ÇĞÇÍ¼Æ¬, ÓĞÍæ¼Ò¸³Öµ
-	int mStarIndexDev;			// Ë÷ÒıµÄ±ä»¯Á¿, -1, 1  -1ÊÇstarÓÉĞ¡±ä´ó, 1 ÊÇstarÓÉ´ó±äĞ¡
-	byte mStarIndex : 2;		// ËÄ½ÇĞÇÏÂ±êË÷Òı±ä»¯¹æÂÉ 0-1-2-3-2-1-0-1-2-3-...
-	int mStarCounter;			// ¼ÆÊı,¶àÉÙ´Î±ä¸üÒ»´ÎÍ¼Ïñ
-	bool mIsOuted;				// ËÄ½ÇĞÇÏûÊ§µÄÊ±ºòÌ¹¿Ë³öÏÖ, Í£Ö¹²¥·ÅËÄ½ÇĞÇÉÁË¸Í¼
+	static IMAGE mStarImage[4];	// å››è§’æ˜Ÿå›¾ç‰‡, ç”±ç©å®¶èµ‹å€¼
+	int mStarIndexDev;			// ç´¢å¼•çš„å˜åŒ–é‡, -1, 1  -1æ˜¯starç”±å°å˜å¤§, 1 æ˜¯starç”±å¤§å˜å°
+	byte mStarIndex : 2;		// å››è§’æ˜Ÿä¸‹æ ‡ç´¢å¼•å˜åŒ–è§„å¾‹ 0-1-2-3-2-1-0-1-2-3-...
+	int mStarCounter;			// è®¡æ•°,å¤šå°‘æ¬¡å˜æ›´ä¸€æ¬¡å›¾åƒ
+	bool mIsOuted;				// å››è§’æ˜Ÿæ¶ˆå¤±çš„æ—¶å€™å¦å…‹å‡ºç°, åœæ­¢æ’­æ”¾å››è§’æ˜Ÿé—ªçƒå›¾
 
-	// Enemy ×¨ÓÃ! Player ÓÃ²»µ½
-	int mTankOutAfterCounter;	// Ò»¸öËæ»ú¼ÆÊıÖ®ºó, ËÄ½ÇĞÇ¿ªÊ¼ÉÁË¸,Ì¹¿Ë³öÏÖ
-	bool mStarOuted;		// ËÄ½ÇĞÇ¸Õ³öÏÖ, Ö»ÓÃÓÚµĞ»ú
+	// Enemy ä¸“ç”¨! Player ç”¨ä¸åˆ°
+	int mTankOutAfterCounter;	// ä¸€ä¸ªéšæœºè®¡æ•°ä¹‹å, å››è§’æ˜Ÿå¼€å§‹é—ªçƒ,å¦å…‹å‡ºç°
+	bool mStarOuted;			// å››è§’æ˜Ÿåˆšå‡ºç°, åªç”¨äºæ•Œæœº
 };
 
-// Íæ¼ÒÌ¹¿Ë³öÏÖµÄÊ±ºòÏÔÊ¾µÄÉÁË¸»·×´±£»¤È¦
+// ç©å®¶å¦å…‹å‡ºç°çš„æ—¶å€™æ˜¾ç¤ºçš„é—ªçƒç¯çŠ¶ä¿æŠ¤åœˆ
 class RingClass
 {
 public:
@@ -223,61 +223,61 @@ public:
 	void Init();
 	bool ShowRing(const HDC&, int centerx, int centery);		//
 
-	/*ÉèÖÃ¿ÉÒÔÏÔÊ¾»·×´, PlayerBase ÄÚ»ñÈ¡µÀ¾ßºóµ÷ÓÃ
-	²ÎÊıÉèÖÃÏÔÊ¾¶à¾Ã, ³öÉúÏÔÊ¾½Ï¶Ì, »ñµÃµÀ¾ßºóÏÔÊ¾½Ï³¤*/
+	/*è®¾ç½®å¯ä»¥æ˜¾ç¤ºç¯çŠ¶, PlayerBase å†…è·å–é“å…·åè°ƒç”¨
+	å‚æ•°è®¾ç½®æ˜¾ç¤ºå¤šä¹…, å‡ºç”Ÿæ˜¾ç¤ºè¾ƒçŸ­, è·å¾—é“å…·åæ˜¾ç¤ºè¾ƒé•¿*/
 	void SetShowable(long);				// 
 
 	static IMAGE image[2];
-	bool canshow;			// ÊÇ·ñ¿ÉÒÔÏÔÊ¾»·×´
-	int index_counter;		// ±ä»¯ÏÂ±êË÷Òı
+	bool canshow;			// æ˜¯å¦å¯ä»¥æ˜¾ç¤ºç¯çŠ¶
+	int index_counter;		// å˜åŒ–ä¸‹æ ‡ç´¢å¼•
 
 	TimeClock timer;
 };
 
-// µÀ¾ßÀàĞÍ
-#define ADD_PROP	0	// ¼Ó»ú
-#define STAR_PROP	1	// Îå½ÇĞÇ
-#define TIME_PROP	2	// Ê±ÖÓ
-#define BOMB_PROP	3	// µØÀ×
-#define SHOVEL_PROP	4	// ²ù×Ó
-#define CAP_PROP	5	// Ã±×Ó
+// é“å…·ç±»å‹
+#define ADD_PROP	0	// åŠ æœº
+#define STAR_PROP	1	// äº”è§’æ˜Ÿ
+#define TIME_PROP	2	// æ—¶é’Ÿ
+#define BOMB_PROP	3	// åœ°é›·
+#define SHOVEL_PROP	4	// é“²å­
+#define CAP_PROP	5	// å¸½å­
 
-/*** µÀ¾ßÀà,
-* ÔÚ PlayerBase ÊµÀı»¯³ÉÔ±Ö¸Õë
-* PlayerBase ¹¹Ôìº¯ÊıÄÚµ÷ÓÃ¸ÃÀàÒ»¸öº¯Êı´«µİ BoxMarkStuct* ¹ıÀ´
-* ¸ÃÀàËùÓĞº¯Êı¶¼ÔÚ PlayerBase ÄÚµ÷ÓÃ
+/*** é“å…·ç±»,
+* åœ¨ PlayerBase å®ä¾‹åŒ–æˆå‘˜æŒ‡é’ˆ
+* PlayerBase æ„é€ å‡½æ•°å†…è°ƒç”¨è¯¥ç±»ä¸€ä¸ªå‡½æ•°ä¼ é€’ BoxMarkStuct* è¿‡æ¥
+* è¯¥ç±»æ‰€æœ‰å‡½æ•°éƒ½åœ¨ PlayerBase å†…è°ƒç”¨
 ***/
 class PropClass
 {
-	void SignPropBox(int val);			// ±ê¼Ç prop_8 ¸ñ×Ó
+	void SignPropBox(int val);			// æ ‡è®° prop_8 æ ¼å­
 
 public:
 	PropClass();
 	void Init(BoxMarkStruct * b);
-	void ShowProp(const HDC&);			// GameControl ÄÚÑ­»·¼ì²â¸Ãº¯Êı
+	void ShowProp(const HDC&);			// GameControl å†…å¾ªç¯æ£€æµ‹è¯¥å‡½æ•°
 
-	/*²ÎÊıÊÇ×óÉÏ½ÇµÄ×ø±ê*/
-	void StartShowProp(int x, int y);	// µÀ¾ßÌ¹¿Ë±»»÷ÖĞºóµ÷ÓÃ¸Ãº¯Êı
-	void StopShowProp(bool);			// Í£Ö¹ÏÔÊ¾µÀ¾ß, ³¬Ê±»òÕß±»Íæ¼Ò»ñµÃ, ²ÎÊıÖ¸Ê¾ÊÇÍæ¼Ò»ñµÃ»¹ÊÇ³¬Ê±
+	/*å‚æ•°æ˜¯å·¦ä¸Šè§’çš„åæ ‡*/
+	void StartShowProp(int x, int y);	// é“å…·å¦å…‹è¢«å‡»ä¸­åè°ƒç”¨è¯¥å‡½æ•°
+	void StopShowProp(bool);			// åœæ­¢æ˜¾ç¤ºé“å…·, è¶…æ—¶æˆ–è€…è¢«ç©å®¶è·å¾—, å‚æ•°æŒ‡ç¤ºæ˜¯ç©å®¶è·å¾—è¿˜æ˜¯è¶…æ—¶
 
 private:
-	int score_counter;		// ¼ÆÊıÏÔÊ¾¶à¾Ã
+	int score_counter;		// è®¡æ•°æ˜¾ç¤ºå¤šä¹…
 	bool show_score;
-	IMAGE score;				// 500 ·ÖÊı
+	IMAGE score;				// 500 åˆ†æ•°
 
 	BoxMarkStruct* bms;
-	int leftx, topy;			// µÀ¾ßÖĞĞÄµã×ø±ê
-	int index_counter = 0;			// ÏÂ±ê±ä»»Ë÷Òı
+	int leftx, topy;			// é“å…·ä¸­å¿ƒç‚¹åæ ‡
+	int index_counter = 0;			// ä¸‹æ ‡å˜æ¢ç´¢å¼•
 	/*static */IMAGE image[6];
-	/*static */int prop_kind;			// µÀ¾ßÀàĞÍ
-	bool can_show;				// ÊÇ·ñ¿ÉÒÔÏÔÊ¾µÀ¾ß
+	/*static */int prop_kind;			// é“å…·ç±»å‹
+	bool can_show;				// æ˜¯å¦å¯ä»¥æ˜¾ç¤ºé“å…·
 	//TimeClock mTimer;
 };
 
 /*
-* Ã¿Ò»¹ØÊ¤Àû\Ê§°ÜºóÏÔÊ¾µÄ·ÖÊıÃæ°å
-* PlayerBase ÄÚÊµÀı»¯
-* Ò»¸öÍæ¼ÒÒ»¸ö¶ÔÏó
+* æ¯ä¸€å…³èƒœåˆ©\å¤±è´¥åæ˜¾ç¤ºçš„åˆ†æ•°é¢æ¿
+* PlayerBase å†…å®ä¾‹åŒ–
+* ä¸€ä¸ªç©å®¶ä¸€ä¸ªå¯¹è±¡
 */
 class ScorePanel
 {
@@ -286,10 +286,10 @@ public:
 	~ScorePanel();
 	bool show(const HDC&);
 
-	/*ÔÚPlayerBase ÄÚµ÷ÓÃ, PlayerBaseÓÖÔÚGameControl ÄÚµ÷ÓÃ
-	* ´«µİÉ±µĞÊı, Íæ¼ÒÊı
+	/*åœ¨PlayerBase å†…è°ƒç”¨, PlayerBaseåˆåœ¨GameControl å†…è°ƒç”¨
+	* ä¼ é€’æ€æ•Œæ•°, ç©å®¶æ•°
 	*/
-	void ResetData(const int * nums, const int&, const int& stage);				// Ã¿´ÎÏÔÊ¾Ç°ĞèÒªÖØÖÃ
+	void ResetData(const int * nums, const int&, const int& stage);				// æ¯æ¬¡æ˜¾ç¤ºå‰éœ€è¦é‡ç½®
 
 	static IMAGE background;
 
@@ -299,36 +299,36 @@ private:
 	static IMAGE number;
 	IMAGE player;
 	IMAGE pts;
-	static IMAGE bunds;		// bunds 1000pts ×ÖÑù
+	static IMAGE bunds;		// bunds 1000pts å­—æ ·
 
-	// ¼ì²âÄÄ¸öÍæ¼Ò·ÖÊı¶à,¾ÍÏÔÊ¾ÔÚÄÄ±ß
-	static int who_bunds[2];			// ÏÔÊ¾ÔÚÍæ¼ÒÒ»»¹ÊÇÍæ¼Ò¶ş´¦
+	// æ£€æµ‹å“ªä¸ªç©å®¶åˆ†æ•°å¤š,å°±æ˜¾ç¤ºåœ¨å“ªè¾¹
+	static int who_bunds[2];			// æ˜¾ç¤ºåœ¨ç©å®¶ä¸€è¿˜æ˜¯ç©å®¶äºŒå¤„
 
-	static int player_num;		// Íæ¼ÒÊı; ³õÊ¼»¯Ò»¸ö±¾Àà¶ÔÏó +1
-	static bool line_done_flag[2];	// Ã¿Ò»ĞĞÊı¾İÁ½¸öÍæ¼Ò¶¼ÏÔÊ¾ÍêÓë·ñ
+	static int player_num;		// ç©å®¶æ•°; åˆå§‹åŒ–ä¸€ä¸ªæœ¬ç±»å¯¹è±¡ +1
+	static bool line_done_flag[2];	// æ¯ä¸€è¡Œæ•°æ®ä¸¤ä¸ªç©å®¶éƒ½æ˜¾ç¤ºå®Œä¸å¦
 
 	byte player_id;
 	int player_x, player_y;
 	int pts_x, pts_y;
-	int kill_num[4], kill_num2[4];		// 4ÖÖµĞ»úÉ±µĞÊı, kill_num = -1 µÄÏîÏÈ²»ÏÔÊ¾
+	int kill_num[4], kill_num2[4];		// 4ç§æ•Œæœºæ€æ•Œæ•°, kill_num = -1 çš„é¡¹å…ˆä¸æ˜¾ç¤º
 
-	// x[..][0] ÊÇ·ÖÊı, x[..][1] ÊÇÉ±µĞÊı
-	int x[4][2];	// Ò»¸öÊÇ·ÖÊı, Ò»¸öÊÇÉ±µĞÊı, ·ÖÊıµÈÓÚ É±µĞÊı*100,200,400...
+	// x[..][0] æ˜¯åˆ†æ•°, x[..][1] æ˜¯æ€æ•Œæ•°
+	int x[4][2];	// ä¸€ä¸ªæ˜¯åˆ†æ•°, ä¸€ä¸ªæ˜¯æ€æ•Œæ•°, åˆ†æ•°ç­‰äº æ€æ•Œæ•°*100,200,400...
 	int y[4][2];
 
-	static int cur_line;		// µ±Ç°ÕıÔÚ¸üĞÂÏÔÊ¾µÄÊı¾İĞĞË÷Òı
+	static int cur_line;		// å½“å‰æ­£åœ¨æ›´æ–°æ˜¾ç¤ºçš„æ•°æ®è¡Œç´¢å¼•
 
-	int total_kill_numm;		// ×ÜÉ±µĞÊı
-	int total_kill_x, total_kill_y;	// ×ø±ê
+	int total_kill_numm;		// æ€»æ€æ•Œæ•°
+	int total_kill_x, total_kill_y;	// åæ ‡
 
-	static int end_counter;		// ·ÖÊıÃæ°åÏÔÊ¾ÍêÈ«ºó¶à¾ÃÌø×ª
+	static int end_counter;		// åˆ†æ•°é¢æ¿æ˜¾ç¤ºå®Œå…¨åå¤šä¹…è·³è½¬
 
 	int total_score_x, total_score_y;
-	int total_score;			// ×Ü·Ö
+	int total_score;			// æ€»åˆ†
 	int stage;
 };
 
-/*Ä³¸öÍæ¼Ò±»ÏûÃğµ¥¶ÀÏÔÊ¾µÄ gameover ×ÖÑù*/
+/*æŸä¸ªç©å®¶è¢«æ¶ˆç­å•ç‹¬æ˜¾ç¤ºçš„ gameover å­—æ ·*/
 class PlayerGameover
 {
 public:
@@ -339,10 +339,10 @@ public:
 	void Show(const HDC& center_hdc);
 
 	TimeClock mGameoverTimer;		//
-	int mGameover_Dev;			// X ÖáÒÆ¶¯, Íæ¼ÒÒ»ÊÇÕıÊı·ÖÁ¿, Íæ¼Ò¶şÊÇ¸ºÊı·ÖÁ¿
+	int mGameover_Dev;			// X è½´ç§»åŠ¨, ç©å®¶ä¸€æ˜¯æ­£æ•°åˆ†é‡, ç©å®¶äºŒæ˜¯è´Ÿæ•°åˆ†é‡
 	int mGameoverX, mGameoverY;
-	int mGameover_end_x;			// Í¼Æ¬Í£Ö¹µÄ x ×ø±ê
-	static IMAGE mGameoverImage;		// Íæ¼ÒÉúÃüÖµÓÃÍê, ÏÔÊ¾Ò»¸öË®Æ½ÒÆ¶¯µÄ GAMEOVER ×ÖÑù
-	int mGameoverCounter;			// Í¼Æ¬Í£Ö¹ºó¶à¾ÃÏûÊ§
+	int mGameover_end_x;			// å›¾ç‰‡åœæ­¢çš„ x åæ ‡
+	static IMAGE mGameoverImage;		// ç©å®¶ç”Ÿå‘½å€¼ç”¨å®Œ, æ˜¾ç¤ºä¸€ä¸ªæ°´å¹³ç§»åŠ¨çš„ GAMEOVER å­—æ ·
+	int mGameoverCounter;			// å›¾ç‰‡åœæ­¢åå¤šä¹…æ¶ˆå¤±
 	bool mShowGameover;
 };
