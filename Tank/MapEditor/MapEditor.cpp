@@ -27,8 +27,8 @@ void TestRead();
 
 void main()
 {
-	//writeMap();
-	TestRead();	// 测试读取地图
+	writeMap();
+	//TestRead();	// 测试读取地图
 	_getch();
 }
 
