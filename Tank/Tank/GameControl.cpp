@@ -61,7 +61,7 @@ GameControl::~GameControl()
 void GameControl::Init()
 {
 	//mOutedEnemyTankNumber = 0;													// 已经出现在地图上的敌机数量,最多显示6架
-	mRemainEnemyTankNumber = 20;	 // 剩余未出现的敌机数量
+	mRemainEnemyTankNumber = TOTAL_ENEMY_NUMBER;	 // 剩余未出现的敌机数量
 	mCurMovingTankNumber = 0;
 	mKillEnemyNum = 0;
 	mCampDie = false;															// 标志大本营是否被击中
@@ -650,7 +650,7 @@ void GameControl::AddEnemy()
 {
 	int size = EnemyList.size();
 
-	if (mCurMovingTankNumber >= 6 || TOTAL_ENEMY_NUMBER - size <= 0)
+	if (mCurMovingTankNumber >= ACTIVE_ENEMY_NUMBER || TOTAL_ENEMY_NUMBER - size <= 0)
 		return;
 	mCurMovingTankNumber++;
 
@@ -741,7 +741,7 @@ bool GameControl::RefreshData()
 					// 玩家记录消灭的敌机数量
 					(*itor)->AddKillEnemyNum((*EnemyItor)->GetLevel());
 
-					if (mKillEnemyNum == 20)
+					if (mKillEnemyNum == TOTAL_ENEMY_NUMBER)
 					{
 						mWinCounter = 0;
 						mWin = true;
@@ -1078,7 +1078,7 @@ void GameControl::CheckKillEnemy(PlayerBase* pb)
 						// 玩家记录消灭的敌机数量
 						pb->AddKillEnemyNum((*EnemyItor)->GetLevel());
 					}
-					if (mKillEnemyNum == 20)
+					if (mKillEnemyNum == TOTAL_ENEMY_NUMBER)
 					{
 						mWinCounter = 0;
 						mWin = true;

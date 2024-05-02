@@ -4,6 +4,55 @@
 
 /////////////////////////////f///////////////////////////
 
+ IMAGE TankInfo::mGrayTank[4][4][2];
+ IMAGE TankInfo::mRedTank[4][4][2];
+ IMAGE TankInfo::mGreenTank[4][2];
+ IMAGE TankInfo::mYellowTank[4][2];
+ 
+ 
+ void TankInfo::Init()
+ {
+	 TCHAR c[100];
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				_stprintf_s(c, L"./res/big/gray-tank/%d-%d-1.gif", i + 1, j + 1);
+				loadimage(&mGrayTank[i][j][0], c);
+				_stprintf_s(c, L"./res/big/gray-tank/%d-%d-2.gif", i + 1, j + 1);
+				loadimage(&mGrayTank[i][j][1], c);
+			}
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				_stprintf_s(c, L"./res/big/red-tank/%d-%d-1.gif", i + 1, j + 1);
+				loadimage(&mRedTank[i][j][0], c);
+				_stprintf_s(c, L"./res/big/red-tank/%d-%d-2.gif", i + 1, j + 1);
+				loadimage(&mRedTank[i][j][1], c);
+			}
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			_stprintf_s(c, L"./res/big/other-tank/g4-%d-1.gif", i + 1);
+			loadimage(&mGreenTank[i][0], c);
+			_stprintf_s(c, L"./res/big/other-tank/g4-%d-2.gif", i + 1);
+			loadimage(&mGreenTank[i][1], c);
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			_stprintf_s(c, L"./res/big/other-tank/y4-%d-1.gif", i + 1);
+			loadimage(&mYellowTank[i][0], c);
+			_stprintf_s(c, L"./res/big/other-tank/y4-%d-2.gif", i + 1);
+			loadimage(&mYellowTank[i][1], c);
+		}
+ }
+
+
 // 敌机坦克信息
 TankInfo::TankInfo(byte tank_color, int enemy_level, bool notuse)
 {
@@ -14,37 +63,49 @@ TankInfo::TankInfo(byte tank_color, int enemy_level, bool notuse)
 	case GRAY_TANK:		// 灰色坦克
 		for ( int i = 0; i < 4; i++ )
 		{
-			_stprintf_s(c, L"./res/big/gray-tank/%d-%d-1.gif", enemy_level + 1, i + 1 );
-			loadimage(&mTankImage[i][0], c);
-			_stprintf_s(c, L"./res/big/gray-tank/%d-%d-2.gif", enemy_level + 1, i + 1 );
-			loadimage(&mTankImage[i][1], c);
+			mTankImage[i][0] = mGrayTank[enemy_level][i][0];
+			mTankImage[i][1] = mGrayTank[enemy_level][i][1];
+
+			//_stprintf_s(c, L"./res/big/gray-tank/%d-%d-1.gif", enemy_level + 1, i + 1 );
+			//loadimage(&mTankImage[i][0], c);
+			//_stprintf_s(c, L"./res/big/gray-tank/%d-%d-2.gif", enemy_level + 1, i + 1 );
+			//loadimage(&mTankImage[i][1], c);
 		}
 		break;
 	case RED_TANK:		// 红色坦克
 		for ( int i = 0; i < 4; i++ )
 		{
-			_stprintf_s(c, L"./res/big/red-tank/%d-%d-1.gif", enemy_level + 1, i + 1);
+			mTankImage[i][0] = mRedTank[enemy_level][i][0];
+			mTankImage[i][1] = mRedTank[enemy_level][i][1];
+
+		/*	_stprintf_s(c, L"./res/big/red-tank/%d-%d-1.gif", enemy_level + 1, i + 1);
 			loadimage(&mTankImage[i][0], c);
 			_stprintf_s(c, L"./res/big/red-tank/%d-%d-2.gif", enemy_level + 1, i + 1);
-			loadimage(&mTankImage[i][1], c);
+			loadimage(&mTankImage[i][1], c);*/
 		}
 		break;
 	case GREEN_TANK:
 		for (int i = 0; i < 4; i++)
 		{
-			_stprintf_s(c, L"./res/big/other-tank/g%d-%d-1.gif", enemy_level + 1, i + 1);
+			mTankImage[i][0] = mGreenTank[i][0];
+			mTankImage[i][1] = mGreenTank[i][1];
+
+			/*_stprintf_s(c, L"./res/big/other-tank/g%d-%d-1.gif", enemy_level + 1, i + 1);
 			loadimage(&mTankImage[i][0], c);
 			_stprintf_s(c, L"./res/big/other-tank/g%d-%d-2.gif", enemy_level + 1, i + 1);
-			loadimage(&mTankImage[i][1], c);
+			loadimage(&mTankImage[i][1], c);*/
 		}
 		break;
 	case YELLOW_TANK:
 		for (int i = 0; i < 4; i++)
 		{
-			_stprintf_s(c, L"./res/big/other-tank/y%d-%d-1.gif", enemy_level + 1, i + 1);
-			loadimage(&mTankImage[i][0], c);
-			_stprintf_s(c, L"./res/big/other-tank/y%d-%d-2.gif", enemy_level + 1, i + 1);
-			loadimage(&mTankImage[i][1], c);
+			mTankImage[i][0] = mYellowTank[i][0];
+			mTankImage[i][1] = mYellowTank[i][1];
+
+			//_stprintf_s(c, L"./res/big/other-tank/y%d-%d-1.gif", enemy_level + 1, i + 1);
+			//loadimage(&mTankImage[i][0], c);
+			//_stprintf_s(c, L"./res/big/other-tank/y%d-%d-2.gif", enemy_level + 1, i + 1);
+			//loadimage(&mTankImage[i][1], c);
 		}
 		break;
 	default:

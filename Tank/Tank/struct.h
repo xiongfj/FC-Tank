@@ -115,7 +115,8 @@ struct BoxMarkStruct
 	int bullet_4[52][52];		// 子弹层标记
 };
 
-#define TOTAL_ENEMY_NUMBER	20
+#define TOTAL_ENEMY_NUMBER	20		// 敌机数量
+#define ACTIVE_ENEMY_NUMBER	6		// 同时活动的敌机数量
 #define SHOWING_STAR	true		// 正在显示四角星
 #define STOP_SHOW_STAR	false		// 四角星显示结束
 

@@ -39,6 +39,7 @@ void main()
 	srand((unsigned)time(0));
 	bool isCustomMap = false;		// 自定义地图
 	MciSound::InitSounds();
+	TankInfo::Init();
 
 	// 灰色背景
 	initgraph(WINDOW_WIDTH, WINDOW_HEIGHT);

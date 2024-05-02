@@ -1,5 +1,6 @@
 #pragma once
 
+
 /************ 单个坦克信息 *********
 * 玩家坦克信息
 * 敌机坦克信息
@@ -10,6 +11,12 @@ public:
 	TankInfo(byte tank_color, int enemy_level, bool notuse );	// tank_color [0-3]; enemy_level [0-4], notuse->区别玩家坦克
 	TankInfo(byte player, byte level);							// player [0-1]; level [0-3]
 	~TankInfo();
+
+	static IMAGE mGrayTank[4][4][2];
+	static IMAGE mRedTank[4][4][2];
+	static IMAGE mGreenTank[4][2];
+	static IMAGE mYellowTank[4][2];
+	static void Init();
 
 	IMAGE GetTankImage( byte dir, int index = 0 );		// index 两张不同动作的图片索引 [0-1]
 private:
